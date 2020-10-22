@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
+import { NGSBuilderDbModule } from 'src/database/ngs-builder/ngs-builder-db.module';
+import { NGSController } from './controllers/ngs.controller';
+import { NGSService } from './services/ngs.service';
 @Module({
     imports: [
+        NGSBuilderDbModule
     ],
     controllers: [
-        AppController
+        NGSController
     ],
     providers: [
-        AppService
+        NGSService
     ]
   })
   export class NGSModule { }
