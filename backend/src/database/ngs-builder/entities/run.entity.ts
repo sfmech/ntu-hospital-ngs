@@ -13,8 +13,6 @@ export class Run {
     @CreateDateColumn({type: 'timestamp with time zone', name: "start_time" })
     startTime: Date;
 
-    @CreateDateColumn({type: 'timestamp with time zone', name: "end_time" })
-    endTime: Date;
 
     @OneToMany(type => Sample, sample => sample.run)
     samples: Sample[];

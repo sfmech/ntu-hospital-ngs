@@ -6,6 +6,7 @@ import { Run } from './entities/run.entity';
 import { Sample } from './entities/sample.entity';
 import { Segment } from './entities/segment.entity';
 import { SegmentTag } from './entities/segmentTag.entity';
+import { Setting } from './entities/setting.entity';
 
 @Module({
     imports: [
@@ -22,7 +23,7 @@ import { SegmentTag } from './entities/segmentTag.entity';
                 },
             inject: [ConfigService],
         }),
-        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag]),
+        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting]),
     ],
     providers: [],
     exports: [TypeOrmModule]

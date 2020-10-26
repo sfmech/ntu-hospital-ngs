@@ -2,7 +2,7 @@ import { Sample } from "./sample.model";
 
 export class Segment {
     segmentId: number;
-    sample: Sample
+    sample: Sample = new Sample()
     chr: string| null;
     position: string| null;
     dbSNP: string| null;

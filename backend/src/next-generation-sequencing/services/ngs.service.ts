@@ -5,13 +5,14 @@ import { Sample as SampleEntity } from 'src/database/ngs-builder/entities/sample
 import { Segment as SegmentEntity } from 'src/database/ngs-builder/entities/segment.entity';
 import { SegmentTag as SegmentTagEntity } from 'src/database/ngs-builder/entities/segmentTag.entity';
 import { Repository } from 'typeorm';
-import { CsvParser, ParsedData } from 'nest-csv-parser';
+
 import { Run } from '../models/run.model';
 import { Sample } from '../models/sample.model';
 import { Segment } from '../models/segment.model';
 import { SegmentTag } from '../models/segmentTag.model';
 var cp = require('child_process');
 const fs = require('fs');
+const csv = require('csv-parser');
 
 class Entity {
 	Chr: string;
@@ -34,6 +35,12 @@ class Entity {
 	'Clinical significance': string;
 	Disease: string;
 }
+class Entity2 {
+	Sample_Name: string;
+	Alignment_Rate: string;
+	mean_coverage: string;
+	Dropout_percentage: string;
+}
 
 @Injectable()
 export class NGSService {
@@ -41,8 +48,7 @@ export class NGSService {
 		@InjectRepository(RunEntity) private runRepository: Repository<RunEntity>,
 		@InjectRepository(SampleEntity) private sampleRepository: Repository<SampleEntity>,
 		@InjectRepository(SegmentEntity) private segmentRepository: Repository<SegmentEntity>,
-		@InjectRepository(SegmentTagEntity) private segmentTagRepository: Repository<SegmentTagEntity>,
-		private readonly csvParser: CsvParser
+		@InjectRepository(SegmentTagEntity) private segmentTagRepository: Repository<SegmentTagEntity>
 	) {}
 
 	async getAllSegments(): Promise<Segment[]> {
@@ -92,19 +98,99 @@ export class NGSService {
 		const whitelist = await this.segmentTagRepository.save(addSegmentTags);
 		return whitelist;
 	}
+
+	async getFilelist(): Promise<string[]> {
+		const test = fs
+			.readdirSync('D:\\NGS_Analysis')
+			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
+		return test;
+	}
+
 	async runScript(): Promise<void> {
-		/*const stream = fs.createReadStream('D:\\NGS_Analysis\\2020-10-20-15\\1137_S8_Annotation.csv');
-		const entities: ParsedData<Entity> = await this.csvParser.parse(stream, Entity, null, null, {
-			strict: false,
-			separator: ';'
-		});*/
-		
-		const test = fs.readdirSync('~/Data').filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/))
-		var child = cp.exec('bash ~/Leukemia_analysis_with_large_indels.bash');
+		var child = cp.execSync('bash ~/Leukemia_analysis_with_large_indels.bash');
 		child.stdout.on('data', function(data) {
 			console.log(data);
 		});
-		
+		const now = new Date(Date.now());
+		const runResults = { runName: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}` };
+		const runsResponse = await this.runRepository.save(runResults);
+		console.log(runsResponse)
+		const files = fs
+			.readdirSync('D:\\NGS_Analysis')
+			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
+		const sampleResults = files.map((file) => {
+			const temp = new Sample();
+			temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
+			temp.run.runId = runsResponse.runId;
+			return temp
+		});
+		const samplesResponse = await this.sampleRepository.save(sampleResults);
+		samplesResponse.forEach((element:Sample,index: number) => {
+			const segmentResults = new Array<Segment>();
+			try {
+				const stream = fs
+					.createReadStream(`~/Data/${runsResponse.runName}/${element.sampleName}_Annotation.csv`)
+					.pipe(csv())
+					.on('data', (data) => {
+						let temp = new Segment();
+						if (
+							(data['Annotation'] || ('' as string)).indexOf('stop') !== -1 ||
+							(data['Annotation'] || ('' as string)).indexOf('missense') !== -1 ||
+							(data['Annotation'] || ('' as string)).indexOf('frameshift') !== -1 ||
+							(data['Annotation'] || ('' as string)).indexOf('splice') !== -1
+						) {
+							temp.chr = data['Chr'] || '';
+							temp.position = data['Position'] || '';
+							temp.dbSNP = data['dbSNP'] || '';
+							temp.freq = parseFloat((data['Freq'] || '0%').split('%')[0]);
+							temp.depth = parseInt(data['Depth']);
+							temp.annotation = data['Annotation'] || '';
+							temp.geneName = data['Gene_Name'] || '';
+							temp.HGVSc = data['HGVS.c'] || '';
+							temp.HGVSp = data['HGVS.p'] || '';
+							if ((data['Clinical significance'] + data['Disease'] || '').indexOf('Pathogenic') !== -1) {
+								temp.clinicalSignificance = 'Pathogenic';
+							} else if (
+								(data['Clinical significance'] + data['Disease'] || '').indexOf('Benign') !== -1
+							) {
+								temp.clinicalSignificance = 'Benign';
+							} else if (
+								(data['Clinical significance'] + data['Disease'] || '')
+									.indexOf('uncertain significant') !== -1
+							) {
+								temp.clinicalSignificance = 'uncertain significant';
+							} else if (
+								(data['Clinical significance'] + data['Disease'] || '').indexOf('not_provided') !== -1
+							) {
+								temp.clinicalSignificance = 'not_provided';
+							} else {
+								temp.clinicalSignificance = '';
+							}
+							if (parseFloat(data['Global_AF'])) temp.globalAF = parseFloat(data['Global_AF']);
+							if (parseFloat(data['AFR_AF'])) temp.AFRAF = parseFloat(data['AFR_AF']);
+							if (parseFloat(data['AMR_AF'])) temp.AMRAF = parseFloat(data['AMR_AF']);
+							if (parseFloat(data['EUR_AF'])) temp.EURAF = parseFloat(data['EUR_AF']);
+							if (parseFloat(data['ASN_AF'])) temp.ASNAF = parseFloat(data['ASN_AF']);
+						}
+						if (temp.clinicalSignificance !== '') {
+							if (temp.freq > 5) {
+								temp.sample.sampleId = element.sampleId;
+								segmentResults.push(temp);
+							} else if (temp.freq >= 3 && temp.clinicalSignificance === 'Pathogenic') {
+								temp.sample.sampleId =  element.sampleId;
+								segmentResults.push(temp);
+							}
+						}
+					})
+					.on('end', async () => {
+						console.log(segmentResults);
+						const samplesResponse = await this.segmentRepository.save(segmentResults);
+					});
+			} catch (error) {
+				console.log('error', error);
+			}
+		});
+
 	}
 
 	saveResult(): void {}

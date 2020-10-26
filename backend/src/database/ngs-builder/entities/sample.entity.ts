@@ -15,6 +15,6 @@ export class Sample {
     segments: Segment[];
 
     @Column({ name: "sample_name" })
-    sampleName: number;
+    sampleName: string;
 
 }

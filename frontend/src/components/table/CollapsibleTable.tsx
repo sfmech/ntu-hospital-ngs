@@ -48,7 +48,6 @@ function Row(props: { row: Sample[] , handleShowModal}) {
 					{row[0].run.runName}
 				</TableCell>
 				<TableCell align="right">{new Date(row[0].run.startTime).toLocaleString()}</TableCell>
-				<TableCell align="right">{new Date(row[0].run.endTime).toLocaleString()}</TableCell>
 			</TableRow>
 			<TableRow>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -104,7 +103,6 @@ export const CollapsibleTable: FunctionComponent<CollapsibleTable> = (props) => 
 							<TableCell />
 							<TableCell>Run Name</TableCell>
 							<TableCell align="right">Start Time</TableCell>
-							<TableCell align="right">End Time</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>

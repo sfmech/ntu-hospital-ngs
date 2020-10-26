@@ -52,8 +52,13 @@ export class NGSController {
 		return this.ngsService.addWhitelist(data);
 	}
 
-	@Get('/runscript')
+	@Post('/runscript')
 	runscript() {
 		return this.ngsService.runScript();
+	}
+
+	@Get('/filelist')
+	getFilelist() : Promise<string[]>{
+		return this.ngsService.getFilelist();
 	}
 }
