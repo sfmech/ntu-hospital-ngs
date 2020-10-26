@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BuilderDbConfigFactory } from './config/course-builder-db.config';
 import { Run } from './entities/run.entity';
 import { Sample } from './entities/sample.entity';
+import { Segment } from './entities/segment.entity';
+import { SegmentTag } from './entities/segmentTag.entity';
 
 @Module({
     imports: [
@@ -20,7 +22,7 @@ import { Sample } from './entities/sample.entity';
                 },
             inject: [ConfigService],
         }),
-        TypeOrmModule.forFeature([Run, Sample]),
+        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag]),
     ],
     providers: [],
     exports: [TypeOrmModule]

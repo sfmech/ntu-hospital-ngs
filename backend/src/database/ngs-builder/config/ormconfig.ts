@@ -1,6 +1,8 @@
 import { Run } from "../entities/run.entity";
 import path = require("path");
 import { Sample } from "../entities/sample.entity";
+import { Segment } from "../entities/segment.entity";
+import { SegmentTag } from "../entities/segmentTag.entity";
 require('dotenv').config();
 
 const isTsNode = process[Symbol.for('ts-node.register.instance')]
@@ -13,7 +15,7 @@ const BuilderDbConfig = {
     database: process.env.BUILDER_DB_DATABASE,
     synchronize: false,
     logging: false,
-    entities: [Run, Sample],
+    entities: [Run, Sample, Segment, SegmentTag],
     migrations: [
         path.resolve(__dirname, isTsNode ? `src/database/ngs-builder/migrations/*.ts` : `dist/database/ngs-builder/migrations/*.js`,),
     ],

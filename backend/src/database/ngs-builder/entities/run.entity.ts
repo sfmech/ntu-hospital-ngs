@@ -10,10 +10,10 @@ export class Run {
     @Column({ name: "run_name" })
     runName: string;
 
-    @CreateDateColumn({type: 'timestamp', name: "start_time" })
+    @CreateDateColumn({type: 'timestamp with time zone', name: "start_time" })
     startTime: Date;
 
-    @CreateDateColumn({type: 'timestamp', name: "end_time" })
+    @CreateDateColumn({type: 'timestamp with time zone', name: "end_time" })
     endTime: Date;
 
     @OneToMany(type => Sample, sample => sample.run)
