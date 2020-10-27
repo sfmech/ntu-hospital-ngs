@@ -103,7 +103,9 @@ export class NGSService {
 	async runScript(): Promise<void> {
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
+			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/))
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
+			.filter((element, index, arr) => arr.indexOf(element) === index);
 
 		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ],{maxBuffer: 1024 * 500});
 		child.stdout.on('data', (data) => {
