@@ -105,13 +105,18 @@ export class NGSService {
 		const files = fs
 			.readdirSync(this.configService.get<string>("ngs.path"))
 			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
-		var child = await cp.spawn('bash ~/Leukemia_analysis_with_large_indels.bash',(error, stdout, stderr) => {
-			if (error) {
-			  console.error(`exec error: ${error}`);
-			  return;
-			}
-			console.log(`stdout: ${stdout}`);
-			console.error(`stderr: ${stderr}`);
+		
+		var child = await cp.spawn('bash ~/Leukemia_analysis_with_large_indels.bash');
+		child.stdout.on('data', (data) => {
+			console.log(`stdout: ${data}`);
+		  });
+		  
+		child.stderr.on('data', (data) => {
+			console.error(`stderr: ${data}`);
+		  });
+		  
+		child.on('close', (code) => {
+			console.log(`子进程退出，退出码 ${code}`);
 		  });
 		
 		const now = new Date(Date.now());
