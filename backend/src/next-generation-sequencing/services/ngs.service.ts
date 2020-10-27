@@ -113,13 +113,13 @@ export class NGSService {
 		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ], {
 			maxBuffer: 1024 * 1024 * 1024 * 5
 		});
-		child.stdout.on('data', (data) => {
+		/*child.stdout.on('data', (data) => {
 			console.log(`stdout: ${data}`);
 		});
 
 		child.stderr.on('data', (data) => {
 			console.error(`stderr: ${data}`);
-		});
+		});*/
 
 		child.on('close', async (code) => {
 			const now = new Date(Date.now());
