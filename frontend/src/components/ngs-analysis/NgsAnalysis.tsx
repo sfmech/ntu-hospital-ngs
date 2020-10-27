@@ -46,7 +46,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 			}
 		};
 		getFilelist();
-		setInterval(() => getFilelist(), 5000);
+		setInterval(() => getFilelist(), 3000);
 	}, []);
 
 	const handleClick = () => {
