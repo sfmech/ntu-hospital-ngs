@@ -106,7 +106,7 @@ export class NGSService {
 			.readdirSync(this.configService.get<string>("ngs.path"))
 			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
 		
-		var child = await cp.spawn('bash ~/Leukemia_analysis_with_large_indels.bash');
+		var child = await cp.execFile('~/Leukemia_analysis_with_large_indels.bash');
 		child.stdout.on('data', (data) => {
 			console.log(`stdout: ${data}`);
 		  });
