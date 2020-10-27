@@ -17,6 +17,7 @@ import { ExportDataToCsv } from '../../utils/exportDataToCsv';
 
 type SampleModalProps = {
 	show: boolean;
+	title: string;
 	segments: Segment[];
 	onClose: () => void;
 };
@@ -36,6 +37,7 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 	useEffect(()=>{
 		let tempOther = Array<Segment>();
 		let tempTarget = Array<Segment>();
+		console.log(props.segments)
 		if(props.segments){
 		props.segments.forEach((segment)=>{	
 			if(blacklist.findIndex((tag)=>tag.id===`${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)!==-1){
@@ -61,7 +63,7 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 
 	return (
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
-			<DialogTitle>Sample Name: {props.segments?props.segments.length>0?props.segments[0].sample.sampleName: "":""}</DialogTitle>
+			<DialogTitle>Sample Name: {props.title}</DialogTitle>
 			<DialogContentText className="ml-5">
 				Select the segments and	click Add Icon (+) to insert blacklist or whitelist.
 			</DialogContentText>

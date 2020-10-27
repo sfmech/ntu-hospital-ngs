@@ -32,8 +32,8 @@ function Row(props: { row: Sample[] , handleShowModal}) {
 	const classes = useRowStyles();
 	const history = useHistory();
 
-	const handleClick = (sampleId: number) => {
-        handleShowModal(sampleId);
+	const handleClick = (sampleId: number, sampleName: string) => {
+        handleShowModal(sampleId, sampleName);
 	};
 
 	return (
@@ -66,7 +66,7 @@ function Row(props: { row: Sample[] , handleShowModal}) {
 									{row.map((sampleRow) => (
 										<TableRow
 											key={sampleRow.sampleId}
-											onClick={() => handleClick(sampleRow.sampleId)}
+											onClick={() => handleClick(sampleRow.sampleId, sampleRow.sampleName)}
 											hover
 										>
 											<TableCell component="th" scope="row">
@@ -92,9 +92,11 @@ type CollapsibleTable = {
 export const CollapsibleTable: FunctionComponent<CollapsibleTable> = (props) => {
 	const [ showModal, setShowModal ] = useState(false);
 	const [ selectedSegments, setSelectedSegments] = useState<Array<Segment>>(new Array<Segment>());
-	
-	const handleShowModal = (selectedSampleId) => {
+	const [ selectedSample, setSelectedSample] = useState<string>("");
+	const handleShowModal = (selectedSampleId, selectedSampleName) => {
 		setSelectedSegments(props.segments[selectedSampleId]);
+		setSelectedSample(selectedSampleName);
+
 		setShowModal(true);
 	};
 	return (
@@ -115,7 +117,7 @@ export const CollapsibleTable: FunctionComponent<CollapsibleTable> = (props) => 
 					</TableBody>
 				</Table>
 			</TableContainer>
-			<SampleModal show={showModal} onClose={() => setShowModal(false)} segments={selectedSegments}/>
+			<SampleModal show={showModal} onClose={() => setShowModal(false)} segments={selectedSegments} title={selectedSample}/>
 		</React.Fragment>
 	);
 };

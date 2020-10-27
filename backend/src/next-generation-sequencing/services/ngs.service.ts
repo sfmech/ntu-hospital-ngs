@@ -75,8 +75,8 @@ export class NGSService {
 
 	async getFilelist(): Promise<{}> {
 		const aligned = fs
-		.readdirSync(this.configService.get<string>('ngs.path'))
-		.filter((align: string) => align.match(/Aligned.csv/))
+			.readdirSync(this.configService.get<string>('ngs.path'))
+			.filter((align: string) => align.match(/Aligned.csv/));
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((bam: string) => bam.match(/(\d)*_S(\d)*.bam/))
@@ -100,7 +100,7 @@ export class NGSService {
 				return { status: 0, name: file };
 			}
 		});
-		return {analysis:aligned.length, files:response};
+		return { analysis: aligned.length, files: response };
 	}
 
 	async runScript(): Promise<void> {
@@ -110,7 +110,9 @@ export class NGSService {
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
 
-		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ],{maxBuffer: 1024 * 500});
+		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ], {
+			maxBuffer: 1024 * 1024 * 1024 * 5
+		});
 		child.stdout.on('data', (data) => {
 			console.log(`stdout: ${data}`);
 		});
@@ -143,70 +145,58 @@ export class NGSService {
 								'ngs.path'
 							)}/${runsResponse.runName}/${element.sampleName}_Annotation.csv`
 						)
-						.pipe(csv())
+						.pipe(csv({ headers: false, skipLines: 1 }))
 						.on('data', (data) => {
+							console.log(`data: ${element.sampleId} -> `, data['0']);
 							let temp = new Segment();
 							if (
-								(data['Annotation'] || ('' as string)).indexOf('stop') !== -1 ||
-								(data['Annotation'] || ('' as string)).indexOf('missense') !== -1 ||
-								(data['Annotation'] || ('' as string)).indexOf('frameshift') !== -1 ||
-								(data['Annotation'] || ('' as string)).indexOf('splice') !== -1
+								(data['8'] || ('' as string)).indexOf('stop') !== -1 ||
+								(data['8'] || ('' as string)).indexOf('missense') !== -1 ||
+								(data['8'] || ('' as string)).indexOf('frameshift') !== -1 ||
+								(data['8'] || ('' as string)).indexOf('splice') !== -1
 							) {
-								temp.chr = data['Chr'] || '';
-								temp.position = data['Position'] || '';
-								temp.dbSNP = data['dbSNP'] || '';
-								temp.freq = parseFloat((data['Freq'] || '0%').split('%')[0]);
-								temp.depth = parseInt(data['Depth']);
-								temp.annotation = data['Annotation'] || '';
-								temp.geneName = data['Gene_Name'] || '';
-								temp.HGVSc = data['HGVS.c'] || '';
-								temp.HGVSp = data['HGVS.p'] || '';
-								if (
-									(data['Clinical significance'] + data['Disease'] || '').indexOf('Pathogenic') !== -1
-								) {
+								temp.chr = data['0'] || '';
+								temp.position = data['1'] || '';
+								temp.dbSNP = data['2'] || '';
+								temp.freq = parseFloat((data['5'] || '0%').split('%')[0]);
+								temp.depth = parseInt(data['6']);
+								temp.annotation = data['8'] || '';
+								temp.geneName = data['10'] || '';
+								temp.HGVSc = data['12'] || '';
+								temp.HGVSp = data['13'] || '';
+								if ((data['22'] + data['23'] || '').indexOf('Pathogenic') !== -1) {
 									temp.clinicalSignificance = 'Pathogenic';
-								} else if (
-									(data['Clinical significance'] + data['Disease'] || '').indexOf('Benign') !== -1
-								) {
+								} else if ((data['22'] + data['23'] || '').indexOf('Benign') !== -1) {
 									temp.clinicalSignificance = 'Benign';
-								} else if (
-									(data['Clinical significance'] + data['Disease'] || '')
-										.indexOf('uncertain significant') !== -1
-								) {
+								} else if ((data['22'] + data['23'] || '').indexOf('uncertain significant') !== -1) {
 									temp.clinicalSignificance = 'uncertain significant';
-								} else if (
-									(data['Clinical significance'] + data['Disease'] || '').indexOf('not_provided') !==
-									-1
-								) {
+								} else if ((data['22'] + data['23'] || '').indexOf('not_provided') !== -1) {
 									temp.clinicalSignificance = 'not_provided';
 								} else {
 									temp.clinicalSignificance = '';
 								}
-								if (parseFloat(data['Global_AF'])) temp.globalAF = parseFloat(data['Global_AF']);
-								if (parseFloat(data['AFR_AF'])) temp.AFRAF = parseFloat(data['AFR_AF']);
-								if (parseFloat(data['AMR_AF'])) temp.AMRAF = parseFloat(data['AMR_AF']);
-								if (parseFloat(data['EUR_AF'])) temp.EURAF = parseFloat(data['EUR_AF']);
-								if (parseFloat(data['ASN_AF'])) temp.ASNAF = parseFloat(data['ASN_AF']);
+								if (parseFloat(data['17'])) temp.globalAF = parseFloat(data['17']);
+								if (parseFloat(data['18'])) temp.AFRAF = parseFloat(data['18']);
+								if (parseFloat(data['19'])) temp.AMRAF = parseFloat(data['19']);
+								if (parseFloat(data['20'])) temp.EURAF = parseFloat(data['20']);
+								if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
 							}
-							if (temp.clinicalSignificance !== '') {
-								if (temp.freq > 5) {
-									temp.sample.sampleId = element.sampleId;
-									segmentResults.push(temp);
-								} else if (temp.freq >= 3 && temp.clinicalSignificance === 'Pathogenic') {
-									temp.sample.sampleId = element.sampleId;
-									segmentResults.push(temp);
-								}
+							if (temp.freq > 5) {
+								temp.sample.sampleId = element.sampleId;
+								segmentResults.push(temp);
+							} else if (temp.freq >= 3 && temp.clinicalSignificance === 'Pathogenic') {
+								temp.sample.sampleId = element.sampleId;
+								segmentResults.push(temp);
 							}
 						})
 						.on('end', async () => {
-							console.log(segmentResults);
+							console.log(`end ${element.sampleName}`);
 							const samplesResponse = await this.segmentRepository.save(segmentResults);
 						});
 				} catch (error) {
 					console.log('error', error);
 				}
 			});
-			console.log(`子进程退出，退出码 ${code}`);
 		});
 	}
 
