@@ -75,6 +75,10 @@ export class NGSService {
 	}
 
 	async getFilelist(): Promise<string[]> {
+		const bams = fs
+			.readdirSync(this.configService.get<string>("ngs.path"))
+			.filter((bam: string) => bam.match(/(\d)*_S(\d)*.bam/))
+			.map((file: string) => `${file.split(".")[0]}`);
 		const annotations = fs
 			.readdirSync(this.configService.get<string>("ngs.path"))
 			.filter((annotation: string) => annotation.match(/(\d)*_S(\d)*_Annotation.csv/))
@@ -84,11 +88,14 @@ export class NGSService {
 			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/))
 			.map((file: string) => `${file.split("_")[0]}_${file.split("_")[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
+
 		const response = files.map((file)=>{
 			if(annotations.includes(file)){
-				return {staus: 1, name: file}
+				return {status: 1, name: file}
+			}else if (bams.includes(file)){
+				return {status: 2, name: file}
 			}else{
-				return {staus: 0, name: file}
+				return {status: 0, name: file}
 			}
 		})
 		return response;
@@ -98,7 +105,7 @@ export class NGSService {
 		const files = fs
 			.readdirSync(this.configService.get<string>("ngs.path"))
 			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
-		var child = cp.execSync('bash ~/Leukemia_analysis_with_large_indels.bash',(error, stdout, stderr) => {
+		var child = await cp.spawn('bash ~/Leukemia_analysis_with_large_indels.bash',(error, stdout, stderr) => {
 			if (error) {
 			  console.error(`exec error: ${error}`);
 			  return;

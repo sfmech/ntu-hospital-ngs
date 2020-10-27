@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import React, { FunctionComponent } from 'react';
 import DescriptIcon from '@material-ui/icons/Description';
 import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, makeStyles, Paper, Theme } from '@material-ui/core';
+import { CircularProgress, createStyles, makeStyles, Paper, Theme } from '@material-ui/core';
 import './NgsAnalysis.css';
 
 type FileListProp={
@@ -35,6 +35,7 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 									<DescriptIcon />
 								</ListItemIcon>
 								<ListItemText primary={file.name} />
+								{file.status===2? <CircularProgress />:null}
 							</ListItem>
 						))}
 					</List>
