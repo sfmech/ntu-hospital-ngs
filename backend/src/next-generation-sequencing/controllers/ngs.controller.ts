@@ -58,7 +58,7 @@ export class NGSController {
 	}
 
 	@Get('/filelist')
-	getFilelist() : Promise<string[]>{
+	getFilelist() : Promise<{}>{
 		return this.ngsService.getFilelist();
 	}
 }
