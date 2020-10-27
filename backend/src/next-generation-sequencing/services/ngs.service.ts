@@ -106,7 +106,7 @@ export class NGSService {
 			.readdirSync(this.configService.get<string>("ngs.path"))
 			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
 		
-		var child = await cp.execFile('~/Leukemia_analysis_with_large_indels.bash');
+		var child = cp.execFile('bash',[`/home/pindel/Leukemia_analysis_with_large_indels.bash`])
 		child.stdout.on('data', (data) => {
 			console.log(`stdout: ${data}`);
 		  });
@@ -115,11 +115,8 @@ export class NGSService {
 			console.error(`stderr: ${data}`);
 		  });
 		  
-		child.on('close', (code) => {
-			console.log(`子进程退出，退出码 ${code}`);
-		  });
-		
-		const now = new Date(Date.now());
+		child.on('close', async (code) => {
+			const now = new Date(Date.now());
 		const runResults = { runName: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}` };
 		const runsResponse = await this.runRepository.save(runResults);
 		console.log(runsResponse)
@@ -196,6 +193,10 @@ export class NGSService {
 				console.log('error', error);
 			}
 		});
+			console.log(`子进程退出，退出码 ${code}`);
+		  });
+		
+		
 
 	}
 
