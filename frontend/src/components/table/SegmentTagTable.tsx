@@ -224,7 +224,6 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 			const response = await axios.post(props.deleteUrl, {
 				data: props.data.filter((data) => selected.includes(data.id))
 			});
-			console.log(response.data);
 		} catch (error) {
 			console.log(error);
 		} finally {

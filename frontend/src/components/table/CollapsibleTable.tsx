@@ -33,7 +33,7 @@ function Row(props: { row: Sample[] , handleShowModal}) {
 	const history = useHistory();
 
 	const handleClick = (sampleId: number) => {
-        handleShowModal();
+        handleShowModal(sampleId);
 	};
 
 	return (
@@ -86,12 +86,15 @@ function Row(props: { row: Sample[] , handleShowModal}) {
 
 type CollapsibleTable = {
 	samples: {};
-	segments: Segment[];
+	segments: {};
 };
 
 export const CollapsibleTable: FunctionComponent<CollapsibleTable> = (props) => {
 	const [ showModal, setShowModal ] = useState(false);
-	const handleShowModal = () => {
+	const [ selectedSegments, setSelectedSegments] = useState<Array<Segment>>(new Array<Segment>());
+	
+	const handleShowModal = (selectedSampleId) => {
+		setSelectedSegments(props.segments[selectedSampleId]);
 		setShowModal(true);
 	};
 	return (
@@ -112,7 +115,7 @@ export const CollapsibleTable: FunctionComponent<CollapsibleTable> = (props) => 
 					</TableBody>
 				</Table>
 			</TableContainer>
-			<SampleModal show={showModal} onClose={() => setShowModal(false)} segments={props.segments} sampleName="744"/>
+			<SampleModal show={showModal} onClose={() => setShowModal(false)} segments={selectedSegments}/>
 		</React.Fragment>
 	);
 };

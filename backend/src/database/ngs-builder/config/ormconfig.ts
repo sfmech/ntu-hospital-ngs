@@ -18,7 +18,7 @@ const BuilderDbConfig = {
     logging: false,
     entities: [Run, Sample, Segment, SegmentTag, Setting],
     migrations: [
-        path.resolve(__dirname, isTsNode ? `src/database/ngs-builder/migrations/*.ts` : `dist/database/ngs-builder/migrations/*.js`,),
+        `dist/database/ngs-builder/migrations/*.js`,
     ],
     cli: {
         migrationsDir: "src/database/ngs-builder/migrations"

@@ -49,6 +49,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			try {
 				const response = await axios(`${ApiUrl}/api/segments`);
 				setSegments(response.data);
+				
 			} catch (error) {
 				console.log(error);
 			}
@@ -102,7 +103,12 @@ export const NgsResult: FunctionComponent = (prop) => {
 						groups[val].push(item);
 						return groups;
 					}, {})}
-					segments={segments}
+					segments={segments.reduce((groups, item) => {
+						const val = item.sample.sampleId;
+						groups[val] = groups[val] || [];
+						groups[val].push(item);
+						return groups;
+					}, {})}
 				/>
 			</div>
 		</React.Fragment>

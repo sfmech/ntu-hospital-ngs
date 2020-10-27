@@ -236,7 +236,6 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 			const response = await axios.post(props.addUrl, {
 				data: props.data.filter((data) => selected.includes(data.segmentId))
 			});
-			console.log(response.data);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -353,7 +352,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 												</TableCell>
 												<TableCell align="right">{row.position}</TableCell>
 												<TableCell align="right">{row.dbSNP}</TableCell>
-												<TableCell align="right">{`${row.freq}%`}</TableCell>
+												<TableCell align="right">{row.freq}%</TableCell>
 												<TableCell align="right">{row.depth}</TableCell>
 												<TableCell align="right">{row.annotation}</TableCell>
 												<TableCell align="right">{row.geneName}</TableCell>

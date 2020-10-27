@@ -13,30 +13,32 @@ import { Segment } from '../../models/segment.model';
 import { SegmentTable } from '../table/SegmentTable';
 import axios from 'axios';
 import { SegmentTagContext } from '../../contexts/segmentTag.context';
+import { ExportDataToCsv } from '../../utils/exportDataToCsv';
 
 type SampleModalProps = {
 	show: boolean;
 	segments: Segment[];
-	sampleName: string;
 	onClose: () => void;
 };
 
 export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 	const { blacklist, whitelist, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
+	const [targetSegments, setTargetSegments] = useState(Array<Segment>())
+	const [otherSegments, setOtherSegments] = useState(Array<Segment>())
 	const handleBlacklistAdd = (segments: Segment[]) => {
 		addBlacklist(segments);
 	};
 	const handleWhitelistAdd = (segments: Segment[]) => {
 		addWhitelist(segments)
 	};
-	const [targetSegments, setTargetSegments] = useState(Array<Segment>())
-	const [otherSegments, setOtherSegments] = useState(Array<Segment>())
+
+
 	useEffect(()=>{
 		let tempOther = Array<Segment>();
 		let tempTarget = Array<Segment>();
+		if(props.segments){
 		props.segments.forEach((segment)=>{	
 			if(blacklist.findIndex((tag)=>tag.id===`${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)!==-1){
-				console.log(segment);
 				tempOther.push(segment);
 				return
 			}
@@ -51,8 +53,7 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 					tempTarget.push(segment);
 			}
 		});
-		console.log('blacklist',blacklist)
-		console.log('whitelist',whitelist)
+	}
 		setOtherSegments(tempOther);
 		setTargetSegments(tempTarget);
 	},[props.segments,blacklist,whitelist]);
@@ -60,7 +61,7 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 
 	return (
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
-			<DialogTitle>Sample Name: {props.sampleName}</DialogTitle>
+			<DialogTitle>Sample Name: {props.segments?props.segments.length>0?props.segments[0].sample.sampleName: "":""}</DialogTitle>
 			<DialogContentText className="ml-5">
 				Select the segments and	click Add Icon (+) to insert blacklist or whitelist.
 			</DialogContentText>
@@ -69,9 +70,9 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 				<SegmentTable data={otherSegments} title='others' addUrl={`${ApiUrl}/api/addWhitelist`} handleAdd={handleWhitelistAdd} />
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={props.onClose} color="primary">
-					匯出
-				</Button>
+			<ExportDataToCsv data={targetSegments} >
+				匯出
+			</ExportDataToCsv>
 				<Button onClick={props.onClose} color="primary">
 					取消
 				</Button>

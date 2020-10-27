@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Run as RunEntity } from 'src/database/ngs-builder/entities/run.entity';
 import { Sample as SampleEntity } from 'src/database/ngs-builder/entities/sample.entity';
@@ -14,33 +15,6 @@ var cp = require('child_process');
 const fs = require('fs');
 const csv = require('csv-parser');
 
-class Entity {
-	Chr: string;
-	Position: string;
-	dbSNP: string;
-	Ref: string;
-	Alt: string;
-	Freq: number;
-	Depth: number;
-	Annotation: string;
-	Gene_Name: string;
-	'HGVS.c': string;
-	'HGVS.p': string;
-
-	Global_AF: number;
-	AFR_AF: number;
-	AMR_AF: number;
-	EUR_AF: number;
-	ASN_AF: number;
-	'Clinical significance': string;
-	Disease: string;
-}
-class Entity2 {
-	Sample_Name: string;
-	Alignment_Rate: string;
-	mean_coverage: string;
-	Dropout_percentage: string;
-}
 
 @Injectable()
 export class NGSService {
@@ -48,7 +22,8 @@ export class NGSService {
 		@InjectRepository(RunEntity) private runRepository: Repository<RunEntity>,
 		@InjectRepository(SampleEntity) private sampleRepository: Repository<SampleEntity>,
 		@InjectRepository(SegmentEntity) private segmentRepository: Repository<SegmentEntity>,
-		@InjectRepository(SegmentTagEntity) private segmentTagRepository: Repository<SegmentTagEntity>
+		@InjectRepository(SegmentTagEntity) private segmentTagRepository: Repository<SegmentTagEntity>,
+		private configService: ConfigService,
 	) {}
 
 	async getAllSegments(): Promise<Segment[]> {
@@ -100,24 +75,43 @@ export class NGSService {
 	}
 
 	async getFilelist(): Promise<string[]> {
-		const test = fs
-			.readdirSync('D:\\NGS_Analysis')
-			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
-		return test;
+		const annotations = fs
+			.readdirSync(this.configService.get<string>("ngs.path"))
+			.filter((annotation: string) => annotation.match(/(\d)*_S(\d)*_Annotation.csv/))
+			.map((file: string) => `${file.split("_")[0]}_${file.split("_")[1]}`);
+		const files = fs
+			.readdirSync(this.configService.get<string>("ngs.path"))
+			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/))
+			.map((file: string) => `${file.split("_")[0]}_${file.split("_")[1]}`)
+			.filter((element, index, arr) => arr.indexOf(element) === index);
+		const response = files.map((file)=>{
+			if(annotations.includes(file)){
+				return {staus: 1, name: file}
+			}else{
+				return {staus: 0, name: file}
+			}
+		})
+		return response;
 	}
 
 	async runScript(): Promise<void> {
-		var child = cp.execSync('bash ~/Leukemia_analysis_with_large_indels.bash');
-		child.stdout.on('data', function(data) {
-			console.log(data);
-		});
+		const files = fs
+			.readdirSync(this.configService.get<string>("ngs.path"))
+			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
+		var child = cp.execSync('bash ~/Leukemia_analysis_with_large_indels.bash',(error, stdout, stderr) => {
+			if (error) {
+			  console.error(`exec error: ${error}`);
+			  return;
+			}
+			console.log(`stdout: ${stdout}`);
+			console.error(`stderr: ${stderr}`);
+		  });
+		
 		const now = new Date(Date.now());
 		const runResults = { runName: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}` };
 		const runsResponse = await this.runRepository.save(runResults);
 		console.log(runsResponse)
-		const files = fs
-			.readdirSync('D:\\NGS_Analysis')
-			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/));
+		
 		const sampleResults = files.map((file) => {
 			const temp = new Sample();
 			temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
@@ -129,7 +123,7 @@ export class NGSService {
 			const segmentResults = new Array<Segment>();
 			try {
 				const stream = fs
-					.createReadStream(`~/Data/${runsResponse.runName}/${element.sampleName}_Annotation.csv`)
+					.createReadStream(`${this.configService.get<string>("ngs.path")}/${runsResponse.runName}/${element.sampleName}_Annotation.csv`)
 					.pipe(csv())
 					.on('data', (data) => {
 						let temp = new Segment();
