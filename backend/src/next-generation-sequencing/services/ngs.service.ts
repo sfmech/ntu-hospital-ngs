@@ -73,7 +73,10 @@ export class NGSService {
 		return whitelist;
 	}
 
-	async getFilelist(): Promise<string[]> {
+	async getFilelist(): Promise<{}> {
+		const aligned = fs
+		.readdirSync(this.configService.get<string>('ngs.path'))
+		.filter((align: string) => align.match(/Aligned.csv/))
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((bam: string) => bam.match(/(\d)*_S(\d)*.bam/))
@@ -97,7 +100,7 @@ export class NGSService {
 				return { status: 0, name: file };
 			}
 		});
-		return response;
+		return {analysis:aligned.length, files:response};
 	}
 
 	async runScript(): Promise<void> {

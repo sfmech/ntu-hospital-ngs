@@ -22,18 +22,23 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
+type FileResponse = {
+	analysis:number,
+	files: Array<{status: number; name: string}>
+}
+
 export const NgsAnalysis: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
 
-	const [ files, setFiles ] = useState<Array<{ status: number; name: string }>>([]);
+	const [ fileResponse, setFileResponse ] = useState<FileResponse>({analysis:0, files:[]});
 
 	useEffect(() => {
 		const getFilelist = () => {
 			try {
 				axios(`${ApiUrl}/api/filelist`).then((res) => {
 					if (res.data.length > 0) {
-						setFiles(res.data);
+						setFileResponse(res.data);
 					}
 				});
 			} catch (error) {
@@ -61,9 +66,9 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 	return (
 		<React.Fragment>
 			<Title>Data Analysis</Title>
-			<FileList files={files} />
+			<FileList files={fileResponse.files} />
 			<div className="row justify-content-center mt-3">
-				<Button variant="contained" color="primary" disabled={files.length === 0||files.filter((file)=>file.status>0).length>0} onClick={handleClick}>
+				<Button variant="contained" color="primary" disabled={fileResponse.files.length === 0||fileResponse.analysis>0} onClick={handleClick}>
 					開始分析
 				</Button>
 			</div>
