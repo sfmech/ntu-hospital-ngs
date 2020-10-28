@@ -13,6 +13,11 @@ export const SegmentTagReducer = (state, action) => {
 				...state,
 				whitelist: action.payload
 			};
+		case 'SETFILTERLIST':
+			return {
+				...state,
+				filterlist: action.payload
+			};
 		case 'DELETEBLACKLIST':
 			const deleteBlackIds = action.payload as string[];
 			const deletedBlacklist = state.blacklist.filter((data) => !deleteBlackIds.includes(data.id));

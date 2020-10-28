@@ -23,7 +23,7 @@ type SampleModalProps = {
 };
 
 export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
-	const { blacklist, whitelist, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
+	const { blacklist, whitelist, filterlist, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
 	const [targetSegments, setTargetSegments] = useState(Array<Segment>())
 	const [otherSegments, setOtherSegments] = useState(Array<Segment>())
 	const handleBlacklistAdd = (segments: Segment[]) => {
@@ -37,9 +37,11 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 	useEffect(()=>{
 		let tempOther = Array<Segment>();
 		let tempTarget = Array<Segment>();
-		console.log(props.segments)
 		if(props.segments){
 		props.segments.forEach((segment)=>{	
+			if(filterlist.findIndex((tag)=>tag.id===`${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)!==-1){
+				return
+			}
 			if(blacklist.findIndex((tag)=>tag.id===`${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)!==-1){
 				tempOther.push(segment);
 				return
@@ -48,7 +50,7 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 				tempTarget.push(segment);
 				return
 			}
-			if((segment.clinicalSignificance?.indexOf("Benign")!==-1&&segment.clinicalSignificance?.indexOf("Pathogenic ")===-1)||
+			if((segment.clinicalSignificance?.indexOf("Benign")!==-1)||
 			(segment.globalAF>0.01||segment.AFRAF>0.01||segment.AMRAF>0.01||segment.EURAF>0.01||segment.ASNAF>0.01)){
 					tempOther.push(segment);
 			}else{

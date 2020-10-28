@@ -8,8 +8,10 @@ import { Segment } from '../models/segment.model';
 const initialState = {
 	blacklist: new Array<SegmentTag>(),
 	whitelist: new Array<SegmentTag>(),
+	filterlist: new Array<SegmentTag>(),
 	setBlacklist: (blacklist: SegmentTag[]) => {},
 	setWhitelist: (whitelist: SegmentTag[]) => {},
+	setFilterlist: (filterlist: SegmentTag[]) => {},
 	deleteBlacklist: (ids: string[]) => {},
 	deleteWhitelist: (ids: string[]) => {},
 	addBlacklist: (segmentTags: Segment[]) => {},
@@ -35,7 +37,9 @@ export const SegmentTagProvider = ({ children }) => {
                     if(groupByCategory.blacklist)
                         setBlacklist(groupByCategory.blacklist);
                     if(groupByCategory.whitelist)
-					    setWhitelist(groupByCategory.whitelist);
+						setWhitelist(groupByCategory.whitelist);
+					if(groupByCategory.filterlist)
+						setFilterlist(groupByCategory.filterlist);
 				}
 			} catch (error) {
 				console.log(error);
@@ -55,6 +59,13 @@ export const SegmentTagProvider = ({ children }) => {
 		dispatch({
 			type: 'SETWHITELIST',
 			payload: whitelist
+		});
+	}
+
+	function setFilterlist(filterlist: SegmentTag[]) {
+		dispatch({
+			type: 'SETFILTERLIST',
+			payload: filterlist
 		});
 	}
 
@@ -90,8 +101,10 @@ export const SegmentTagProvider = ({ children }) => {
 			value={{
 				blacklist: state.blacklist,
 				whitelist: state.whitelist,
+				filterlist: state.filterlist,
 				setBlacklist,
 				setWhitelist,
+				setFilterlist,
 				deleteBlacklist,
 				deleteWhitelist,
 				addBlacklist,

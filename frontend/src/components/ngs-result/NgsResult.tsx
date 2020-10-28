@@ -57,7 +57,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		getAllSamples();
 		getAllSegments();
 	}, []);
-
+	/**
 	const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 		setCondition(event.target.value as string);
 		setInput('');
@@ -69,7 +69,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 
 	const handleSearchClick = () => {};
 
-	/**
+	
 	 			<div className="row ml-3 mt-3">
 				<FormControl variant="outlined" className={classes.formControl}>
 					<Select native value={condition} onChange={handleChange}>
