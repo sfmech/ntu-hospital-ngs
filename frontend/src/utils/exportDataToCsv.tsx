@@ -31,7 +31,7 @@ export const ExportDataToCsv: FunctionComponent<CsvReport> = (props) => {
         d.freq=d.freq+"%"
         return d
     })
-    const filename = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`
+    const filename = `${reportData[0].sample.sampleName}${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`
 	return (
 		<CSVLink data={reportData} headers={headers} filename={filename}>
 			{props.children}
