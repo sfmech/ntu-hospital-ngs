@@ -61,7 +61,7 @@ interface HeadCell {
 const headCells: HeadCell[] = [
 	{ id: 'chr', numeric: false, disablePadding: true, label: 'Chr' },
 	{ id: 'position', numeric: false, disablePadding: false, label: 'Position' },
-	{ id: 'dbSNP', numeric: false, disablePadding: false, label: 'FrdbSNPeq' },
+	{ id: 'dbSNP', numeric: false, disablePadding: false, label: 'dbSNP' },
 	{ id: 'freq', numeric: true, disablePadding: false, label: 'Freq' },
 	{ id: 'depth', numeric: true, disablePadding: false, label: 'Depth' },
 	{ id: 'annotation', numeric: false, disablePadding: false, label: 'Annotation' },
