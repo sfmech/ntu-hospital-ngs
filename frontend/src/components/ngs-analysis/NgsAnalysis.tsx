@@ -37,7 +37,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		const getFilelist = () => {
 			try {
 				axios(`${ApiUrl}/api/filelist`).then((res) => {
-					if (res.data.length > 0) {
+					if (res.data.files.length > 0) {
 						setFileResponse(res.data);
 					}
 				});
