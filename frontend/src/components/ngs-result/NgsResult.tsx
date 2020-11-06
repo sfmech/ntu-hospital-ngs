@@ -1,7 +1,8 @@
-import { createStyles, FormControl, IconButton, InputBase, makeStyles, Paper, Select, Theme } from '@material-ui/core';
+import { Backdrop, Button, CircularProgress, createStyles, FormControl, IconButton, InputBase, InputLabel, makeStyles, MenuItem, Paper, Select, Theme, Typography } from '@material-ui/core';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { CollapsibleTable } from '../table/CollapsibleTable';
 import SearchIcon from '@material-ui/icons/Search';
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import { Title } from '../title/Title';
 import { Segment } from '../../models/segment.model';
 import { Sample } from '../../models/sample.model';
@@ -26,17 +27,34 @@ const useStyles = makeStyles((theme: Theme) =>
 		formControl: {
 			margin: theme.spacing(1),
 			minWidth: 120
+		},
+		backdrop: {
+			zIndex: theme.zIndex.drawer + 1,
+			color: '#fff'
 		}
 	})
 );
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ condition, setCondition ] = useState('runName');
+	const [ open, setOpen ] = React.useState(false);
 	const [ samples, setSamples ] = useState(Array<Sample>());
 	const [ segments, setSegments ] = useState(Array<Segment>());
-	const [ input, setInput ] = useState('');
+	const [ resultlist, setResultlist ] = useState(Array<string>());
+	const [ selectResult, setSelectResult ] = useState<string>("");
 
+	const [ input, setInput ] = useState('');
+	
 	useEffect(() => {
+		const getResultlist = async () => {
+			try {
+				const response = await axios(`${ApiUrl}/api/resultlist`);
+				console.log(response.data)
+				setResultlist(response.data)
+			} catch (error) {
+				console.log(error);
+			}
+		};
 		const getAllSamples = async () => {
 			try {
 				const response = await axios(`${ApiUrl}/api/samples`);
@@ -54,9 +72,32 @@ export const NgsResult: FunctionComponent = (prop) => {
 				console.log(error);
 			}
 		};
-		getAllSamples();
+		
 		getAllSegments();
+		getAllSamples();
+		getResultlist();
 	}, []);
+
+	const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+		setSelectResult(event.target.value as string);
+	  };
+
+	const handleUploadResult=()=>{
+		const uploadResult = async () => {
+			try {
+				setOpen(true);
+				const response = await axios.post(`${ApiUrl}/api/uploadresult`,{
+					data: selectResult
+				});
+			} catch (error) {
+				console.log(error);
+			} finally {
+				window.location.reload(false);
+				setOpen(false);
+			}
+		};
+		uploadResult();
+	}
 	/**
 	const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 		setCondition(event.target.value as string);
@@ -94,7 +135,33 @@ export const NgsResult: FunctionComponent = (prop) => {
 	return (
 		<React.Fragment>
 			<Title>Results Overview</Title>
+			<Paper className="mt-3 px-5 py-2">
+				<div  className="row">
+				<Typography variant="h5" className="file-list-title ml-2">
+						Upload folder
+				</Typography>
+				</div>
+				<div className="row justify-content-center">
+				<FormControl variant="outlined" className={classes.formControl}>
+        <InputLabel id="demo-simple-select-outlined-label">Result Folder</InputLabel>
+        <Select
+          labelId="demo-simple-select-outlined-label"
+          id="demo-simple-select-outlined"
+          value={selectResult}
+          onChange={handleChange}
+          label="Result Folder"
+        >
+			{resultlist.map((result)=>{
+				return <MenuItem value={result}>{result}</MenuItem>
+			})}
 
+        </Select>
+      </FormControl>
+				<Button className="ml-2" variant="contained" color="default" startIcon={<FolderOpenIcon />} onClick={handleUploadResult} disabled={resultlist.length<=0||selectResult===""}>
+						Upload
+				</Button>
+				</div>
+			</Paper>
 			<div className="row justify-content-center mt-3 px-4">
 				<CollapsibleTable
 					samples={samples.reduce((groups, item) => {
@@ -111,6 +178,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 					}, {})}
 				/>
 			</div>
+			<Backdrop className={classes.backdrop} open={open}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 		</React.Fragment>
 	);
 };

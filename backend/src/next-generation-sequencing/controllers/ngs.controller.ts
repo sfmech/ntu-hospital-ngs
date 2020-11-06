@@ -61,4 +61,14 @@ export class NGSController {
 	getFilelist() : Promise<{}>{
 		return this.ngsService.getFilelist();
 	}
+
+	@Get('/resultlist')
+	getResultlist() : Promise<Array<string>>{
+		return this.ngsService.getResultList();
+	}
+
+	@Post('/uploadresult')
+	uploadResult(@Body() body) {
+		return this.ngsService.uploadResult(body.data);
+	}
 }
