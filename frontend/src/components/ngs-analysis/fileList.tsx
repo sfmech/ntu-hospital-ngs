@@ -44,7 +44,7 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 								<ListItemIcon>
 									<DescriptIcon />
 								</ListItemIcon>
-								<ListItemText primary={file.name} />
+								<ListItemText primary={file.name} secondary={file.name.split("_")[1].match(/S(\d)*/)?"unknown":file.name.split("_")[1]} />
 								{file.status===2? <CircularProgress />:null}
 							</ListItem>
 						))}

@@ -5,6 +5,7 @@ import { Run as RunEntity } from 'src/database/ngs-builder/entities/run.entity';
 import { Sample as SampleEntity } from 'src/database/ngs-builder/entities/sample.entity';
 import { Segment as SegmentEntity } from 'src/database/ngs-builder/entities/segment.entity';
 import { SegmentTag as SegmentTagEntity } from 'src/database/ngs-builder/entities/segmentTag.entity';
+import { Disease as DiseaseEntity } from 'src/database/ngs-builder/entities/disease.entity';
 import { Repository } from 'typeorm';
 
 import { Sample } from '../models/sample.model';
@@ -21,6 +22,7 @@ export class NGSService {
 		@InjectRepository(SampleEntity) private sampleRepository: Repository<SampleEntity>,
 		@InjectRepository(SegmentEntity) private segmentRepository: Repository<SegmentEntity>,
 		@InjectRepository(SegmentTagEntity) private segmentTagRepository: Repository<SegmentTagEntity>,
+		@InjectRepository(DiseaseEntity) private diseaseRepository: Repository<DiseaseEntity>,
 		private configService: ConfigService
 	) {}
 
@@ -78,17 +80,18 @@ export class NGSService {
 			.filter((align: string) => align.match(/Aligned.csv/));
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((bam: string) => bam.match(/(\d)*_S(\d)*.bam/))
+			.filter((bam: string) => bam.match(/(\d)*_(\w)*.bam/))
 			.map((file: string) => `${file.split('.')[0]}`);
 		const annotations = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((annotation: string) => annotation.match(/(\d)*_S(\d)*_Annotation.csv/))
+			.filter((annotation: string) => annotation.match(/(\d)*_(\w)*_Annotation.csv/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/))
+			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
-			.filter((element, index, arr) => arr.indexOf(element) === index);
+			.filter((element, index, arr) => arr.indexOf(element) !== index);
+
 
 		const response = files.map((file) => {
 			if (annotations.includes(file)) {
@@ -109,16 +112,16 @@ export class NGSService {
 		return files
 	}
 
-	updateFileName(): Promise<void>{
+	updateDisease(): Promise<void>{
 		return
 	}
 
 	async runScript(): Promise<void> {
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R1_001.fastq.gz/))
+			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
-			.filter((element, index, arr) => arr.indexOf(element) === index);
+			.filter((element, index, arr) => arr.indexOf(element) !== index);
 
 		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ], {
 			maxBuffer: 1024 * 1024 * 1024 * 5

@@ -4,6 +4,7 @@ import { Sample } from "../entities/sample.entity";
 import { Segment } from "../entities/segment.entity";
 import { SegmentTag } from "../entities/segmentTag.entity";
 import { Setting } from "../entities/setting.entity";
+import { Disease } from "../entities/disease.entity";
 require('dotenv').config();
 
 const isTsNode = process[Symbol.for('ts-node.register.instance')]
@@ -16,7 +17,7 @@ const BuilderDbConfig = {
     database: process.env.BUILDER_DB_DATABASE,
     synchronize: false,
     logging: false,
-    entities: [Run, Sample, Segment, SegmentTag, Setting],
+    entities: [Run, Sample, Segment, SegmentTag, Setting, Disease],
     migrations: [
         `dist/database/ngs-builder/migrations/*.js`,
     ],
