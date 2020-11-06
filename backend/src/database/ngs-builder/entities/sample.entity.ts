@@ -17,4 +17,7 @@ export class Sample {
     @Column({ name: "sample_name" })
     sampleName: string;
 
+    @Column({ name: "disease" })
+    disease: string;
+
 }

@@ -7,7 +7,6 @@ import { Segment as SegmentEntity } from 'src/database/ngs-builder/entities/segm
 import { SegmentTag as SegmentTagEntity } from 'src/database/ngs-builder/entities/segmentTag.entity';
 import { Repository } from 'typeorm';
 
-import { Run } from '../models/run.model';
 import { Sample } from '../models/sample.model';
 import { Segment } from '../models/segment.model';
 import { SegmentTag } from '../models/segmentTag.model';
@@ -103,10 +102,21 @@ export class NGSService {
 		return { analysis: aligned.length, files: response };
 	}
 
+	test(): any{
+		const files = fs
+			.readdirSync(this.configService.get<string>('ngs.path'))
+			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R1_001.fastq.gz/))
+		return files
+	}
+
+	updateFileName(): Promise<void>{
+		return
+	}
+
 	async runScript(): Promise<void> {
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/))
+			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R1_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
 
@@ -120,11 +130,11 @@ export class NGSService {
 				runName: `${now.getFullYear()}-${("0" + (now.getMonth() + 1)).slice(-2)}-${("0" + now.getDate()).slice(-2)}-${("0" + now.getHours()).slice(-2)}`
 			};
 			const runsResponse = await this.runRepository.save(runResults);
-			console.log(runsResponse);
 
 			const sampleResults = files.map((file) => {
 				const temp = new Sample();
 				temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
+				temp.disease = file.split('_')[1].match(/S(\d)*/)?"unknown":file.split('_')[1]
 				temp.run.runId = runsResponse.runId;
 				return temp;
 			});
@@ -140,7 +150,6 @@ export class NGSService {
 						)
 						.pipe(csv({ headers: false, skipLines: 1 }))
 						.on('data', (data) => {
-							console.log(`data: ${element.sampleId} -> `, data['0']);
 							let temp = new Segment();
 							if (
 								(data['8'] || ('' as string)).indexOf('stop') !== -1 ||
@@ -183,7 +192,6 @@ export class NGSService {
 							}
 						})
 						.on('end', async () => {
-							console.log(`end ${element.sampleName}`);
 							const samplesResponse = await this.segmentRepository.save(segmentResults);
 						});
 				} catch (error) {

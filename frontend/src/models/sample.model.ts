@@ -4,5 +4,5 @@ export class Sample {
     sampleId: number;
     sampleName: string;
     run: Run = new Run();
-
+    disease: string;
 }

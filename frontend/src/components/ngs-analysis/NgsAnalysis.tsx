@@ -1,11 +1,5 @@
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Typography from '@material-ui/core/Typography';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Title } from '../title/Title';
-import DescriptIcon from '@material-ui/icons/Description';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Button, createStyles, makeStyles, Paper, Theme } from '@material-ui/core';
 import './NgsAnalysis.css';
 import axios from 'axios';
