@@ -1,4 +1,8 @@
+
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
+import { Backdrop, Button, CircularProgress, createStyles, FormControl, IconButton, InputBase, InputLabel, makeStyles, MenuItem, Paper, Select, Theme, Typography } from '@material-ui/core';
+
+
 import { Title } from '../title/Title';
 import {
 	AppBar,
@@ -93,6 +97,7 @@ declare module 'csstype' {
 		'& $content': {
 		  paddingLeft: theme.spacing(2),
 		},
+
 	  },
 	  expanded: {},
 	  selected: {},
@@ -137,6 +142,7 @@ declare module 'csstype' {
 			  {labelInfo}
 			</Typography>
 		  </div>
+
 		}
 		style={{
 		  '--tree-view-color': color,
@@ -188,6 +194,7 @@ declare module 'csstype' {
   );
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
+
 	const [ samples, setSamples ] = useState(Array<Sample>());
 	const [ segments, setSegments ] = useState(Array<Segment>());
 	const [ coverages, setCoverages ] = useState(Array<Coverage>());
@@ -208,7 +215,17 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
 		setValue(newValue);
 	};
+
 	useEffect(() => {
+		const getResultlist = async () => {
+			try {
+				const response = await axios(`${ApiUrl}/api/resultlist`);
+				console.log(response.data)
+				setResultlist(response.data)
+			} catch (error) {
+				console.log(error);
+			}
+		};
 		const getAllSamples = async () => {
 			try {
 				const response = await axios(`${ApiUrl}/api/samples`);
@@ -242,11 +259,12 @@ export const NgsResult: FunctionComponent = (prop) => {
 				console.log(error);
 			}
 		};
-		getAllSamples();
+		
 		getAllSegments();
 		getAllCoverages();
 		getAllMutationQCs();
 	}, []);
+
 
 	useEffect(()=>{
 		const [tempOther, tempTarget] =filterSegments(selectedSegments);
@@ -381,6 +399,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	return (
 		<React.Fragment>
 			<Title>Results Overview</Title>
+
 		<div className="row">
 			<div className="col-3">
 				<Grid container alignItems="center" justify="center">
@@ -465,6 +484,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		<UploadFolderModal show={showUploadModal} onClose={()=>setShowUploadModal(false)} />
 		<EditDiseaseModal show={showEditDiseaseModal} sample={selectedSample} onClose={()=>setShowEditDiseaseModal(false)}/>
 	  </React.Fragment>
+
 	);
 
 };

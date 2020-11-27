@@ -136,6 +136,7 @@ export class NGSService {
 		return { analysis: aligned.length, files: response };
 	}
 
+
 	updateFile(oldSampleName, newSampleName): Promise<void> {
 		const oldFileR1 = `${oldSampleName}_L001_R1_001.fastq.gz`;
 		const oldFileR2 = `${oldSampleName}_L001_R2_001.fastq.gz`;
@@ -174,6 +175,7 @@ export class NGSService {
 	}
 
 	getResultList(): Promise<Array<string>> {
+
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));

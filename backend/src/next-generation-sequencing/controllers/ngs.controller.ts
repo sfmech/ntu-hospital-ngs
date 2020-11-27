@@ -85,6 +85,7 @@ export class NGSController {
 		return this.ngsService.uploadResult(body.data);
 	}
 
+
 	@Get('/getDiseases')
 	getDiseases(): Promise<Array<Disease>>{
 		return this.ngsService.getDiseases();
