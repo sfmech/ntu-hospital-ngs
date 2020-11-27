@@ -25,7 +25,7 @@ export const SegmentTagReducer = (state, action) => {
 				...state,
 				blacklist: deletedBlacklist
 			};
-		case 'DELETEBLACKLIST':
+		case 'DELETEWHITELIST':
 			const deleteWhiteIds = action.payload as string[];
 			const deletedWhitelist = state.whitelist.filter((data) => !deleteWhiteIds.includes(data.id));
 
@@ -43,7 +43,8 @@ export const SegmentTagReducer = (state, action) => {
 				temp.chr = segmentTag.chr;
 				temp.position = segmentTag.position;
 				temp.HGVSc = segmentTag.HGVSc;
-                temp.HGVSp = segmentTag.HGVSp;
+				temp.HGVSp = segmentTag.HGVSp;
+				temp.geneName = segmentTag.geneName;
                 temp.category = 'blacklist'
 				return temp;
             });
@@ -64,7 +65,8 @@ export const SegmentTagReducer = (state, action) => {
 				temp.chr = segmentTag.chr;
 				temp.position = segmentTag.position;
 				temp.HGVSc = segmentTag.HGVSc;
-                temp.HGVSp = segmentTag.HGVSp;
+				temp.HGVSp = segmentTag.HGVSp;
+				temp.geneName = segmentTag.geneName;
                 temp.category = 'whitelist'
 				return temp;
             });

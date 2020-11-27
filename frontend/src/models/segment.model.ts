@@ -8,8 +8,8 @@ export class Segment {
     dbSNP: string| null;
     freq: number| null;
     depth: number| null;
-    annotation: string| null;
-    geneName: string| null;
+    annotation: string;
+    geneName: string;
     HGVSc: string;
     HGVSp: string;
     clinicalSignificance: string;
@@ -18,4 +18,5 @@ export class Segment {
     AMRAF: number;
     EURAF: number;
     ASNAF: number;
+    alert: string;
 }

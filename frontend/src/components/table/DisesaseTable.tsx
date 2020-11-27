@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import clsx from 'clsx';
 import { createStyles, lighten, makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -15,10 +15,14 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { SegmentTag } from '../../models/segmentTag.model';
 import { Backdrop, CircularProgress } from '@material-ui/core';
 import axios from 'axios';
+import { Disease } from '../../models/disease.model';
+import { ApiUrl } from '../../constants/constants';
+import { DiseaseModal } from '../modals/DiseaseModal';
+
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -52,23 +56,22 @@ function stableSort(array, comparator: (a, b) => number) {
 
 interface HeadCell {
 	disablePadding: boolean;
-	id: keyof SegmentTag;
+	id: keyof Disease;
 	label: string;
 	numeric: boolean;
 }
 
 const headCells: HeadCell[] = [
-	{ id: 'geneName', numeric: false, disablePadding: true, label: 'Gene Name' },
-	{ id: 'chr', numeric: false, disablePadding: false, label: 'Chr' },
-	{ id: 'position', numeric: true, disablePadding: false, label: 'Position' },
-	{ id: 'HGVSc', numeric: true, disablePadding: false, label: 'HGVSc' },
-	{ id: 'HGVSp', numeric: true, disablePadding: false, label: 'HGVSp' }
+	{ id: 'diseaseId', numeric: true, disablePadding: false, label: 'Id' },
+	{ id: 'zhName', numeric: true, disablePadding: false, label: 'Zh Name' },
+	{ id: 'enName', numeric: true, disablePadding: false, label: 'En Name' },
+	{ id: 'abbr', numeric: true, disablePadding: false, label: 'Abbr.' },
 ];
 
 interface EnhancedTableProps {
 	classes: ReturnType<typeof useStyles>;
 	numSelected: number;
-	onRequestSort: (event: React.MouseEvent<unknown>, property: keyof SegmentTag) => void;
+	onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Disease) => void;
 	onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	order: Order;
 	orderBy: string;
@@ -77,7 +80,7 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
 	const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-	const createSortHandler = (property: keyof SegmentTag) => (event: React.MouseEvent<unknown>) => {
+	const createSortHandler = (property: keyof Disease) => (event: React.MouseEvent<unknown>) => {
 		onRequestSort(event, property);
 	};
 
@@ -143,13 +146,14 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 interface EnhancedTableToolbarProps {
 	numSelected: number;
 	title: string;
-	selected: string[];
-	handleDelete: (ids: string[]) => void;
+    selected: number[];
+	handleDelete: (ids: number[]) => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 	const classes = useToolbarStyles();
-	const { selected, numSelected, handleDelete } = props;
+    const { selected, numSelected, handleDelete } = props;
+    const [ showModal, setShowModal ] = useState(false);
 
 	return (
 		<Toolbar
@@ -166,6 +170,12 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 					{props.title}
 				</Typography>
 			)}
+            <Tooltip title="Add">
+					<IconButton aria-label="add" onClick={() => setShowModal(true)}>
+						<AddIcon />
+					</IconButton>
+			</Tooltip>
+            <DiseaseModal show={showModal} onClose={() => setShowModal(false)}/>
 			{numSelected > 0 ? (
 				<Tooltip title="Delete">
 					<IconButton aria-label="delete" onClick={() => handleDelete(selected)}>
@@ -203,38 +213,36 @@ const useStyles = makeStyles((theme: Theme) =>
 		}
 	})
 );
-type SegmentTagTable = {
-	data: SegmentTag[];
-	title: string;
-	deleteUrl: string;
-	handleDelete: (ids: string[]) => void;
+type DiseaseTable = {
+	data: Disease[];
 };
 
-export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
+export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
 	const [ order, setOrder ] = React.useState<Order>('asc');
-	const [ orderBy, setOrderBy ] = React.useState<keyof SegmentTag>('geneName');
-	const [ selected, setSelected ] = React.useState<string[]>([]);
+	const [ orderBy, setOrderBy ] = React.useState<keyof Disease>('diseaseId');
+	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ page, setPage ] = React.useState(0);
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(5);
 	const rows = props.data;
-	const deleteSegmentTag = async (ids) => {
+	const deleteDisease = async (ids) => {
 		try {
 			setOpen(true);
-			const response = await axios.post(props.deleteUrl, {
-				data: props.data.filter((data) => selected.includes(data.id))
+			const response = await axios.post(`${ApiUrl}/api/deleteDisease`, {
+				data: props.data.filter((data) => selected.includes(data.diseaseId))
 			});
 		} catch (error) {
 			console.log(error);
 		} finally {
 			setOpen(false);
-			props.handleDelete(ids);
-			setSelected([]);
+            setSelected([]);
+            window.location.reload(false);
 		}
-	};
+    };
 
-	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof SegmentTag) => {
+
+	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Disease) => {
 		const isAsc = orderBy === property && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
 		setOrderBy(property);
@@ -242,16 +250,16 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 
 	const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
-			const newSelecteds = rows.map((n) => n.id);
+			const newSelecteds = rows.map((n) => n.diseaseId);
 			setSelected(newSelecteds);
 			return;
 		}
 		setSelected([]);
 	};
 
-	const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
+	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
 		const selectedIndex = selected.indexOf(id);
-		let newSelected: string[] = [];
+		let newSelected: number[] = [];
 
 		if (selectedIndex === -1) {
 			newSelected = newSelected.concat(selected, id);
@@ -267,8 +275,9 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 	};
 
 	const handleDelete = (ids) => {
-		deleteSegmentTag(ids);
-	};
+		deleteDisease(ids)
+    };
+    
 
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);
@@ -279,7 +288,11 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 		setPage(0);
 	};
 
-	const isSelected = (id: string) => selected.indexOf(id) !== -1;
+	const handleClose = () => {
+		setOpen(false);
+	};
+
+	const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
 	const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
@@ -288,7 +301,7 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 			<Paper className={classes.paper}>
 				<EnhancedTableToolbar
 					numSelected={selected.length}
-					title={props.title}
+                    title="Diseases"
 					handleDelete={handleDelete}
 					selected={selected}
 				/>
@@ -313,17 +326,17 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 								stableSort(rows, getComparator(order, orderBy))
 									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 									.map((row, index) => {
-										const isItemSelected = isSelected(row.id);
+										const isItemSelected = isSelected(row.diseaseId);
 										const labelId = `enhanced-table-checkbox-${index}`;
 
 										return (
 											<TableRow
 												hover
-												onClick={(event) => handleClick(event, row.id)}
+												onClick={(event) => handleClick(event, row.diseaseId)}
 												role="checkbox"
 												aria-checked={isItemSelected}
 												tabIndex={-1}
-												key={row.id}
+												key={row.diseaseId}
 												selected={isItemSelected}
 											>
 												<TableCell padding="checkbox">
@@ -332,13 +345,10 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 														inputProps={{ 'aria-labelledby': labelId }}
 													/>
 												</TableCell>
-												<TableCell component="th" id={labelId} scope="row" padding="none">
-													{row.geneName}
-												</TableCell>
-												<TableCell align="right">{row.chr}</TableCell>
-												<TableCell align="right">{row.position}</TableCell>
-												<TableCell align="right">{row.HGVSc}</TableCell>
-												<TableCell align="right">{row.HGVSp}</TableCell>
+												<TableCell component="th" scope="row" align="right">{row.diseaseId}</TableCell>
+												<TableCell align="right">{row.zhName}</TableCell>
+												<TableCell align="right">{row.enName}</TableCell>
+												<TableCell align="right">{row.abbr}</TableCell>
 											</TableRow>
 										);
 									})
@@ -361,7 +371,7 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>
-			<Backdrop className={classes.backdrop} open={open}>
+			<Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
 				<CircularProgress color="inherit" />
 			</Backdrop>
 		</React.Fragment>

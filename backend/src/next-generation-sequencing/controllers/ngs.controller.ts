@@ -1,4 +1,7 @@
 import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Coverage } from '../models/coverage.model';
+import { Disease } from '../models/disease.model';
+import { MutationQC } from '../models/mutationQC.model';
 import { Sample } from '../models/sample.model';
 import { Segment } from '../models/segment.model';
 import { SegmentTag } from '../models/segmentTag.model';
@@ -16,6 +19,16 @@ export class NGSController {
 	@Get('/samples')
 	getAllSamples(): Promise<Sample[]> {
 		return this.ngsService.getAllSamples();
+	}
+
+	@Get('/coverages')
+	getAllCoverage(): Promise<Coverage[]> {
+		return this.ngsService.getAllCoverage();
+	}
+
+	@Get('/mutationQCs')
+	getAllMutationQC(): Promise<MutationQC[]> {
+		return this.ngsService.getAllMutationQC();
 	}
 
 	@Get('/segmentTags')
@@ -71,4 +84,31 @@ export class NGSController {
 	uploadResult(@Body() body) {
 		return this.ngsService.uploadResult(body.data);
 	}
+
+
+	@Get('/getDiseases')
+	getDiseases(): Promise<Array<Disease>>{
+		return this.ngsService.getDiseases();
+	}
+
+	@Post('/addDisease')
+	addDisease(@Body() body) {
+		return this.ngsService.addDisease(body.data);
+	}
+	@Post('/editSampleDisease')
+	editSampleDisease(@Body() body) {
+		return this.ngsService.editSampleDisease(body.data);
+	}
+
+	@Post('/deleteDisease')
+	deleteDisease(@Body() body) {
+		return this.ngsService.deleteDisease(body.data);
+	}
+
+	@Post('/updateFile')
+	updateFile(@Body() body): Promise<void> {
+		return this.ngsService.updateFile(body.oldSampleName, body.newSampleName);
+	}
+
+
 }

@@ -17,6 +17,7 @@ import { Sample } from '../../models/sample.model';
 import { useHistory } from 'react-router-dom';
 import { SampleModal } from '../modals/SampleModal';
 import { Segment } from '../../models/segment.model';
+import { MutationQC } from '../../models/mutationQC.model';
 
 const useRowStyles = makeStyles({
 	root: {
@@ -26,15 +27,15 @@ const useRowStyles = makeStyles({
 	}
 });
 
-function Row(props: { row: Sample[] , handleShowModal}) {
-	const { row, handleShowModal } = props;
+function Row(props: { row: MutationQC[], index: string}) {
+	const { row, index } = props;
 	const [ open, setOpen ] = React.useState(false);
 	const classes = useRowStyles();
-	const history = useHistory();
-	
-	const handleClick = (sampleId: number, sampleName: string) => {
-        handleShowModal(sampleId, sampleName);
-	};
+	row.sort(function (a, b) {
+		return a.QC-b.QC;
+	  });
+
+
 
 	return (
 		<React.Fragment>
@@ -44,37 +45,63 @@ function Row(props: { row: Sample[] , handleShowModal}) {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell component="th" scope="row">
-					{row[0].run.runName}
+				<TableCell>
+					{index}
 				</TableCell>
-				<TableCell align="right">{new Date(row[0].run.startTime).toLocaleString()}</TableCell>
+				<TableCell>
+					{row.filter((r)=>r.QC>99).length+" ("+(row.filter((r)=>r.QC>99).length/row.length*100).toFixed(2) +"%)"}
+				</TableCell>
+				<TableCell>
+					{row.filter((r)=>r.QC>499).length+" ("+(row.filter((r)=>r.QC>499).length/row.length*100).toFixed(2) +"%)"}
+				</TableCell>
+				<TableCell>
+					{row.filter((r)=>r.QC<100).length}
+				</TableCell>
+				<TableCell>
+					{row.length}
+				</TableCell>
 			</TableRow>
 			<TableRow>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
 					<Collapse in={open} timeout="auto" unmountOnExit>
 						<Box margin={1}>
 							<Typography variant="h6" gutterBottom component="div">
-								Samples ({row.length})
+								Mutation QC
 							</Typography>
 							<Table size="small" aria-label="purchases">
 								<TableHead>
 									<TableRow>
-										<TableCell>Sample Name</TableCell>
-										<TableCell>Disease</TableCell>
+										<TableCell>Chr</TableCell>
+										<TableCell>Position</TableCell>
+										<TableCell>Cosmic</TableCell>
+										<TableCell>HGVS.c</TableCell>
+										<TableCell>HGVS.p</TableCell>
+										<TableCell>QC</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{row.map((sampleRow) => (
+									{row.map((mutationQCRow) => (
 										<TableRow
-											key={sampleRow.sampleId}
-											onClick={() => handleClick(sampleRow.sampleId, sampleRow.sampleName)}
-											hover
+											key={mutationQCRow.mutationId}
+											style={{backgroundColor: mutationQCRow.QC<100?"#DF686A":(mutationQCRow.QC<500?"orange":"#28a745")}}
 										>
 											<TableCell component="th" scope="row">
-												{sampleRow.sampleName.split('_')[0]}
+												{mutationQCRow.chr}
 											</TableCell>
 											<TableCell align="right">
-												{sampleRow.disease.enName}
+												{mutationQCRow.position}
+											</TableCell>
+											<TableCell align="right">
+												{mutationQCRow.cosmic}
+											</TableCell>
+											<TableCell style={{maxWidth: '80px', whiteSpace:'normal', wordWrap: 'break-word'}}>
+												{mutationQCRow.HGVSc}
+											</TableCell>
+											<TableCell style={{maxWidth: '80px', whiteSpace:'normal', wordWrap: 'break-word'}}>
+												{mutationQCRow.HGVSp}
+											</TableCell>
+											<TableCell align="right">
+												{mutationQCRow.QC}
 											</TableCell>
 										</TableRow>
 									))}
@@ -88,21 +115,21 @@ function Row(props: { row: Sample[] , handleShowModal}) {
 	);
 }
 
-type CollapsibleTable = {
-	samples: {};
-	segments: {};
+type MutationQCCollapsibleTable = {
+	mutationQCs: MutationQC[];
 };
 
-export const CollapsibleTable: FunctionComponent<CollapsibleTable> = (props) => {
-	const [ showModal, setShowModal ] = useState(false);
-	const [ selectedSegments, setSelectedSegments] = useState<Array<Segment>>(new Array<Segment>());
-	const [ selectedSample, setSelectedSample] = useState<string>("_");
-	const handleShowModal = (selectedSampleId, selectedSampleName) => {
-		setSelectedSegments(props.segments[selectedSampleId]);
-		setSelectedSample(selectedSampleName);
-
-		setShowModal(true);
-	};
+export const MutationQCCollapsibleTable: FunctionComponent<MutationQCCollapsibleTable> = (props) => {
+	const rows = props.mutationQCs.map((d)=>{
+		d.QC = parseInt(d.QC as unknown as string)
+		return d
+	});
+	const testmutationqcs=rows.reduce((groups, item) => {
+		const val = item.geneName;
+		groups[val] = groups[val] || [];
+		groups[val].push(item);
+		return groups;
+	}, {})
 	return (
 		<React.Fragment>
 			<TableContainer component={Paper}>
@@ -110,18 +137,20 @@ export const CollapsibleTable: FunctionComponent<CollapsibleTable> = (props) => 
 					<TableHead>
 						<TableRow>
 							<TableCell />
-							<TableCell>Run Name</TableCell>
-							<TableCell align="right">Start Time</TableCell>
+							<TableCell>Gene Name</TableCell>
+							<TableCell>(optimum) Pass Percentage</TableCell>
+							<TableCell>Pass Percentage</TableCell>
+							<TableCell>Failed</TableCell>
+							<TableCell>Total</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{Object.keys(props.samples).map((key) => (
-							<Row key={key} row={props.samples[key]} handleShowModal={handleShowModal} />
+						{Object.keys(testmutationqcs).map((key) => (
+							<Row key={key} row={testmutationqcs[key]} index={key} />
 						))}
 					</TableBody>
 				</Table>
 			</TableContainer>
-			<SampleModal show={showModal} onClose={() => setShowModal(false)} segments={selectedSegments} title={selectedSample}/>
 		</React.Fragment>
 	);
 };
