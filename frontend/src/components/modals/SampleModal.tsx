@@ -38,6 +38,7 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 		let tempOther = Array<Segment>();
 		let tempTarget = Array<Segment>();
 		if(props.segments){
+			console.log(props.segments)
 		props.segments.forEach((segment)=>{	
 			if(filterlist.findIndex((tag)=>tag.id===`${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)!==-1){
 				return
@@ -50,7 +51,11 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 				tempTarget.push(segment);
 				return
 			}
-			if((segment.clinicalSignificance?.indexOf("Benign")!==-1)||
+			if((segment.clinicalSignificance?.indexOf("Benign")!==-1)||(
+			segment.annotation.indexOf('stop') === -1 &&
+			segment.annotation.indexOf('missense') === -1 &&
+			segment.annotation.indexOf('frameshift') === -1 &&
+			segment.annotation.indexOf('splice') === -1)||
 			(segment.globalAF>0.01||segment.AFRAF>0.01||segment.AMRAF>0.01||segment.EURAF>0.01||segment.ASNAF>0.01)){
 					tempOther.push(segment);
 			}else{
@@ -65,7 +70,11 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 
 	return (
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
-			<DialogTitle>Sample Name: {props.title}</DialogTitle>
+			<div className="row">
+			<DialogTitle className="col-6">Sample Name: {props.title.split('_')[0]}</DialogTitle>
+			<DialogTitle className="col-6">Disease: {props.title.split('_')[1].match(/S(\d)*/) ? 'unknown' : props.title.split('_')[1]}</DialogTitle>
+			</div>
+			
 			<DialogContentText className="ml-5">
 				Select the segments and	click Add Icon (+) to insert blacklist or whitelist.
 			</DialogContentText>
@@ -74,9 +83,7 @@ export const SampleModal: FunctionComponent<SampleModalProps> = (props) => {
 				<SegmentTable data={otherSegments} title='others' addUrl={`${ApiUrl}/api/addWhitelist`} handleAdd={handleWhitelistAdd} />
 			</DialogContent>
 			<DialogActions>
-			<ExportDataToCsv data={targetSegments} >
-				匯出
-			</ExportDataToCsv>
+			
 				<Button onClick={props.onClose} color="primary">
 					取消
 				</Button>

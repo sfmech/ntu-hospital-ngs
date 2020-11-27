@@ -1,11 +1,13 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { Title } from '../title/Title';
-import { Button, createStyles, makeStyles, Paper, Theme } from '@material-ui/core';
+import { Button, createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import './NgsAnalysis.css';
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
 import { Backdrop, CircularProgress } from '@material-ui/core';
 import { FileList } from './fileList';
+import { Disease } from '../../models/disease.model';
+import { FileContext } from '../../contexts/files.context';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -16,31 +18,26 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-type FileResponse = {
-	analysis:number,
-	files: Array<{status: number; name: string}>
-}
+
 
 export const NgsAnalysis: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
+	const [ diseases, setDiseases ] = useState<Array<Disease>>([])
+	const { analysis, files } = useContext(FileContext);
 
-	const [ fileResponse, setFileResponse ] = useState<FileResponse>({analysis:0, files:[]});
 
 	useEffect(() => {
-		const getFilelist = () => {
+		const getDiseases = () => {
 			try {
-				axios(`${ApiUrl}/api/filelist`).then((res) => {
-					if (res.data.files.length > 0) {
-						setFileResponse(res.data);
-					}
+				axios(`${ApiUrl}/api/getDiseases`).then((res) => {
+					setDiseases(res.data);
 				});
-			} catch (error) {
+			} catch (error){
 				console.log(error);
 			}
-		};
-		getFilelist();
-		setInterval(() => getFilelist(), 3000);
+		}
+		getDiseases();
 	}, []);
 
 	const handleClick = () => {
@@ -60,9 +57,14 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 	return (
 		<React.Fragment>
 			<Title>Data Analysis</Title>
-			<FileList files={fileResponse.files} />
+			<div className="row justify-content-between mt-3 px-4">
+					<Typography variant="h5" className="col-4 file-list-title">
+						Waiting List
+					</Typography>
+			</div>
+			<FileList diseases={diseases}/>
 			<div className="row justify-content-center mt-3">
-				<Button variant="contained" color="primary" disabled={fileResponse.files.length === 0||fileResponse.analysis>0} onClick={handleClick}>
+				<Button variant="contained" color="primary" disabled={files.length === 0|| analysis>0 } onClick={handleClick}>
 					開始分析
 				</Button>
 			</div>

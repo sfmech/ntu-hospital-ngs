@@ -17,4 +17,7 @@ export class SegmentTag {
 
     @Column({ name: "category" })
     category: string;
+
+    @Column({ name: "gene_name" })
+    geneName: string;
 }

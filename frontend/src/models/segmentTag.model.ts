@@ -5,4 +5,5 @@ export class SegmentTag {
     HGVSc: string;
     HGVSp: string;
     category: string;
+    geneName: string;
 }

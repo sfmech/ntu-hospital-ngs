@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import clsx from 'clsx';
 import { createStyles, lighten, makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -229,7 +229,14 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ page, setPage ] = React.useState(0);
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(5);
-	const rows = props.data;
+	const rows = props.data.map((d)=>{
+		d.freq = parseFloat(d.freq as unknown as string)
+		d.depth = parseInt(d.depth as unknown as string)
+		return d
+	});
+	useEffect(()=>{
+		setSelected([]);
+	},[props.data])
 	const addFilterlist = async (ids) => {
 		try {
 			setOpen(true);

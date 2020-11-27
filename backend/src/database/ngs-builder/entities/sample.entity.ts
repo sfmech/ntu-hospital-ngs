@@ -1,4 +1,7 @@
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, Index, OneToMany, ManyToOne, JoinColumn } from "typeorm";
+import { Coverage } from "./coverage.entity";
+import { Disease } from "./disease.entity";
+import { MutationQC } from "./mutationQC.entity";
 import { Run } from "./run.entity";
 import { Segment } from "./segment.entity";
 
@@ -14,10 +17,17 @@ export class Sample {
     @OneToMany(type => Segment, segment => segment.sample)
     segments: Segment[];
 
+    @OneToMany(type => MutationQC, mutationQC => mutationQC.sample)
+    mutationQC: MutationQC[];
+
+    @OneToMany(type => Coverage, coverage => coverage.sample)
+    coverage: Coverage[];
+
     @Column({ name: "sample_name" })
     sampleName: string;
 
-    @Column({ name: "disease" })
-    disease: string;
+    @ManyToOne(type => Disease, type => type.diseaseId, { eager: true })
+    @JoinColumn({ name: "disease_id" })
+    disease: Disease;
 
 }
