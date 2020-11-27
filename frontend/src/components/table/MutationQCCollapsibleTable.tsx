@@ -52,7 +52,10 @@ function Row(props: { row: MutationQC[], index: string}) {
 					{row.filter((r)=>r.QC>99).length+" ("+(row.filter((r)=>r.QC>99).length/row.length*100).toFixed(2) +"%)"}
 				</TableCell>
 				<TableCell>
-					{row.filter((r)=>r.QC>499).length+" ("+(row.filter((r)=>r.QC>99).length/row.length*100).toFixed(2) +"%)"}
+					{row.filter((r)=>r.QC>499).length+" ("+(row.filter((r)=>r.QC>499).length/row.length*100).toFixed(2) +"%)"}
+				</TableCell>
+				<TableCell>
+					{row.filter((r)=>r.QC<100).length}
 				</TableCell>
 				<TableCell>
 					{row.length}
@@ -135,8 +138,9 @@ export const MutationQCCollapsibleTable: FunctionComponent<MutationQCCollapsible
 						<TableRow>
 							<TableCell />
 							<TableCell>Gene Name</TableCell>
-							<TableCell>(optimal) Pass Percentage</TableCell>
+							<TableCell>(optimum) Pass Percentage</TableCell>
 							<TableCell>Pass Percentage</TableCell>
+							<TableCell>Failed</TableCell>
 							<TableCell>Total</TableCell>
 						</TableRow>
 					</TableHead>

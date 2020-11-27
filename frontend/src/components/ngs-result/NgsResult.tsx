@@ -316,7 +316,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		
 		let tempOther = Array<Segment>();
 		let tempTarget = Array<Segment>();
-	
+		if(segments){
 		segments.forEach((segment)=>{	
 			if(filterlist.findIndex((tag)=>tag.id===`${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)!==-1){
 				return
@@ -340,6 +340,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 					tempTarget.push(segment);
 			}
 		});
+	}
 
 		return [tempOther, tempTarget];
 		
@@ -354,7 +355,10 @@ export const NgsResult: FunctionComponent = (prop) => {
 			setSelectedMutationQCs(testmutationqcs[sampleId])
 		else
 			setSelectedMutationQCs([])
-		setSelectedCoverages(testcoverages[sampleId])
+		if(testcoverages[sampleId])
+			setSelectedCoverages(testcoverages[sampleId])
+		else
+			setSelectedCoverages([])
 	};
 	const handleExportClick = () =>{
 		setShowModal(true)
