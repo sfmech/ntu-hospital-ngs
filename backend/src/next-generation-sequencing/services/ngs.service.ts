@@ -119,7 +119,7 @@ export class NGSService {
 			if (disease.match(/S(\d)*/)) {
 				disease = unknown;
 			} else {
-				disease = diseases.find((d) => d.enName === disease);
+				disease = diseases.find((d) => d.abbr === disease);
 				if (disease === undefined) {
 					disease = unknown;
 				}
@@ -199,7 +199,7 @@ export class NGSService {
 			const temp = new Sample();
 			temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
 			temp.disease = diseases.find(
-				(d) => (d.enName === file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1])
+				(d) => (d.abbr === file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1])
 			);
 			temp.run.runId = runsResponse.runId;
 			return temp;
@@ -321,7 +321,7 @@ export class NGSService {
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
-			.filter((element, index, arr) => arr.indexOf(element) !== index);
+			.filter((element, index, arr) => arr.indexOf(element) === index);
 
 		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ], {
 			maxBuffer: 1024 * 1024 * 1024 * 5

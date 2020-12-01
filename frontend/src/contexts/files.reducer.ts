@@ -19,7 +19,7 @@ export const FileReducer = (state, action) => {
 			
             const updatedFiles = state.files.map((file: File) => {
                 if (file.name.split("_")[0] === updatedFile.name.split("_")[0]){
-					updatedFile.name = `${updatedFile.name.split("_")[0]}_${updatedFile.disease.enName}`
+					updatedFile.name = `${updatedFile.name.split("_")[0]}_${updatedFile.disease.abbr}`
 					try {
 						const response = axios.post(`${ApiUrl}/api/updateFile`,{
 							oldSampleName:file.name,

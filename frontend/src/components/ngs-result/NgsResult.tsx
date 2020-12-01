@@ -1,8 +1,5 @@
 
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
-import { Backdrop, Button, CircularProgress, createStyles, FormControl, IconButton, InputBase, InputLabel, makeStyles, MenuItem, Paper, Select, Theme, Typography } from '@material-ui/core';
-
-
 import { Title } from '../title/Title';
 import {
 	AppBar,
@@ -217,15 +214,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	};
 
 	useEffect(() => {
-		const getResultlist = async () => {
-			try {
-				const response = await axios(`${ApiUrl}/api/resultlist`);
-				console.log(response.data)
-				setResultlist(response.data)
-			} catch (error) {
-				console.log(error);
-			}
-		};
 		const getAllSamples = async () => {
 			try {
 				const response = await axios(`${ApiUrl}/api/samples`);
@@ -259,7 +247,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				console.log(error);
 			}
 		};
-		
+		getAllSamples();
 		getAllSegments();
 		getAllCoverages();
 		getAllMutationQCs();
