@@ -81,7 +81,7 @@ export const EditDiseaseModal: FunctionComponent<EditDiseaseModalProps> = (props
 			<DialogContent className={classes.root} dividers>
 				<Autocomplete
 					options={diseases}
-					getOptionLabel={(disease) => disease.enName}
+					getOptionLabel={(disease) => disease.abbr}
                     defaultValue={props.sample.disease}
                     disableClearable
 					onChange={(event: any, newValue: Disease | null) => handleChange(newValue)}
