@@ -100,7 +100,7 @@ export class NGSService {
 			.filter((align: string) => align.match(/Aligned.csv/));
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((bam: string) => bam.match(/(\d)*_(\w)*.bam/))
+			.filter((bam: string) => bam.match(/(\d)*_(\w)*_coverage.csv/))
 			.map((file: string) => `${file.split('.')[0]}`);
 		const annotations = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
