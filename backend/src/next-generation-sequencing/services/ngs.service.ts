@@ -100,7 +100,7 @@ export class NGSService {
 			.filter((align: string) => align.match(/Aligned.csv/));
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((bam: string) => bam.match(/(\d)*_(\w)*.bam/))
+			.filter((bam: string) => bam.match(/(\d)*_(\w)*_coverage.csv/))
 			.map((file: string) => `${file.split('.')[0]}`);
 		const annotations = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
@@ -110,7 +110,7 @@ export class NGSService {
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
-			.filter((element, index, arr) => arr.indexOf(element) !== index);
+			.filter((element, index, arr) => arr.indexOf(element) === index);
 		const diseases = await this.diseaseRepository.find();
 		const unknown = diseases.find((disease) => disease.diseaseId === 1);
 
@@ -186,9 +186,10 @@ export class NGSService {
 	async uploadResult(folder: string): Promise<void> {
 		const files = fs
 			.readdirSync(`${this.configService.get<string>('ngs.path')}/${folder}/FASTQ`)
-			.filter((file: string) => file.match(/(\d)*_S(\d)*_L001_R1_001.fastq.gz/))
+			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
+		console.log(files)
 		const runResults = {
 			runName: folder
 		};
@@ -199,7 +200,7 @@ export class NGSService {
 			const temp = new Sample();
 			temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
 			temp.disease = diseases.find(
-				(d) => (d.abbr === file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1])
+				(d) => (d.abbr === (file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1]))
 			);
 			temp.run.runId = runsResponse.runId;
 			return temp;
@@ -218,7 +219,7 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false, skipLines: 1 }))
 					.on('data', (data) => {
-						console.log(`data: ${element.sampleId} -> `, data['0']);
+						//console.log(`data: ${element.sampleId} -> `, data['0']);
 						let temp = new Segment();
 						/*if (
 							(data['8'] || ('' as string)).indexOf('stop') !== -1 ||
@@ -273,7 +274,7 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
-						console.log(`data: ${element.sampleId} -> `, data['0']);
+						//console.log(`data: ${element.sampleId} -> `, data['0']);
 						let temp = new MutationQC();
 						temp.sample.sampleId = element.sampleId
 						temp.geneName = data[0];
@@ -296,7 +297,7 @@ export class NGSService {
 					)
 					.pipe(csv({  headers: false, skipLines: 1  }))
 					.on('data', (data) => {
-						console.log(`data: ${element.sampleId} -> `, data['0']);
+						//console.log(`data: ${element.sampleId} -> `, data['0']);
 						let temp = new Coverage();
 						temp.sample.sampleId = element.sampleId
 						temp.amplionName = data[4];
@@ -335,11 +336,13 @@ export class NGSService {
 				)}-${('0' + now.getHours()).slice(-2)}`
 			};
 			const runsResponse = await this.runRepository.save(runResults);
-
+			const diseases = await this.diseaseRepository.find();
 			const sampleResults = files.map((file) => {
 				const temp = new Sample();
 				temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
-				temp.disease = file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1];
+				temp.disease = diseases.find(
+					(d) => (d.abbr === (file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1]))
+				);
 				temp.run.runId = runsResponse.runId;
 				return temp;
 			});
