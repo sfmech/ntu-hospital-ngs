@@ -7,7 +7,7 @@ export class Coverage {
     @PrimaryGeneratedColumn({ name: "coverage_id" })
     coverageId: number;
 
-    @ManyToOne(type => Sample, type => type.mutationQC, { primary: true, eager: true })
+    @ManyToOne(type => Sample, type => type.coverage, { primary: true, eager: true })
     @JoinColumn({ name: "sample_id" })
     sample: Sample;
 
