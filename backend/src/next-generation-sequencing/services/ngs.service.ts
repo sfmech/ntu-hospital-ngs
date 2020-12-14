@@ -18,7 +18,6 @@ import { FileStatus } from '../models/file.state.enum';
 import * as path from 'path';
 import { MutationQC } from '../models/mutationQC.model';
 import { Coverage } from '../models/coverage.model';
-import { Run } from '../models/run.model';
 
 var cp = require('child_process');
 const fs = require('fs');
@@ -36,31 +35,12 @@ export class NGSService {
 		@InjectRepository(CoverageEntity) private coverageRepository: Repository<CoverageEntity>,
 		private configService: ConfigService
 	) {}
-	
-	async getAllRuns(): Promise<Run[]> {
-		const runs = await this.runRepository.find({ order: { runId: 'DESC' } });
-		return runs;
-	}
 
 	async getAllSegments(): Promise<Segment[]> {
 		const segments = await this.segmentRepository.find({ order: { segmentId: 'DESC' } });
 		return segments;
 	}
 	async getAllSamples(): Promise<Sample[]> {
-		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
-		return samples;
-	}
-
-	async deleteSamples(sampleIds: number[], runIds: number[]): Promise<Sample[]> {
-		const deleteSamples = await this.sampleRepository.delete(sampleIds);
-		runIds.forEach(async (id)=>{
-			const count = await this.sampleRepository.count({ run:{runId: id} });
-			if(count==0){
-				const deleteRun = await this.runRepository.delete(id);
-				console.log(deleteRun)
-			}
-		})
-		console.log(deleteSamples)
 		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
 		return samples;
 	}
@@ -120,7 +100,7 @@ export class NGSService {
 			.filter((align: string) => align.match(/Aligned.csv/));
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((bam: string) => bam.match(/(\d)*_(\w)*_coverage.csv/))
+			.filter((bam: string) => bam.match(/(\d)*_(\w)*.bam/))
 			.map((file: string) => `${file.split('.')[0]}`);
 		const annotations = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
