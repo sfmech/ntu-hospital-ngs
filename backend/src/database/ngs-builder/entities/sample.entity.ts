@@ -10,7 +10,7 @@ export class Sample {
     @PrimaryGeneratedColumn({ name: "sample_id" })
     sampleId: number;
 
-    @ManyToOne(type => Run, type => type.samples, { primary: true, eager: true })
+    @ManyToOne(type => Run, type => type.samples, { eager: true })
     @JoinColumn({ name: "run_id" })
     run: Run;
 
