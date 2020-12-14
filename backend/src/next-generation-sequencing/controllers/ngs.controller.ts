@@ -2,7 +2,6 @@ import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { Coverage } from '../models/coverage.model';
 import { Disease } from '../models/disease.model';
 import { MutationQC } from '../models/mutationQC.model';
-import { Run } from '../models/run.model';
 import { Sample } from '../models/sample.model';
 import { Segment } from '../models/segment.model';
 import { SegmentTag } from '../models/segmentTag.model';
@@ -12,11 +11,6 @@ import { NGSService } from '../services/ngs.service';
 export class NGSController {
 	constructor(private readonly ngsService: NGSService) {}
 
-	@Get('/runs')
-	getAllRuns(): Promise<Run[]> {
-		return this.ngsService.getAllRuns();
-	}
-
 	@Get('/segments')
 	getAllSegments(): Promise<Segment[]> {
 		return this.ngsService.getAllSegments();
@@ -25,11 +19,6 @@ export class NGSController {
 	@Get('/samples')
 	getAllSamples(): Promise<Sample[]> {
 		return this.ngsService.getAllSamples();
-	}
-
-	@Post('/deleteSamples')
-	deleteSamples(@Body() body): Promise<Sample[]> {
-		return this.ngsService.deleteSamples(body.data.sampleIds, body.data.runIds);
 	}
 
 	@Get('/coverages')

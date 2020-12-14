@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export const EditDiseaseModal: FunctionComponent<EditDiseaseModalProps> = (props) => {
     const classes = useStyles();
 	const [ diseases, setDiseases ] = useState<Array<Disease>>([]);
-	const [ selectedDisease, setSelectedDisease ] = useState<Disease>(props.sample.disease);
 
 	useEffect(() => {
 		const getDiseases = () => {
@@ -64,7 +63,6 @@ export const EditDiseaseModal: FunctionComponent<EditDiseaseModalProps> = (props
 	}, []);
 	const hadleAddClick = async () => {
 		try {
-			props.sample.disease = selectedDisease;
 			const response = await axios.post(`${ApiUrl}/api/editSampleDisease`, {
 				data: props.sample
 			});
@@ -75,7 +73,7 @@ export const EditDiseaseModal: FunctionComponent<EditDiseaseModalProps> = (props
 		}
 	};
 	const handleChange = (newValue) => {
-		setSelectedDisease(newValue);
+		props.sample.disease = newValue;
 	};
 	return (
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
