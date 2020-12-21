@@ -92,10 +92,10 @@ export const EditDiseaseModal: FunctionComponent<EditDiseaseModalProps> = (props
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={hadleAddClick} color="primary">
-					Edit
+					儲存
 				</Button>
 				<Button onClick={props.onClose} color="primary">
-					Cancel
+					取消
 				</Button>
 			</DialogActions>
 		</Dialog>

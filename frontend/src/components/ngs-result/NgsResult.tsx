@@ -33,6 +33,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { Segment } from '../../models/segment.model';
 import { Sample } from '../../models/sample.model';
 import axios from 'axios';
+import EditIcon from "@material-ui/icons/EditOutlined";
+import DoneIcon from "@material-ui/icons/Done";
 import { ApiUrl } from '../../constants/constants';
 import DescriptIcon from '@material-ui/icons/Description';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -208,6 +210,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ showUploadModal, setShowUploadModal ] = useState<boolean>(false);
 	const [ showEditDiseaseModal, setShowEditDiseaseModal ] = useState<boolean>(false);
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState<boolean>(false);
+	const [ isEditable, setIsEditable ] = useState<boolean>(false);
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
@@ -216,14 +219,23 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
 		setValue(newValue);
 	};
+	useEffect(
+		() => {
+			setIsEditable(false);
+		},
+		[ selectedSegments ]
+	);
 
 	useEffect(
 		() => {
+			/*if (selectedSegments.length>0){
+				setSelectedSegments(segmentResults[selectedSegments[0].sample.sampleId])
+			}*/
 			const [ tempOther, tempTarget ] = filterSegments(selectedSegments);
 			setOtherSegments(tempOther);
 			setTargetSegments(tempTarget);
 		},
-		[ selectedSegments, blacklist, whitelist ]
+		[ selectedSegments, blacklist, whitelist, isEditable ]
 	);
 
 	const handleUploadClick = () => {
@@ -307,12 +319,28 @@ export const NgsResult: FunctionComponent = (prop) => {
 			return runIsSelected;
 		}
 	};
-
-	const handleBlacklistAdd = (segments: Segment[]) => {
-		addBlacklist(segments);
+	
+	const handleBlacklistAdd = async (segments: Segment[]) => {
+		try {
+			const response = await axios.post(`${ApiUrl}/api/addBlacklist`, {
+				data: segments
+			});
+		} catch (error) {
+			console.log(error);
+		} finally {
+			addBlacklist(segments);
+		}
 	};
-	const handleWhitelistAdd = (segments: Segment[]) => {
-		addWhitelist(segments);
+	const handleWhitelistAdd = async (segments: Segment[]) => {
+		try {
+			const response = await axios.post(`${ApiUrl}/api/addWhitelist`, {
+				data: segments
+			});
+		} catch (error) {
+			console.log(error);
+		} finally {
+			addWhitelist(segments);
+		}
 	};
 	function filterSegments(segments) {
 		let tempOther = Array<Segment>();
@@ -331,27 +359,41 @@ export const NgsResult: FunctionComponent = (prop) => {
 						(tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`
 					) !== -1
 				) {
+					const finding = blacklist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
+					segment.remark = finding?.remark
+					segment.clinicalSignificance = finding?.clinicalSignificance
 					tempOther.push(segment);
-					return;
 				}
-				if (
+				else if (
 					whitelist.findIndex(
 						(tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`
 					) !== -1
 				) {
+					const finding = whitelist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
+					segment.remark = finding?.remark
+					segment.clinicalSignificance = finding?.clinicalSignificance
 					tempTarget.push(segment);
-					return;
 				}
-				if((segment.clinicalSignificance?.indexOf("Benign")!==-1)||(
+				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1){
+					tempTarget.push(segment);
+				}
+				else if(segment.clinicalSignificance?.indexOf("Benign")!==-1){
+					tempOther.push(segment);
+				}
+				else if(
+				(segment.globalAF>0.01||segment.AFRAF>0.01||segment.AMRAF>0.01||segment.EURAF>0.01||segment.ASNAF>0.01)){
+					tempOther.push(segment);
+				}
+				else if((
 				segment.annotation.indexOf('stop') === -1 &&
 				segment.annotation.indexOf('missense') === -1 &&
 				segment.annotation.indexOf('frameshift') === -1 &&
 				segment.annotation.indexOf('splice') === -1 &&
-				segment.annotation.indexOf('inframe') === -1)||
-				(segment.globalAF>0.01||segment.AFRAF>0.01||segment.AMRAF>0.01||segment.EURAF>0.01||segment.ASNAF>0.01)){
-						tempOther.push(segment);
-				}else{
-						tempTarget.push(segment);
+				segment.annotation.indexOf('inframe') === -1)){
+					tempOther.push(segment);
+				}else {
+					tempTarget.push(segment);
+
 				}
 			});
 		}
@@ -363,11 +405,12 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setShowEditDiseaseModal(true);
 	};
 
-	const handleClick = (segments: Segment[], sampleId: number) => {
+	const handleClick = (segments: Segment[], sample: Sample) => {
 		setSelectedSegments(segments);
-		if (mutationQCResults[sampleId]) setSelectedMutationQCs(mutationQCResults[sampleId]);
+		setSelectedSample(sample)
+		if (mutationQCResults[sample.sampleId]) setSelectedMutationQCs(mutationQCResults[sample.sampleId]);
 		else setSelectedMutationQCs([]);
-		if (coverageResults[sampleId]) setSelectedCoverages(coverageResults[sampleId]);
+		if (coverageResults[sample.sampleId]) setSelectedCoverages(coverageResults[sample.sampleId]);
 		else setSelectedCoverages([]);
 	};
 	const handleExportClick = () => {
@@ -410,6 +453,18 @@ export const NgsResult: FunctionComponent = (prop) => {
 		});
 		return newExportData;
 	};
+
+	const onToggleEditMode =  () => {
+		if(isEditable){
+			const response =  axios.post(`${ApiUrl}/api/updateSegment`, {
+				data: segmentResults[selectedSample.sampleId] 
+			});
+			setSelectedSegments(segmentResults[selectedSample.sampleId])
+		}
+		setIsEditable(!isEditable)
+		
+	};
+
 	return (
 		<React.Fragment>
 			<Title>Results Overview</Title>
@@ -469,7 +524,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 										nodeId={String(sampleRow.sampleId)}
 										labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
 										onClick={() =>
-											handleClick(segmentResults[sampleRow.sampleId], sampleRow.sampleId)}
+											handleClick(segmentResults[sampleRow.sampleId], sampleRow)}
 										isSample={true}
 										onDoubleClick={() => handleDoubleClick(sampleRow)}
 										handleSelectClick={handleSelectClick}
@@ -490,16 +545,41 @@ export const NgsResult: FunctionComponent = (prop) => {
 							</TabList>
 						</AppBar>
 						<TabPanel value="1">
+							{isEditable ? (
+									<Button
+										onClick={onToggleEditMode}
+										aria-label="done"
+										variant="contained"
+										color="default"
+										startIcon={<DoneIcon />}
+										className="mb-1"
+									>
+										儲存
+									</Button>
+							) : (
+									<Button
+										aria-label="edit"
+										onClick={onToggleEditMode}
+										variant="contained"
+										color="default"
+										startIcon={<EditIcon />}
+										className="mb-1"
+									>
+										編輯
+									</Button>
+							)}
 							<SegmentTable
 								data={targetSegments}
+								setSelectSegments={(segments: Segment[])=>setSelectedSegments(segments)}
 								title="targets"
-								addUrl={`${ApiUrl}/api/addBlacklist`}
+								isEditMode={isEditable}
 								handleAdd={handleBlacklistAdd}
 							/>
 							<SegmentTable
 								data={otherSegments}
+								setSelectSegments={(segments: Segment[])=>setSelectedSegments(segments)}
 								title="others"
-								addUrl={`${ApiUrl}/api/addWhitelist`}
+								isEditMode={isEditable}
 								handleAdd={handleWhitelistAdd}
 							/>
 						</TabPanel>

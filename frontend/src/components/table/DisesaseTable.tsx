@@ -21,7 +21,7 @@ import { Backdrop, CircularProgress } from '@material-ui/core';
 import axios from 'axios';
 import { Disease } from '../../models/disease.model';
 import { ApiUrl } from '../../constants/constants';
-import { DiseaseModal } from '../modals/DiseaseModal';
+import { DiseaseModal } from '../modals/AddDiseaseModal';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {

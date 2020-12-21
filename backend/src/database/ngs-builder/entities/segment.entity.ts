@@ -56,6 +56,4 @@ export class Segment {
 
     @Column({ name: "ASN_AF" })
     ASNAF: number;
-
-
 }
