@@ -6,4 +6,6 @@ export class SegmentTag {
     HGVSp: string;
     category: string;
     geneName: string;
+    remark: string;
+    clinicalSignificance: string;
 }

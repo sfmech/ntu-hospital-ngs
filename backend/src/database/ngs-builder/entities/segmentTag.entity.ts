@@ -20,4 +20,10 @@ export class SegmentTag {
 
     @Column({ name: "gene_name" })
     geneName: string;
+
+    @Column({ name: "remark" })
+    remark: string;
+
+    @Column({ name: "clinical_significance" })
+    clinicalSignificance: string;
 }

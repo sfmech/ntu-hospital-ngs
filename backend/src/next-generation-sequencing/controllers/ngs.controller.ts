@@ -32,6 +32,11 @@ export class NGSController {
 		return this.ngsService.deleteSamples(body.data.sampleIds, body.data.runIds);
 	}
 
+	@Post('/updatesegment')
+	updateSegment(@Body() body): Promise<Segment[]> {
+		return this.ngsService.updateSegment(body.data);
+	}
+
 	@Get('/coverages')
 	getAllCoverage(): Promise<Coverage[]> {
 		return this.ngsService.getAllCoverage();
@@ -74,6 +79,11 @@ export class NGSController {
 			return temp;
 		});
 		return this.ngsService.addWhitelist(data);
+	}
+	
+	@Post('/updateSegmentTag')
+	updateSegmentTag(@Body() body): Promise<SegmentTag[]> {
+		return this.ngsService.updateSegmentTag(body.data);
 	}
 
 	@Post('/runscript')

@@ -63,7 +63,6 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 				const response = await axios.post(`${ApiUrl}/api/uploadresult`, {
 					data: selectResult
 				});
-				console.log(response.data)
 			} catch (error) {
 				console.log(error);
 			} finally {
@@ -105,10 +104,10 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 						onClick={handleUploadResult}
 						disabled={resultlist.length <= 0 || selectResult === ''}
 					>
-						Upload
+						上傳
 					</Button>
 				<Button onClick={props.onClose} color="primary">
-					Cancel
+					取消
 				</Button>
 			</DialogActions>
 		</Dialog>

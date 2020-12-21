@@ -11,6 +11,10 @@ import FormControl from '@material-ui/core/FormControl';
 import { SegmentTag } from '../../models/segmentTag.model';
 import { SegmentTagContext } from '../../contexts/segmentTag.context';
 import { ApiUrl } from '../../constants/constants';
+import axios from 'axios';
+import { Button } from '@material-ui/core';
+import EditIcon from "@material-ui/icons/EditOutlined";
+import DoneIcon from "@material-ui/icons/Done";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -30,8 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		formControl: {
 			margin: theme.spacing(1),
 			minWidth: 120
-		},
-
+		}
 	})
 );
 
@@ -39,8 +42,8 @@ export const FilterListManage: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ condition, setCondition ] = useState('geneName');
 	const [ input, setInput ] = useState('');
-
-	const { blacklist, whitelist, deleteBlacklist, deleteWhitelist } = useContext(SegmentTagContext);
+	const [ isEditable, setIsEditable ] = useState<boolean>(false);
+	const { blacklist, whitelist, deleteBlacklist, deleteWhitelist, setBlacklist, setWhitelist } = useContext(SegmentTagContext);
 	const [ showBlacklist, setShowBlacklist ] = useState<SegmentTag[]>(blacklist);
 	const [ showWhitelist, setShowWhitelist ] = useState<SegmentTag[]>(whitelist);
 
@@ -62,26 +65,72 @@ export const FilterListManage: FunctionComponent = (prop) => {
 	};
 
 	const handleSearchClick = () => {
-		if(blacklist.length>0)
-			setShowBlacklist(blacklist.filter((data) => data[condition].indexOf(input) !== -1));
-		if(whitelist.length>0)
-			setShowWhitelist(whitelist.filter((data) => data[condition].indexOf(input) !== -1));
+		if (blacklist.length > 0) setShowBlacklist(blacklist.filter((data) => data[condition].indexOf(input) !== -1));
+		if (whitelist.length > 0) setShowWhitelist(whitelist.filter((data) => data[condition].indexOf(input) !== -1));
 	};
 
-	const handleBlacklistDelete = (ids: string[]) => {
-		setShowBlacklist(showBlacklist.filter((data) => !ids.includes(data.id)));
-		deleteBlacklist(ids);
+	const handleBlacklistDelete = async (ids: string[]) => {
+		try {
+			const response = await axios.post(`${ApiUrl}/api/deleteBlacklist`, {
+				data: showBlacklist.filter((data) => ids.includes(data.id))
+			});
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setShowBlacklist(showBlacklist.filter((data) => !ids.includes(data.id)));
+			deleteBlacklist(ids);
+		}
 	};
 
-	const handleWhitelistDelete = (ids: string[]) => {
-		setShowWhitelist(showWhitelist.filter((data) => !ids.includes(data.id)));
-		deleteWhitelist(ids);
+	const handleWhitelistDelete = async (ids: string[]) => {
+		try {
+			const response = await axios.post(`${ApiUrl}/api/deleteWhitelist`, {
+				data: showWhitelist.filter((data) => ids.includes(data.id))
+			});
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setShowWhitelist(showWhitelist.filter((data) => !ids.includes(data.id)));
+			deleteWhitelist(ids);
+		}
 	};
 
+	const onToggleEditMode =  () => {
+		if(isEditable){
+			const response =  axios.post(`${ApiUrl}/api/updateSegmentTag`, {
+				data:  blacklist.concat(whitelist)
+			});
+		}
+		setIsEditable(!isEditable)
+		
+	};
 
 	return (
 		<React.Fragment>
 			<div className="row ml-3 mt-3">
+				{isEditable ? (
+					<Button
+						onClick={onToggleEditMode}
+						aria-label="done"
+						variant="contained"
+						color="default"
+						startIcon={<DoneIcon />}
+						className="mb-1"
+					>
+						儲存
+					</Button>
+				) : (
+					<Button
+						aria-label="edit"
+						onClick={onToggleEditMode}
+						variant="contained"
+						color="default"
+						startIcon={<EditIcon />}
+						className="mb-1"
+					>
+						編輯
+					</Button>
+				)}
 				<FormControl variant="outlined" className={classes.formControl}>
 					<Select native value={condition} onChange={handleChange}>
 						<option value="geneName">Gene Name</option>
@@ -104,12 +153,23 @@ export const FilterListManage: FunctionComponent = (prop) => {
 				</Paper>
 			</div>
 			<div className="row justify-content-center mt-3 px-4">
-				<SegmentTagTable data={showBlacklist} title="Blacklist" handleDelete={handleBlacklistDelete} deleteUrl={`${ApiUrl}/api/deleteBlacklist`}/>
+				<SegmentTagTable
+					data={showBlacklist}
+					title="Blacklist"
+					handleChange={setBlacklist}
+					handleDelete={handleBlacklistDelete}
+					isEditMode={isEditable}
+				/>
 			</div>
 			<div className="row justify-content-center mt-3 px-4">
-				<SegmentTagTable data={showWhitelist} title="Whitelist" handleDelete={handleWhitelistDelete} deleteUrl={`${ApiUrl}/api/deleteWhitelist`}/>
+				<SegmentTagTable
+					data={showWhitelist}
+					title="Whitelist"
+					handleChange={setWhitelist}
+					handleDelete={handleWhitelistDelete}
+					isEditMode={isEditable}
+				/>
 			</div>
-
 		</React.Fragment>
 	);
 };

@@ -127,17 +127,17 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
 			<DialogActions>
                 { step===0&&template===0?
 				<Button onClick={()=>setStep(1)} color="primary">
-					Confirm
+					確認
                 </Button>:(template===1?
                 <ExportDataToCsv data={props.exportData} onClose={props.onClose} headers={headers.filter((h)=>LISHeader[h.key])}>
-                    Export
+                    匯出
                 </ExportDataToCsv>:
                 <ExportDataToCsv data={props.exportData} onClose={props.onClose} headers={headers.filter((h)=>header[h.key])}>
-                    Export
+                    匯出
                 </ExportDataToCsv>)
                 }
 				<Button onClick={props.onClose} color="primary">
-					Cancel
+					取消
 				</Button>
 			</DialogActions>
 		</Dialog>

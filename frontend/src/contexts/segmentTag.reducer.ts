@@ -44,7 +44,9 @@ export const SegmentTagReducer = (state, action) => {
 				temp.position = segmentTag.position;
 				temp.HGVSc = segmentTag.HGVSc;
 				temp.HGVSp = segmentTag.HGVSp;
+				temp.clinicalSignificance = segmentTag.clinicalSignificance;
 				temp.geneName = segmentTag.geneName;
+				temp.remark = segmentTag.remark;
                 temp.category = 'blacklist'
 				return temp;
             });
@@ -67,6 +69,8 @@ export const SegmentTagReducer = (state, action) => {
 				temp.HGVSc = segmentTag.HGVSc;
 				temp.HGVSp = segmentTag.HGVSp;
 				temp.geneName = segmentTag.geneName;
+				temp.clinicalSignificance = segmentTag.clinicalSignificance;
+				temp.remark = segmentTag.remark;
                 temp.category = 'whitelist'
 				return temp;
             });
@@ -77,6 +81,7 @@ export const SegmentTagReducer = (state, action) => {
 				blacklist: newBlacklist,
 				whitelist: state.whitelist.concat(addWhiteSegmentTags)
 			};
+		
 		default:
 			return state;
 	}

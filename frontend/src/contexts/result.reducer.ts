@@ -54,6 +54,31 @@ export const ResultReducer = (state, action) => {
 				...state,
 				coverageResults: groupCoverages
 			};  
+		case "UPDATESEGMENT":
+			const updatedSegment = action.payload as Segment;
+			const updatedSegmentResults = state.segmentResults;
+            const updatedSegments = state.segmentResults[updatedSegment.sample.sampleId].map((segment: Segment) => {
+                if (segment.segmentId === updatedSegment.segmentId) {
+                    return updatedSegment;
+                }
+                
+                return segment;
+			});
+			updatedSegmentResults[updatedSegment.sample.sampleId] = updatedSegments
+			/*
+			const updatedSegmentResults = (segmentResults, sampleId)=>{
+				segmentResults[sampleId].forEach((segment: Segment, index: number, array: Segment[]) => {
+					if (index === updatedSegment.segmentId) {
+						array[index] = updatedSegment
+					}	
+				});	
+				return segmentResults
+			};
+			*/
+			return {
+				...state,
+				segmentResults: {...updatedSegmentResults}
+			};  
 		default:
 			return state;
 	}

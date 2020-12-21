@@ -60,9 +60,13 @@ export class NGSService {
 				console.log(deleteRun)
 			}
 		})
-		console.log(deleteSamples)
 		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
 		return samples;
+	}
+
+	async updateSegment(updatedSegment: Segment[]): Promise<Segment[]> {
+		const segments = await this.segmentRepository.save(updatedSegment);
+		return segments;
 	}
 
 	async getAllMutationQC(): Promise<MutationQC[]> {
@@ -113,7 +117,10 @@ export class NGSService {
 		const whitelist = await this.segmentTagRepository.save(addSegmentTags);
 		return whitelist;
 	}
-
+	async updateSegmentTag(updateSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
+		const segmentTags = await this.segmentTagRepository.save(updateSegmentTags);
+		return segmentTags;
+	}
 	async getFilelist(): Promise<{}> {
 		const aligned = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))

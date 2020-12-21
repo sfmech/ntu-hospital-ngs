@@ -71,10 +71,10 @@ export const AnalysisModal: FunctionComponent<AnalysisFileModalProps> = (props) 
 
 			<DialogActions>
 				<Button onClick={handleSaveClick} color="primary">
-					Save
+					儲存
 				</Button>
 				<Button onClick={props.onClose} color="primary">
-					Cancel
+					取消
 				</Button>
 			</DialogActions>
 		</Dialog>

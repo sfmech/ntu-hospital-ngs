@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { createStyles, lighten, makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -17,8 +17,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import { Segment } from '../../models/segment.model';
-import { Backdrop, CircularProgress } from '@material-ui/core';
+import { Backdrop, CircularProgress, FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core';
 import axios from 'axios';
+import { ResultContext } from '../../contexts/result.context';
+import { ApiUrl } from '../../constants/constants';
+import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
+import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -42,7 +46,7 @@ function getComparator<Key extends keyof any>(
 }
 
 function stableSort(array, comparator: (a, b) => number) {
-	const stabilizedThis = array.map((el, index) => [ el, index ]);
+	const stabilizedThis = array.map((el, index) => [el, index]);
 	stabilizedThis.sort((a, b) => {
 		const order = comparator(a[0], b[0]);
 		if (order !== 0) return order;
@@ -69,6 +73,7 @@ const headCells: HeadCell[] = [
 	{ id: 'HGVSc', numeric: false, disablePadding: false, label: 'HGVS.c' },
 	{ id: 'HGVSp', numeric: false, disablePadding: false, label: 'HGVS.p' },
 	{ id: 'clinicalSignificance', numeric: false, disablePadding: false, label: 'Clinical significance' },
+	{ id: 'remark', numeric: false, disablePadding: false, label: 'remark' },
 	{ id: 'globalAF', numeric: true, disablePadding: false, label: 'Global_AF' },
 	{ id: 'AFRAF', numeric: true, disablePadding: false, label: 'AFR_AF' },
 	{ id: 'AMRAF', numeric: true, disablePadding: false, label: 'AMR_AF' },
@@ -84,10 +89,11 @@ interface EnhancedTableProps {
 	order: Order;
 	orderBy: string;
 	rowCount: number;
+	isEditable: boolean;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-	const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+	const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, isEditable } = props;
 	const createSortHandler = (property: keyof Segment) => (event: React.MouseEvent<unknown>) => {
 		onRequestSort(event, property);
 	};
@@ -96,12 +102,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 		<TableHead>
 			<TableRow>
 				<TableCell padding="checkbox">
-					<Checkbox
-						indeterminate={numSelected > 0 && numSelected < rowCount}
-						checked={rowCount > 0 && numSelected === rowCount}
-						onChange={onSelectAllClick}
-						inputProps={{ 'aria-label': 'select all desserts' }}
-					/>
+					{!isEditable?
+						<Checkbox
+							indeterminate={numSelected > 0 && numSelected < rowCount}
+							checked={rowCount > 0 && numSelected === rowCount}
+							onChange={onSelectAllClick}
+							inputProps={{ 'aria-label': 'select all desserts' }}
+						/>:null
+					}
 				</TableCell>
 				{headCells.map((headCell) => (
 					<TableCell
@@ -138,13 +146,13 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 		highlight:
 			theme.palette.type === 'light'
 				? {
-						color: theme.palette.secondary.main,
-						backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-					}
+					color: theme.palette.secondary.main,
+					backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+				}
 				: {
-						color: theme.palette.text.primary,
-						backgroundColor: theme.palette.secondary.dark
-					},
+					color: theme.palette.text.primary,
+					backgroundColor: theme.palette.secondary.dark
+				},
 		title: {
 			flex: '1 1 100%'
 		}
@@ -154,13 +162,15 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 interface EnhancedTableToolbarProps {
 	numSelected: number;
 	title: string;
+	rows: Segment[];
 	selected: number[];
-	handleDelete: (ids: number[]) => void;
+	handleAdd: (segments: Segment[]) => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 	const classes = useToolbarStyles();
-	const { selected, numSelected, handleDelete } = props;
+	const { selected, numSelected, handleAdd, rows } = props;
+    const [ showModal, setShowModal ] = useState(false);
 
 	return (
 		<Toolbar
@@ -173,13 +183,14 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 					{numSelected} selected
 				</Typography>
 			) : (
-				<Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-					{props.title}
-				</Typography>
-			)}
+					<Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+						{props.title}
+					</Typography>
+				)}
+			<AddSegmentTagModal show={showModal} title={props.title} onSave={(segments: Segment[]) => handleAdd(segments)} onClose={() => setShowModal(false)} segments={rows.filter((data) => selected.includes(data.segmentId))}></AddSegmentTagModal>
 			{numSelected > 0 ? (
 				<Tooltip title="add">
-					<IconButton aria-label="add" onClick={() => handleDelete(selected)}>
+					<IconButton aria-label="add"  onClick={() => setShowModal(true)}>
 						<AddIcon />
 					</IconButton>
 				</Tooltip>
@@ -216,38 +227,42 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 type SegmentTable = {
 	data: Segment[];
+	setSelectSegments: (segments: Segment[]) => void
 	title: string;
-	addUrl: string;
-	handleAdd: (ids: Segment[]) => void;
+	isEditMode: boolean;
+	handleAdd: (segments: Segment[]) => void;
 };
 
 export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 	const classes = useStyles();
-	const [ open, setOpen ] = React.useState(false);
-	const [ order, setOrder ] = React.useState<Order>('asc');
-	const [ orderBy, setOrderBy ] = React.useState<keyof Segment>('chr');
-	const [ selected, setSelected ] = React.useState<number[]>([]);
-	const [ page, setPage ] = React.useState(0);
-	const [ rowsPerPage, setRowsPerPage ] = React.useState(5);
-	const rows = props.data.map((d)=>{
-		d.freq = parseFloat(d.freq as unknown as string)
-		d.depth = parseInt(d.depth as unknown as string)
-		return d
-	});
-	useEffect(()=>{
+	const [open, setOpen] = React.useState(false);
+	const [order, setOrder] = React.useState<Order>('asc');
+	const { updateSegment } = useContext(ResultContext);
+	const [orderBy, setOrderBy] = React.useState<keyof Segment>('chr');
+	const [selected, setSelected] = React.useState<number[]>([]);
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [rows, setRows] = useState(new Array<Segment>());
+	useEffect(() => {
 		setSelected([]);
-	},[props.data])
-	const addFilterlist = async (ids) => {
+		setOrder('asc');
+		setOrderBy('chr');
+		setPage(0)
+		setRows(props.data.map((d) => {
+			d.freq = parseFloat(d.freq as unknown as string);
+			d.depth = parseInt(d.depth as unknown as string);
+
+			return d;
+		}));
+	}, [props.data])
+	const handleAdd = async (segments: Segment[]) => {
 		try {
 			setOpen(true);
-			const response = await axios.post(props.addUrl, {
-				data: props.data.filter((data) => selected.includes(data.segmentId))
-			});
+			props.handleAdd(segments)
 		} catch (error) {
 			console.log(error);
 		} finally {
 			setOpen(false);
-			props.handleAdd(props.data.filter((data) => selected.includes(data.segmentId)));
 			setSelected([]);
 		}
 	};
@@ -284,10 +299,6 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 		setSelected(newSelected);
 	};
 
-	const handleDelete = (ids) => {
-		addFilterlist(ids)
-	};
-
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);
 	};
@@ -305,13 +316,29 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 
 	const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+	
+	const onChange = async (e, row) => {
+		const value = e.target.value;
+		const name = e.target.name;
+		const { segmentId } = row;
+		const newRows = rows.map(row => {
+			if (row.segmentId === segmentId) {
+				updateSegment({ ...row, [name]: value })
+				return { ...row, [name]: value };
+			}
+			return row;
+		});
+		
+		setRows(newRows);
+	};
 	return (
 		<React.Fragment>
 			<Paper className={classes.paper}>
 				<EnhancedTableToolbar
 					numSelected={selected.length}
 					title={props.title}
-					handleDelete={handleDelete}
+					handleAdd={handleAdd}
+					rows={rows}
 					selected={selected}
 				/>
 				<TableContainer>
@@ -329,6 +356,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 							onSelectAllClick={handleSelectAllClick}
 							onRequestSort={handleRequestSort}
 							rowCount={rows.length}
+							isEditable={props.isEditMode}
 						/>
 						<TableBody>
 							{rows.length > 0 ? (
@@ -341,18 +369,20 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 										return (
 											<TableRow
 												hover
-												onClick={(event) => handleClick(event, row.segmentId)}
-												role="checkbox"
+												role={!props.isEditMode?"checkbox":""}
 												aria-checked={isItemSelected}
+												onClick={!props.isEditMode?(event) => handleClick(event, row.segmentId):()=>{}}
 												tabIndex={-1}
 												key={row.segmentId}
 												selected={isItemSelected}
 											>
 												<TableCell padding="checkbox">
-													<Checkbox
-														checked={isItemSelected}
-														inputProps={{ 'aria-labelledby': labelId }}
-													/>
+													{!props.isEditMode?
+														<Checkbox
+															checked={isItemSelected}
+															inputProps={{ 'aria-labelledby': labelId }}
+														/>:null
+													}
 												</TableCell>
 												<TableCell component="th" scope="row">
 													{row.chr}
@@ -365,7 +395,26 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 												<TableCell align="right">{row.geneName}</TableCell>
 												<TableCell align="right">{row.HGVSc}</TableCell>
 												<TableCell align="right">{row.HGVSp}</TableCell>
-												<TableCell align="right">{row.clinicalSignificance}</TableCell>
+												<TableCell align="right">
+													{props.isEditMode ? (
+														<FormControl variant="outlined">
+														<Select
+															labelId="demo-simple-select-outlined-label"
+															value={row.clinicalSignificance}
+															name={"clinicalSignificance"}
+															onChange={e => onChange(e, row)}
+														>
+															{Object.keys(ClinicalSignificance).map((result) => {
+																return <MenuItem value={ClinicalSignificance[result]}>{ClinicalSignificance[result]}</MenuItem>;
+															})}
+														</Select>
+													</FormControl>
+													) : (
+															row.clinicalSignificance
+														)
+													}
+												</TableCell>
+												<TableCell align="right">{row.remark}</TableCell>
 												<TableCell align="right">{row.globalAF}</TableCell>
 												<TableCell align="right">{row.AFRAF}</TableCell>
 												<TableCell align="right">{row.AMRAF}</TableCell>
@@ -384,7 +433,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 					</Table>
 				</TableContainer>
 				<TablePagination
-					rowsPerPageOptions={[ 5, 10, 25 ]}
+					rowsPerPageOptions={[5, 10, 25]}
 					component="div"
 					count={rows.length}
 					rowsPerPage={rowsPerPage}

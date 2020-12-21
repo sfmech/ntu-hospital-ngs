@@ -96,6 +96,7 @@ export const SegmentTagProvider = ({ children }) => {
 			payload: segmentTags
 		});
 	}
+
 	return (
 		<SegmentTagContext.Provider
 			value={{

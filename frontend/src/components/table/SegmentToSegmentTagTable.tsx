@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { createStyles, lighten, makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -15,11 +15,14 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { SegmentTag } from '../../models/segmentTag.model';
-import { Backdrop, CircularProgress, FormControl, Input, MenuItem, Select } from '@material-ui/core';
-import axios from 'axios';
+import { Segment } from '../../models/segment.model';
+import { Backdrop, CircularProgress, FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { ResultContext } from '../../contexts/result.context';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
+import DeleteIcon from '@material-ui/icons/Delete';
+import axios from 'axios';
+import { ApiUrl } from '../../constants/constants';
+
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -53,25 +56,34 @@ function stableSort(array, comparator: (a, b) => number) {
 
 interface HeadCell {
 	disablePadding: boolean;
-	id: keyof SegmentTag;
+	id: keyof Segment;
 	label: string;
 	numeric: boolean;
 }
 
 const headCells: HeadCell[] = [
-	{ id: 'geneName', numeric: false, disablePadding: true, label: 'Gene Name' },
-	{ id: 'chr', numeric: false, disablePadding: false, label: 'Chr' },
-	{ id: 'position', numeric: true, disablePadding: false, label: 'Position' },
-	{ id: 'HGVSc', numeric: true, disablePadding: false, label: 'HGVSc' },
-	{ id: 'HGVSp', numeric: true, disablePadding: false, label: 'HGVSp' },
+	{ id: 'chr', numeric: false, disablePadding: true, label: 'Chr' },
+	{ id: 'position', numeric: false, disablePadding: false, label: 'Position' },
+	{ id: 'dbSNP', numeric: false, disablePadding: false, label: 'dbSNP' },
+	{ id: 'freq', numeric: true, disablePadding: false, label: 'Freq' },
+	{ id: 'depth', numeric: true, disablePadding: false, label: 'Depth' },
+	{ id: 'annotation', numeric: false, disablePadding: false, label: 'Annotation' },
+	{ id: 'geneName', numeric: false, disablePadding: false, label: 'Gene_Name' },
+	{ id: 'HGVSc', numeric: false, disablePadding: false, label: 'HGVS.c' },
+	{ id: 'HGVSp', numeric: false, disablePadding: false, label: 'HGVS.p' },
 	{ id: 'clinicalSignificance', numeric: false, disablePadding: false, label: 'Clinical significance' },
-	{ id: 'remark', numeric: false, disablePadding: false, label: 'remark' }
+	{ id: 'remark', numeric: false, disablePadding: false, label: 'remark' },
+	{ id: 'globalAF', numeric: true, disablePadding: false, label: 'Global_AF' },
+	{ id: 'AFRAF', numeric: true, disablePadding: false, label: 'AFR_AF' },
+	{ id: 'AMRAF', numeric: true, disablePadding: false, label: 'AMR_AF' },
+	{ id: 'EURAF', numeric: true, disablePadding: false, label: 'EUR_AF' },
+	{ id: 'ASNAF', numeric: true, disablePadding: false, label: 'ASN_AF' }
 ];
 
 interface EnhancedTableProps {
 	classes: ReturnType<typeof useStyles>;
 	numSelected: number;
-	onRequestSort: (event: React.MouseEvent<unknown>, property: keyof SegmentTag) => void;
+	onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Segment) => void;
 	onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	order: Order;
 	orderBy: string;
@@ -80,7 +92,7 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
 	const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-	const createSortHandler = (property: keyof SegmentTag) => (event: React.MouseEvent<unknown>) => {
+	const createSortHandler = (property: keyof Segment) => (event: React.MouseEvent<unknown>) => {
 		onRequestSort(event, property);
 	};
 
@@ -146,13 +158,14 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 interface EnhancedTableToolbarProps {
 	numSelected: number;
 	title: string;
-	selected: string[];
-	handleDelete: (ids: string[]) => void;
+	rows: Segment[];
+	selected: number[];
+	handleDelete: (ids: number[]) => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 	const classes = useToolbarStyles();
-	const { selected, numSelected, handleDelete } = props;
+	const { selected, numSelected, handleDelete, rows } = props;
 
 	return (
 		<Toolbar
@@ -170,7 +183,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 				</Typography>
 			)}
 			{numSelected > 0 ? (
-				<Tooltip title="Delete">
+				<Tooltip title="delete">
 					<IconButton aria-label="delete" onClick={() => handleDelete(selected)}>
 						<DeleteIcon />
 					</IconButton>
@@ -187,7 +200,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			marginBottom: theme.spacing(2)
 		},
 		table: {
-			minWidth: 800
+			minWidth: 900
 		},
 		visuallyHidden: {
 			border: 0,
@@ -206,46 +219,44 @@ const useStyles = makeStyles((theme: Theme) =>
 		}
 	})
 );
-type SegmentTagTable = {
-	data: SegmentTag[];
+type SegmentToSegmentTagTable = {
+	data: Segment[];
 	title: string;
-	isEditMode: boolean;
-	handleDelete: (ids: string[]) => void;
-	handleChange: (data: SegmentTag[]) => void;
+	setSaveSegments: React.Dispatch<React.SetStateAction<Segment[]>>;
 };
 
-export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
+export const SegmentToSegmentTagTable: FunctionComponent<SegmentToSegmentTagTable> = (props) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
 	const [ order, setOrder ] = React.useState<Order>('asc');
-	const [ orderBy, setOrderBy ] = React.useState<keyof SegmentTag>('geneName');
-	const [ selected, setSelected ] = React.useState<string[]>([]);
+	const { updateSegment } = useContext(ResultContext);
+	const [ orderBy, setOrderBy ] = React.useState<keyof Segment>('chr');
+	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ page, setPage ] = React.useState(0);
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(5);
-	const [ rows, setRows ] = useState(new Array<SegmentTag>());
+	const [ rows, setRows ] = useState(new Array<Segment>());
 	useEffect(
 		() => {
 			setSelected([]);
 			setOrder('asc');
 			setOrderBy('chr');
 			setPage(0);
-			setRows(props.data);
+			setRows(
+				props.data.map((d) => {
+					d.freq = parseFloat((d.freq as unknown) as string);
+					d.depth = parseInt((d.depth as unknown) as string);
+
+					return d;
+				})
+			);
 		},
 		[ props.data ]
 	);
-	const deleteSegmentTag = async (ids) => {
-		try {
-			setOpen(true);
-			props.handleDelete(ids);
-		} catch (error) {
-			console.log(error);
-		} finally {
-			setOpen(false);
-			setSelected([]);
-		}
+	const handleDelete = async (ids) => {
+		props.setSaveSegments(props.data.filter((data) => !ids.includes(data.segmentId)));
 	};
 
-	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof SegmentTag) => {
+	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Segment) => {
 		const isAsc = orderBy === property && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
 		setOrderBy(property);
@@ -253,16 +264,16 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 
 	const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
-			const newSelecteds = rows.map((n) => n.id);
+			const newSelecteds = rows.map((n) => n.segmentId);
 			setSelected(newSelecteds);
 			return;
 		}
 		setSelected([]);
 	};
 
-	const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
+	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
 		const selectedIndex = selected.indexOf(id);
-		let newSelected: string[] = [];
+		let newSelected: number[] = [];
 
 		if (selectedIndex === -1) {
 			newSelected = newSelected.concat(selected, id);
@@ -277,10 +288,6 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 		setSelected(newSelected);
 	};
 
-	const handleDelete = (ids) => {
-		deleteSegmentTag(ids);
-	};
-
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);
 	};
@@ -290,23 +297,27 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 		setPage(0);
 	};
 
-	const isSelected = (id: string) => selected.indexOf(id) !== -1;
+	const handleClose = () => {
+		setOpen(false);
+	};
+
+	const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
 	const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+
 	const onChange = async (e, row) => {
 		const value = e.target.value;
 		const name = e.target.name;
-		const { id } = row;
+		const { segmentId } = row;
 		const newRows = rows.map((row) => {
-			if (row.id === id) {
+			if (row.segmentId === segmentId) {
 				return { ...row, [name]: value };
 			}
 			return row;
 		});
-		props.handleChange(newRows);
+		props.setSaveSegments(newRows);
 		setRows(newRows);
 	};
-
 	return (
 		<React.Fragment>
 			<Paper className={classes.paper}>
@@ -314,6 +325,7 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 					numSelected={selected.length}
 					title={props.title}
 					handleDelete={handleDelete}
+					rows={rows}
 					selected={selected}
 				/>
 				<TableContainer>
@@ -337,67 +349,65 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 								stableSort(rows, getComparator(order, orderBy))
 									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 									.map((row, index) => {
-										const isItemSelected = isSelected(row.id);
+										const isItemSelected = isSelected(row.segmentId);
 										const labelId = `enhanced-table-checkbox-${index}`;
 
 										return (
 											<TableRow
 												hover
-												onClick={(event) => {if(!props.isEditMode)handleClick(event, row.id);}}
-												role="checkbox"
 												aria-checked={isItemSelected}
 												tabIndex={-1}
-												key={row.id}
+												key={row.segmentId}
 												selected={isItemSelected}
 											>
 												<TableCell padding="checkbox">
-													{!props.isEditMode?
-														<Checkbox
-															checked={isItemSelected}
-															inputProps={{ 'aria-labelledby': labelId }}
-														/>:null
-													}
+													<Checkbox
+														onClick={(event) => handleClick(event, row.segmentId)}
+														checked={isItemSelected}
+														inputProps={{ 'aria-labelledby': labelId }}
+													/>
 												</TableCell>
-												<TableCell component="th" id={labelId} scope="row" padding="none">
-													{row.geneName}
+												<TableCell component="th" scope="row">
+													{row.chr}
 												</TableCell>
-												<TableCell align="right">{row.chr}</TableCell>
 												<TableCell align="right">{row.position}</TableCell>
+												<TableCell align="right">{row.dbSNP}</TableCell>
+												<TableCell align="right">{row.freq}%</TableCell>
+												<TableCell align="right">{row.depth}</TableCell>
+												<TableCell align="right">{row.annotation}</TableCell>
+												<TableCell align="right">{row.geneName}</TableCell>
 												<TableCell align="right">{row.HGVSc}</TableCell>
 												<TableCell align="right">{row.HGVSp}</TableCell>
 												<TableCell align="right">
-													{props.isEditMode ? (
-														<FormControl variant="outlined">
-															<Select
-																labelId="demo-simple-select-outlined-label"
-																value={row.clinicalSignificance}
-																name={'clinicalSignificance'}
-																onChange={(e) => onChange(e, row)}
-															>
-																{Object.keys(ClinicalSignificance).map((result) => {
-																	return (
-																		<MenuItem value={ClinicalSignificance[result]}>
-																			{ClinicalSignificance[result]}
-																		</MenuItem>
-																	);
-																})}
-															</Select>
-														</FormControl>
-													) : (
-														row.clinicalSignificance
-													)}
+													<FormControl variant="outlined">
+														<Select
+															labelId="demo-simple-select-outlined-label"
+															value={row.clinicalSignificance}
+															name={'clinicalSignificance'}
+															onChange={(e) => onChange(e, row)}
+														>
+															{Object.keys(ClinicalSignificance).map((result) => {
+																return (
+																	<MenuItem value={ClinicalSignificance[result]}>
+																		{ClinicalSignificance[result]}
+																	</MenuItem>
+																);
+															})}
+														</Select>
+													</FormControl>
 												</TableCell>
 												<TableCell align="right">
-													{props.isEditMode ? (
-														<Input
-															defaultValue={row.remark}
-															name={'remark'}
-															onChange={(e) => onChange(e, row)}
-														/>
-													) : (
-														row.remark
-													)}
+													<Input
+														defaultValue={row.remark}
+														name={'remark'}
+														onChange={(e) => onChange(e, row)}
+													/>
 												</TableCell>
+												<TableCell align="right">{row.globalAF}</TableCell>
+												<TableCell align="right">{row.AFRAF}</TableCell>
+												<TableCell align="right">{row.AMRAF}</TableCell>
+												<TableCell align="right">{row.EURAF}</TableCell>
+												<TableCell align="right">{row.ASNAF}</TableCell>
 											</TableRow>
 										);
 									})
@@ -420,7 +430,7 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>
-			<Backdrop className={classes.backdrop} open={open}>
+			<Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
 				<CircularProgress color="inherit" />
 			</Backdrop>
 		</React.Fragment>

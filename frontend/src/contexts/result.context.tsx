@@ -16,6 +16,7 @@ const initialState = {
 	setSegments: (segments: Segment[]) => {},
 	setCoverages: (coverages: Coverage[]) => {},
 	setMutationQCs: (mutationQCs: MutationQC[]) => {},
+	updateSegment: (segment: Segment) => {},
 };
 
 export const ResultContext = createContext(initialState);
@@ -90,6 +91,13 @@ export const ResultProvider = ({ children }) => {
             payload: mutationQCs
         });
 	}
+
+	function updateSegment(segment: Segment) {
+        dispatch({
+            type: 'UPDATESEGMENT',
+            payload: segment
+        });
+	}
 	return (
 		<ResultContext.Provider
 			value={{
@@ -100,7 +108,8 @@ export const ResultProvider = ({ children }) => {
 				setSamples,
 				setSegments,
 				setMutationQCs,
-				setCoverages
+				setCoverages,
+				updateSegment
 			}}
 		>
 			{children}

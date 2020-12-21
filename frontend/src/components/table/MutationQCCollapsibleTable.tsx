@@ -13,10 +13,6 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { Sample } from '../../models/sample.model';
-import { useHistory } from 'react-router-dom';
-import { SampleModal } from '../modals/SampleModal';
-import { Segment } from '../../models/segment.model';
 import { MutationQC } from '../../models/mutationQC.model';
 import { createStyles, TableSortLabel, Theme } from '@material-ui/core';
 
