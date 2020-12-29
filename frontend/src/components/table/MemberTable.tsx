@@ -19,9 +19,9 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Backdrop, CircularProgress } from '@material-ui/core';
 import axios from 'axios';
-import { Disease } from '../../models/disease.model';
 import { ApiUrl } from '../../constants/constants';
-import { DiseaseModal } from '../modals/AddDiseaseModal';
+import { User } from '../../models/user.model';
+import { AddUserModal } from '../modals/AddUserModal';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -56,22 +56,22 @@ function stableSort(array, comparator: (a, b) => number) {
 
 interface HeadCell {
 	disablePadding: boolean;
-	id: keyof Disease;
+	id: keyof User;
 	label: string;
 	numeric: boolean;
 }
 
 const headCells: HeadCell[] = [
-	{ id: 'diseaseId', numeric: true, disablePadding: false, label: 'Id' },
-	{ id: 'zhName', numeric: true, disablePadding: false, label: 'Zh Name' },
-	{ id: 'enName', numeric: true, disablePadding: false, label: 'En Name' },
-	{ id: 'abbr', numeric: true, disablePadding: false, label: 'Abbr.' },
+	{ id: 'userId', numeric: true, disablePadding: false, label: 'Id' },
+	{ id: 'userName', numeric: false, disablePadding: false, label: 'Name' },
+	{ id: 'password', numeric: false, disablePadding: false, label: 'password' },
+	{ id: 'userRole', numeric: false, disablePadding: false, label: 'Role.' },
 ];
 
 interface EnhancedTableProps {
 	classes: ReturnType<typeof useStyles>;
 	numSelected: number;
-	onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Disease) => void;
+	onRequestSort: (event: React.MouseEvent<unknown>, property: keyof User) => void;
 	onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	order: Order;
 	orderBy: string;
@@ -80,7 +80,7 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
 	const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-	const createSortHandler = (property: keyof Disease) => (event: React.MouseEvent<unknown>) => {
+	const createSortHandler = (property: keyof User) => (event: React.MouseEvent<unknown>) => {
 		onRequestSort(event, property);
 	};
 
@@ -175,7 +175,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 						<AddIcon />
 					</IconButton>
 			</Tooltip>
-            <DiseaseModal show={showModal} onClose={() => setShowModal(false)}/>
+            <AddUserModal show={showModal} onClose={() => setShowModal(false)}/>
 			{numSelected > 0 ? (
 				<Tooltip title="Delete">
 					<IconButton aria-label="delete" onClick={() => handleDelete(selected)}>
@@ -213,24 +213,24 @@ const useStyles = makeStyles((theme: Theme) =>
 		}
 	})
 );
-type DiseaseTable = {
-	data: Disease[];
+type UserTable = {
+	data: User[];
 };
 
-export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
+export const UserTable: FunctionComponent<UserTable> = (props) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
 	const [ order, setOrder ] = React.useState<Order>('asc');
-	const [ orderBy, setOrderBy ] = React.useState<keyof Disease>('diseaseId');
+	const [ orderBy, setOrderBy ] = React.useState<keyof User>('userId');
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ page, setPage ] = React.useState(0);
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(5);
 	const rows = props.data;
-	const deleteDisease = async (ids) => {
+	const deleteUser = async (ids) => {
 		try {
 			setOpen(true);
-			await axios.post(`${ApiUrl}/api/deleteDisease`, {
-				data: props.data.filter((data) => selected.includes(data.diseaseId))
+			await axios.post(`${ApiUrl}/api/deleteUser`, {
+				data: props.data.filter((data) => selected.includes(data.userId))
 			});
 		} catch (error) {
 			console.log(error);
@@ -242,7 +242,7 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
     };
 
 
-	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Disease) => {
+	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof User) => {
 		const isAsc = orderBy === property && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
 		setOrderBy(property);
@@ -250,7 +250,7 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 
 	const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
-			const newSelecteds = rows.map((n) => n.diseaseId);
+			const newSelecteds = rows.map((n) => n.userId);
 			setSelected(newSelecteds);
 			return;
 		}
@@ -275,7 +275,7 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 	};
 
 	const handleDelete = (ids) => {
-		deleteDisease(ids)
+		deleteUser(ids)
     };
     
 
@@ -301,7 +301,7 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 			<Paper className={classes.paper}>
 				<EnhancedTableToolbar
 					numSelected={selected.length}
-                    title="Diseases"
+                    title="Users"
 					handleDelete={handleDelete}
 					selected={selected}
 				/>
@@ -326,17 +326,17 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 								stableSort(rows, getComparator(order, orderBy))
 									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 									.map((row, index) => {
-										const isItemSelected = isSelected(row.diseaseId);
+										const isItemSelected = isSelected(row.userId);
 										const labelId = `enhanced-table-checkbox-${index}`;
 
 										return (
 											<TableRow
 												hover
-												onClick={(event) => handleClick(event, row.diseaseId)}
+												onClick={(event) => handleClick(event, row.userId)}
 												role="checkbox"
 												aria-checked={isItemSelected}
 												tabIndex={-1}
-												key={row.diseaseId}
+												key={row.userId}
 												selected={isItemSelected}
 											>
 												<TableCell padding="checkbox">
@@ -345,10 +345,10 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 														inputProps={{ 'aria-labelledby': labelId }}
 													/>
 												</TableCell>
-												<TableCell component="th" scope="row" align="right">{row.diseaseId}</TableCell>
-												<TableCell align="right">{row.zhName}</TableCell>
-												<TableCell align="right">{row.enName}</TableCell>
-												<TableCell align="right">{row.abbr}</TableCell>
+												<TableCell component="th" scope="row" align="right">{row.userId}</TableCell>
+												<TableCell align="right">{row.userName}</TableCell>
+												<TableCell align="right">{row.password}</TableCell>
+												<TableCell align="right">{row.userRole}</TableCell>
 											</TableRow>
 										);
 									})

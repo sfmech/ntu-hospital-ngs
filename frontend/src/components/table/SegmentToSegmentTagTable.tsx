@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { createStyles, lighten, makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -16,12 +16,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Segment } from '../../models/segment.model';
-import { Backdrop, CircularProgress, FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core';
-import { ResultContext } from '../../contexts/result.context';
+import { Backdrop, CircularProgress, FormControl, Input, MenuItem, Select } from '@material-ui/core';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
 import DeleteIcon from '@material-ui/icons/Delete';
-import axios from 'axios';
-import { ApiUrl } from '../../constants/constants';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -165,7 +162,7 @@ interface EnhancedTableToolbarProps {
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 	const classes = useToolbarStyles();
-	const { selected, numSelected, handleDelete, rows } = props;
+	const { selected, numSelected, handleDelete } = props;
 
 	return (
 		<Toolbar
@@ -229,7 +226,6 @@ export const SegmentToSegmentTagTable: FunctionComponent<SegmentToSegmentTagTabl
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
 	const [ order, setOrder ] = React.useState<Order>('asc');
-	const { updateSegment } = useContext(ResultContext);
 	const [ orderBy, setOrderBy ] = React.useState<keyof Segment>('chr');
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ page, setPage ] = React.useState(0);

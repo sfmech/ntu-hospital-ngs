@@ -1,7 +1,5 @@
-import { Button, Checkbox, createStyles, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormGroup, InputLabel, makeStyles, MenuItem, Radio, RadioGroup, Select, TextField, Theme, Typography } from '@material-ui/core';
-import { CheckBox } from '@material-ui/icons';
-import React, { FunctionComponent, useState, useContext, useEffect } from 'react';
-import { ExportDataToCsv } from '../../utils/exportDataToCsv';
+import { Button, createStyles, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, makeStyles, MenuItem, Select, Theme } from '@material-ui/core';
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
@@ -37,7 +35,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (props) => {
     const classes = useStyles();
     const [ resultlist, setResultlist ] = useState(Array<string>());
-    const [ open, setOpen ] = React.useState(false);
     const [ selectResult, setSelectResult ] = useState<string>('');
     useEffect(() => {
 		const getResultlist = async () => {
@@ -59,15 +56,12 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 	const handleUploadResult = () => {
 		const uploadResult = async () => {
 			try {
-				setOpen(true);
-				const response = await axios.post(`${ApiUrl}/api/uploadresult`, {
+				await axios.post(`${ApiUrl}/api/uploadresult`, {
 					data: selectResult
 				});
 			} catch (error) {
 				console.log(error);
 			} finally {
-				
-				setOpen(false);
 				window.location.reload(false);
 				
 			}

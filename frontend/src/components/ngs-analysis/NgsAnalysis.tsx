@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { Title } from '../title/Title';
-import { Button, createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
+import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import './NgsAnalysis.css';
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
@@ -44,7 +44,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		const runScripts = async () => {
 			try {
 				setOpen(true);
-				const response = await axios.post(`${ApiUrl}/api/runscript`);
+				await axios.post(`${ApiUrl}/api/runscript`);
 			} catch (error) {
 				console.log(error);
 			} finally {

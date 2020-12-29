@@ -1,17 +1,14 @@
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import React, { FunctionComponent, useContext, useState } from 'react';
+import React, { FunctionComponent, useContext } from 'react';
 import DescriptIcon from '@material-ui/icons/Description';
 import ListItemText from '@material-ui/core/ListItemText';
 import {
 	CircularProgress,
 	createStyles,
-	FormControl,
-	InputLabel,
 	makeStyles,
 	Paper,
-	Select,
 	TextField,
 	Theme
 } from '@material-ui/core';
@@ -35,8 +32,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const FileList: FunctionComponent<FileListProp> = (props) => {
 	const classes = useStyles();
-	const [ selectedSample, setSelectedSample ] = useState<string>('');
-	const [ showModal, setShowModal ] = useState(false);
 	const { files, analysis, updateFile } = useContext(FileContext);
 
 	const handleChange = (newValue, file: File) => {

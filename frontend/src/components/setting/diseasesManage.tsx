@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
 import { Disease } from '../../models/disease.model';

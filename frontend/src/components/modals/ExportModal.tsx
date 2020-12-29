@@ -1,6 +1,5 @@
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, FormGroup, Radio, RadioGroup, TextField, Typography } from '@material-ui/core';
-import { CheckBox } from '@material-ui/icons';
-import React, { FunctionComponent, useState, useContext, useEffect } from 'react';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, Radio, RadioGroup } from '@material-ui/core';
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import { ExportDataToCsv } from '../../utils/exportDataToCsv';
 
 

@@ -71,7 +71,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 
 	const handleBlacklistDelete = async (ids: string[]) => {
 		try {
-			const response = await axios.post(`${ApiUrl}/api/deleteBlacklist`, {
+			await axios.post(`${ApiUrl}/api/deleteBlacklist`, {
 				data: showBlacklist.filter((data) => ids.includes(data.id))
 			});
 		} catch (error) {
@@ -84,7 +84,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 
 	const handleWhitelistDelete = async (ids: string[]) => {
 		try {
-			const response = await axios.post(`${ApiUrl}/api/deleteWhitelist`, {
+			await axios.post(`${ApiUrl}/api/deleteWhitelist`, {
 				data: showWhitelist.filter((data) => ids.includes(data.id))
 			});
 		} catch (error) {
@@ -97,7 +97,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 
 	const onToggleEditMode =  () => {
 		if(isEditable){
-			const response =  axios.post(`${ApiUrl}/api/updateSegmentTag`, {
+			axios.post(`${ApiUrl}/api/updateSegmentTag`, {
 				data:  blacklist.concat(whitelist)
 			});
 		}

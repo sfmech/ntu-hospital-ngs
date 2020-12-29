@@ -13,6 +13,7 @@ import { Sample } from './entities/sample.entity';
 import { Segment } from './entities/segment.entity';
 import { SegmentTag } from './entities/segmentTag.entity';
 import { Setting } from './entities/setting.entity';
+import { User } from './entities/user.entity';
 
 @Module({
     imports: [
@@ -31,7 +32,7 @@ import { Setting } from './entities/setting.entity';
                 },
             inject: [ConfigService, LoggerService],
         }),
-        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage]),
+        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User]),
     ],
     providers: [],
     exports: [TypeOrmModule]

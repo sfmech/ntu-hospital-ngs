@@ -18,7 +18,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { SegmentTag } from '../../models/segmentTag.model';
 import { Backdrop, CircularProgress, FormControl, Input, MenuItem, Select } from '@material-ui/core';
-import axios from 'axios';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
