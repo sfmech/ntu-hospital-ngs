@@ -8,6 +8,8 @@ import { SegmentTag as SegmentTagEntity } from 'src/database/ngs-builder/entitie
 import { Disease as DiseaseEntity } from 'src/database/ngs-builder/entities/disease.entity';
 import { MutationQC as MutationQCEntity } from 'src/database/ngs-builder/entities/mutationQC.entity';
 import { Coverage as CoverageEntity } from 'src/database/ngs-builder/entities/coverage.entity';
+import { User as UserEntity } from 'src/database/ngs-builder/entities/user.entity';
+
 import { Repository } from 'typeorm';
 
 import { Sample } from '../models/sample.model';
@@ -19,6 +21,7 @@ import * as path from 'path';
 import { MutationQC } from '../models/mutationQC.model';
 import { Coverage } from '../models/coverage.model';
 import { Run } from '../models/run.model';
+import { User } from '../models/user.model';
 
 var cp = require('child_process');
 const fs = require('fs');
@@ -34,6 +37,7 @@ export class NGSService {
 		@InjectRepository(DiseaseEntity) private diseaseRepository: Repository<DiseaseEntity>,
 		@InjectRepository(MutationQCEntity) private mutationQCRepository: Repository<MutationQCEntity>,
 		@InjectRepository(CoverageEntity) private coverageRepository: Repository<CoverageEntity>,
+		@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
 		private configService: ConfigService
 	) {}
 	
@@ -88,6 +92,25 @@ export class NGSService {
 		});
 
 		return segmentTagsModel;
+	}
+
+	async getMemberlist(): Promise<User[]>{
+		const memberlist = await this.userRepository.find();
+		return memberlist.slice(1);
+	}
+
+	async addUser(user:User){
+		const confirmUser = await this.userRepository.findOne({where:{userName:user.userName}});
+		if(confirmUser===undefined)
+			await this.userRepository.save(user);
+		else
+			await this.userRepository.update({userId: confirmUser.userId},user);
+		return confirmUser;
+	}
+
+	async deleteUser(users: User[]): Promise<void> {
+		const response = await this.userRepository.remove(users);
+		return;
 	}
 
 	async deleteBlacklist(deleteSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {

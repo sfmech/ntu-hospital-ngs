@@ -2,7 +2,6 @@ import { Coverage } from '../models/coverage.model';
 import { MutationQC } from '../models/mutationQC.model';
 import { Sample } from '../models/sample.model';
 import { Segment } from '../models/segment.model';
-import { SegmentTag } from '../models/segmentTag.model';
 
 export const ResultReducer = (state, action) => {
 	switch (action.type) {

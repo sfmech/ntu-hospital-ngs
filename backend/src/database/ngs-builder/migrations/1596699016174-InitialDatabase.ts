@@ -11,7 +11,8 @@ export class InitialDatabase1596699016174 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "setting" (id SERIAL NOT NULL, "name" character varying NOT NULL, "value" character varying  NOT NULL, CONSTRAINT setting_pkey PRIMARY KEY (id))`);
         await queryRunner.query(`CREATE TABLE "diseases" (disease_id SERIAL NOT NULL, zh_name character varying, en_name character varying, abbr character varying, CONSTRAINT diseases_pkey PRIMARY KEY (disease_id))`);
         await queryRunner.query(`CREATE TABLE "mutation_qc" (mutation_id SERIAL NOT NULL, sample_id integer NOT NULL, gene_name character varying, "HGVS.c" character varying, "HGVS.p" character varying, cosmic character varying, chr character varying, position character varying, qc integer, CONSTRAINT mutation_pkey PRIMARY KEY (mutation_id), CONSTRAINT "foreign_mutation" FOREIGN KEY ("sample_id") REFERENCES public.samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
-        await queryRunner.query(`CREATE TABLE "coverage" (coverage_id SERIAL NOT NULL, sample_id integer NOT NULL, chr character varying, amplicon_start character varying, amplicon_end character varying, amplion_name character varying, amplion_mean_coverge numeric, CONSTRAINT coverage_pkey PRIMARY KEY (coverage_id), CONSTRAINT foreign_coverage FOREIGN KEY (sample_id) REFERENCES public.samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`)
+        await queryRunner.query(`CREATE TABLE "coverage" (coverage_id SERIAL NOT NULL, sample_id integer NOT NULL, chr character varying, amplicon_start character varying, amplicon_end character varying, amplion_name character varying, amplion_mean_coverge numeric, CONSTRAINT coverage_pkey PRIMARY KEY (coverage_id), CONSTRAINT foreign_coverage FOREIGN KEY (sample_id) REFERENCES public.samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
+        await queryRunner.query(`CREATE TABLE public.users(user_id serial NOT NULL,user_name character varying NOT NULL,password character varying NOT NULL,user_role character varying NOT NULL, CONSTRAINT users_pkey PRIMARY KEY (user_id))`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -23,6 +24,8 @@ export class InitialDatabase1596699016174 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "diseases"`);
         await queryRunner.query(`DROP TABLE "mutation_qc"`);
         await queryRunner.query(`DROP TABLE "coverage"`);
+        await queryRunner.query(`DROP TABLE "users"`);
+
     }
 
 }

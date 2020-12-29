@@ -4,6 +4,7 @@ import { FrontendModule } from './frontend/frontend.module';
 import { AppConfig } from './app.config';
 import { NGSBuilderDbModule } from './database/ngs-builder/ngs-builder-db.module';
 import { NGSModule } from './next-generation-sequencing/ngs.modules';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { NGSModule } from './next-generation-sequencing/ngs.modules';
     }),
     NGSModule,
     NGSBuilderDbModule,
+    AuthModule,
     FrontendModule,
   ]
 })

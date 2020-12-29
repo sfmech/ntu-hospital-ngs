@@ -1,29 +1,15 @@
 import {
 	Button,
-	Checkbox,
 	createStyles,
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogContentText,
 	DialogTitle,
-	FormControl,
-	FormControlLabel,
-	FormGroup,
-	InputLabel,
 	makeStyles,
-	MenuItem,
-	Radio,
-	RadioGroup,
-	Select,
 	TextField,
 	Theme,
-	Typography
 } from '@material-ui/core';
-import { CheckBox } from '@material-ui/icons';
-import React, { FunctionComponent, useState, useContext, useEffect } from 'react';
-import { ExportDataToCsv } from '../../utils/exportDataToCsv';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
 import { Sample } from '../../models/sample.model';
@@ -65,7 +51,7 @@ export const EditDiseaseModal: FunctionComponent<EditDiseaseModalProps> = (props
 	const hadleAddClick = async () => {
 		try {
 			props.sample.disease = selectedDisease;
-			const response = await axios.post(`${ApiUrl}/api/editSampleDisease`, {
+			await axios.post(`${ApiUrl}/api/editSampleDisease`, {
 				data: props.sample
 			});
 		} catch (error) {

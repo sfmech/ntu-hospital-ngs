@@ -17,10 +17,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import { Segment } from '../../models/segment.model';
-import { Backdrop, CircularProgress, FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core';
-import axios from 'axios';
+import { Backdrop, CircularProgress, FormControl, MenuItem, Select } from '@material-ui/core';
 import { ResultContext } from '../../contexts/result.context';
-import { ApiUrl } from '../../constants/constants';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
 import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
 

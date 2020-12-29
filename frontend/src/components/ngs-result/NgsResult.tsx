@@ -10,19 +10,9 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-	Divider,
-	FormControl,
 	Grid,
-	IconButton,
-	InputBase,
-	InputLabel,
 	makeStyles,
-	MenuItem,
-	Paper,
-	Select,
 	Tab,
-	Tabs,
-	TextField,
 	Theme,
 	Typography
 } from '@material-ui/core';
@@ -39,10 +29,8 @@ import { ApiUrl } from '../../constants/constants';
 import DescriptIcon from '@material-ui/icons/Description';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import { SegmentTable } from '../table/SegmentTable';
 import { SegmentTagContext } from '../../contexts/segmentTag.context';
-import { ExportDataToCsv } from '../../utils/exportDataToCsv';
 import { ExportModal } from '../modals/ExportModal';
 import { UploadFolderModal } from '../modals/UploadFolderModal';
 import { EditDiseaseModal } from '../modals/EditDiseaseModal';
@@ -286,9 +274,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 				runIsSelected = runIsSelected && selected.indexOf(element as number) !== -1;
 			});
 			if (runIsSelected) {
-				newSelected = selected.filter((id) => ids.indexOf(id) == -1);
+				newSelected = selected.filter((id) => ids.indexOf(id) === -1);
 			} else {
-				newSelected = newSelected.concat(selected, ids.filter((id) => selected.indexOf(id) == -1));
+				newSelected = newSelected.concat(selected, ids.filter((id) => selected.indexOf(id) === -1));
 			}
 			const selectedIndex = selectedRunId.indexOf(id);
 			if (selectedIndex === -1) {
@@ -322,7 +310,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	
 	const handleBlacklistAdd = async (segments: Segment[]) => {
 		try {
-			const response = await axios.post(`${ApiUrl}/api/addBlacklist`, {
+			await axios.post(`${ApiUrl}/api/addBlacklist`, {
 				data: segments
 			});
 		} catch (error) {
@@ -333,7 +321,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	};
 	const handleWhitelistAdd = async (segments: Segment[]) => {
 		try {
-			const response = await axios.post(`${ApiUrl}/api/addWhitelist`, {
+			await axios.post(`${ApiUrl}/api/addWhitelist`, {
 				data: segments
 			});
 		} catch (error) {
@@ -456,7 +444,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 
 	const onToggleEditMode =  () => {
 		if(isEditable){
-			const response =  axios.post(`${ApiUrl}/api/updateSegment`, {
+			axios.post(`${ApiUrl}/api/updateSegment`, {
 				data: segmentResults[selectedSample.sampleId] 
 			});
 			setSelectedSegments(segmentResults[selectedSample.sampleId])

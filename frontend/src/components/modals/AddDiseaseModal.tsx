@@ -1,5 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from '@material-ui/core';
-import React, { FunctionComponent, useState, useContext, useEffect } from 'react';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@material-ui/core';
+import React, { FunctionComponent, useState } from 'react';
 import { ApiUrl } from '../../constants/constants';
 import axios from 'axios';
 import { Disease } from '../../models/disease.model';
@@ -21,7 +21,7 @@ export const DiseaseModal: FunctionComponent<DiseaseModalProps> = (props) => {
             return
         }
 		try {
-			const response = await axios.post(`${ApiUrl}/api/addDisease`, {
+			await axios.post(`${ApiUrl}/api/addDisease`, {
 				data: disease
 			});
 		} catch (error) {
