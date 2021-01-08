@@ -22,23 +22,19 @@ export class CustomJwtService {
         if(user !== undefined ){
             const token = this.sign({...user});
             response.cookie("jwt-auth-token", token, {
-                //httpOnly: true,
-                //secure: process.env.NODE_ENV === 'production' ? true : false,
                 secure: false,
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
-                expires: new Date(Date.now() + 3600000),
+                expires: new Date(Date.now() + 259200000),
             });
             response.cookie("user-role", user.userRole, {
-                //secure: process.env.NODE_ENV === 'production' ? true : false,
                 secure: false,
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
-                expires: new Date(Date.now() + 3600000),
+                expires: new Date(Date.now() + 259200000),
             });
             response.cookie("user-name", user.userName, {
-                //secure: process.env.NODE_ENV === 'production' ? true : false,
                 secure: false,
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
-                expires: new Date(Date.now() + 3600000),
+                expires: new Date(Date.now() + 259200000),
             });
             return user.userRole;
         }

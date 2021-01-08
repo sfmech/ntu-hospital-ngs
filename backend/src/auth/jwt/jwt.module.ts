@@ -14,7 +14,7 @@ import { JwtController } from "./jwt.controller";
     NestJwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('jwt.secret'),
-        signOptions: { expiresIn: '1d' }
+        signOptions: { expiresIn: '3d' }
       }),
       inject: [ConfigService]
     })

@@ -10,8 +10,13 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
+	FormControl,
 	Grid,
+	IconButton,
+	InputBase,
 	makeStyles,
+	Paper,
+	Select,
 	Tab,
 	Theme,
 	Typography
@@ -24,6 +29,7 @@ import { Segment } from '../../models/segment.model';
 import { Sample } from '../../models/sample.model';
 import axios from 'axios';
 import EditIcon from "@material-ui/icons/EditOutlined";
+import SearchIcon from '@material-ui/icons/Search';
 import DoneIcon from "@material-ui/icons/Done";
 import { ApiUrl } from '../../constants/constants';
 import DescriptIcon from '@material-ui/icons/Description';
@@ -161,13 +167,21 @@ const useStyles = makeStyles((theme: Theme) =>
 			overflow: 'auto',
 			flexGrow: 1
 		},
+		searchBar: {
+			padding: '2px 4px',
+			display: 'flex',
+			alignItems: 'center',
+			'& .Mui-focused': {
+				color: 'green'
+			}
+		},
 		input: {
 			marginLeft: theme.spacing(1),
 			flex: 1
 		},
 		formControl: {
 			margin: theme.spacing(1),
-			minWidth: 200
+			minWidth: 100
 		},
 		iconGroup: {
 			width: 'fit-content',
@@ -203,6 +217,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
 	const [ value, setValue ] = React.useState('1');
+	const [ input, setInput ] = useState('');
 
 	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
 		setValue(newValue);
@@ -452,14 +467,31 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setIsEditable(!isEditable)
 		
 	};
+	
+	const handleInputChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+		setInput(event.target.value as string);
+	};
+	const handleSearchClick = () => {
+		console.log(input);
+	};
 
 	return (
 		<React.Fragment>
 			<Title>Results Overview</Title>
-
 			<div className="row">
 				<div className="col-3">
-					<Grid container alignItems="center" justify="center">
+					<Paper className={classes.searchBar}>
+						<InputBase
+							value={input}
+							onChange={handleInputChange}
+							className={classes.input}
+							placeholder="Disease Name"
+						/>
+						<IconButton type="submit" aria-label="search" onClick={handleSearchClick}>
+							<SearchIcon />
+						</IconButton>
+					</Paper>
+					<Grid container alignItems="center" justify="center">							
 						<Grid item xs={4}>
 							<Button
 								variant="contained"
@@ -501,13 +533,14 @@ export const NgsResult: FunctionComponent = (prop) => {
 							<StyledTreeItem
 								nodeId={String(sampleResults[key][0].run.runId)}
 								labelText={
-									sampleResults[key][0].run.runName + '  (' + sampleResults[key].length + ' records)'
+									sampleResults[key][0].run.runName + '  (' + sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1).length + ' records)'
 								}
 								isSample={false}
 								handleSelectClick={handleSelectClick}
 								isSelected={isSelected(sampleResults[key].map((sample) => sample.sampleId), false)}
 							>
 								{sampleResults[key].map((sampleRow: Sample) => (
+									sampleRow.disease.enName.indexOf(input)!==-1?
 									<StyledTreeItem
 										nodeId={String(sampleRow.sampleId)}
 										labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
@@ -517,7 +550,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 										onDoubleClick={() => handleDoubleClick(sampleRow)}
 										handleSelectClick={handleSelectClick}
 										isSelected={isSelected(sampleRow.sampleId, true)}
-									/>
+									/>:null
 								))}
 							</StyledTreeItem>
 						))}
