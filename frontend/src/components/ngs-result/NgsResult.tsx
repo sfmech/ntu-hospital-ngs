@@ -48,6 +48,7 @@ import { MutationQC } from '../../models/mutationQC.model';
 import { CoverageTable } from '../table/CoverageTable';
 import { MutationQCCollapsibleTable } from '../table/MutationQCCollapsibleTable';
 import { ResultContext } from '../../contexts/result.context';
+import useCookies from 'react-cookie/cjs/useCookies';
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -218,6 +219,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
 	const [ value, setValue ] = React.useState('1');
 	const [ input, setInput ] = useState('');
+	const [ cookies ] = useCookies();
 
 	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
 		setValue(newValue);
@@ -331,7 +333,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		} catch (error) {
 			console.log(error);
 		} finally {
-			addBlacklist(segments);
+			addBlacklist(segments, cookies['user-name']);
 		}
 	};
 	const handleWhitelistAdd = async (segments: Segment[]) => {
@@ -342,7 +344,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		} catch (error) {
 			console.log(error);
 		} finally {
-			addWhitelist(segments);
+			addWhitelist(segments, cookies['user-name']);
 		}
 	};
 	function filterSegments(segments) {
@@ -364,6 +366,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					const finding = blacklist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark
+					segment.editor = finding?.editor
 					segment.clinicalSignificance = finding?.clinicalSignificance
 					tempOther.push(segment);
 				}
@@ -374,6 +377,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					const finding = whitelist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark
+					segment.editor = finding?.editor
 					segment.clinicalSignificance = finding?.clinicalSignificance
 					tempTarget.push(segment);
 				}

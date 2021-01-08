@@ -17,7 +17,7 @@ export const AddSegmentTagModal: FunctionComponent<AddSegmentTagModalProps> = (p
 	useEffect(()=>{
 		console.log(saveSegments);
 		setSaveSegments(props.segments);
-	},[props.segments, saveSegments])
+	},[props.segments])
     
 	return (
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>

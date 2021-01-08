@@ -2,6 +2,7 @@ import { Segment } from '../models/segment.model';
 import { SegmentTag } from '../models/segmentTag.model';
 
 export const SegmentTagReducer = (state, action) => {
+
 	switch (action.type) {
 		case 'SETBLACKLIST':
 			return {
@@ -34,9 +35,9 @@ export const SegmentTagReducer = (state, action) => {
 				whitelist: deletedWhitelist
 			};
 		case 'ADDBLACKLIST':
-			const addBlackSegments = action.payload as Segment[];
+			const addBlackSegments = action.payload as {segmentTags: Segment[], userName: string};
 			let blackIds = new Array<string>();
-			const addBlackSegmentTags = addBlackSegments.map((segmentTag) => {
+			const addBlackSegmentTags = addBlackSegments['segmentTags'].map((segmentTag) => {
 				let temp = new SegmentTag();
 				temp.id = `${segmentTag.chr}_${segmentTag.position}_${segmentTag.HGVSc}_${segmentTag.HGVSp}`;
 				blackIds.push(temp.id);
@@ -46,6 +47,7 @@ export const SegmentTagReducer = (state, action) => {
 				temp.HGVSp = segmentTag.HGVSp;
 				temp.clinicalSignificance = segmentTag.clinicalSignificance;
 				temp.geneName = segmentTag.geneName;
+				temp.editor = addBlackSegments['userName'];
 				temp.remark = segmentTag.remark;
                 temp.category = 'blacklist'
 				return temp;
@@ -58,9 +60,9 @@ export const SegmentTagReducer = (state, action) => {
 				whitelist: newWhitelist
 			};
 		case 'ADDWHITELIST':
-			const addWhiteSegments = action.payload as Segment[];
+			const addWhiteSegments = action.payload as {segmentTags: Segment[], userName: string};
 			let whiteIds = new Array<string>();
-			const addWhiteSegmentTags = addWhiteSegments.map((segmentTag) => {
+			const addWhiteSegmentTags = addWhiteSegments['segmentTags'].map((segmentTag) => {
 				let temp = new SegmentTag();
 				temp.id = `${segmentTag.chr}_${segmentTag.position}_${segmentTag.HGVSc}_${segmentTag.HGVSp}`;
 				whiteIds.push(temp.id);
@@ -70,6 +72,7 @@ export const SegmentTagReducer = (state, action) => {
 				temp.HGVSp = segmentTag.HGVSp;
 				temp.geneName = segmentTag.geneName;
 				temp.clinicalSignificance = segmentTag.clinicalSignificance;
+				temp.editor = addWhiteSegments['userName'];
 				temp.remark = segmentTag.remark;
                 temp.category = 'whitelist'
 				return temp;

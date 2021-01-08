@@ -8,4 +8,5 @@ export class SegmentTag {
     geneName: string;
     clinicalSignificance: string;
     remark: string;
+    editor: string;
 }

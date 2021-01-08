@@ -19,5 +19,6 @@ export class Segment {
     EURAF: number;
     ASNAF: number;
     alert: string;
-	remark: string;
+    remark: string;
+    editor: string;
 }

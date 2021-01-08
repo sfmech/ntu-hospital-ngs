@@ -72,6 +72,7 @@ const headCells: HeadCell[] = [
 	{ id: 'HGVSp', numeric: false, disablePadding: false, label: 'HGVS.p' },
 	{ id: 'clinicalSignificance', numeric: false, disablePadding: false, label: 'Clinical significance' },
 	{ id: 'remark', numeric: false, disablePadding: false, label: 'remark' },
+	{ id: 'editor', numeric: false, disablePadding: false, label: 'editor' },
 	{ id: 'globalAF', numeric: true, disablePadding: false, label: 'Global_AF' },
 	{ id: 'AFRAF', numeric: true, disablePadding: false, label: 'AFR_AF' },
 	{ id: 'AMRAF', numeric: true, disablePadding: false, label: 'AMR_AF' },
@@ -413,6 +414,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 													}
 												</TableCell>
 												<TableCell align="right">{row.remark}</TableCell>
+												<TableCell align="right">{row.editor}</TableCell>
 												<TableCell align="right">{row.globalAF}</TableCell>
 												<TableCell align="right">{row.AFRAF}</TableCell>
 												<TableCell align="right">{row.AMRAF}</TableCell>

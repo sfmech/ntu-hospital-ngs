@@ -77,29 +77,33 @@ export class NGSController {
 
 	@Post('/addBlacklist')
 	@UseGuards(AuthGuard('jwt'))
-	addBlacklist(@Body() body): Promise<SegmentTag[]> {
+	addBlacklist(@Req() request, @Body() body): Promise<SegmentTag[]> {
+		const payload: User = this.jwtService.verifyToken(request.cookies['jwt-auth-token']);
+
 		const data = body.data.map((element: Segment) => {
 			let temp = Object.assign(new SegmentTag(), element);
 			temp.category = 'blacklist';
 			return temp;
 		});
 
-		return this.ngsService.addBlacklist(data);
+		return this.ngsService.addBlacklist(data, payload.userName);
 	}
 	@Post('/addWhitelist')
 	@UseGuards(AuthGuard('jwt'))
-	addWhitelist(@Body() body): Promise<SegmentTag[]> {
+	addWhitelist(@Req() request, @Body() body): Promise<SegmentTag[]> {
+		const payload: User = this.jwtService.verifyToken(request.cookies['jwt-auth-token']);
+
 		const data = body.data.map((element: Segment) => {
 			let temp = Object.assign(new SegmentTag(), element);
 			temp.category = 'whitelist';
 			return temp;
 		});
-		return this.ngsService.addWhitelist(data);
+		return this.ngsService.addWhitelist(data, payload.userName);
 	}
 
 	@Post('/updateSegmentTag')
 	@UseGuards(AuthGuard('jwt'))
-	updateSegmentTag(@Body() body): Promise<SegmentTag[]> {
+	updateSegmentTag(@Req() request, @Body() body): Promise<SegmentTag[]> {
 		return this.ngsService.updateSegmentTag(body.data);
 	}
 

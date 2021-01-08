@@ -7,5 +7,6 @@ export class SegmentTag {
     category: string;
     geneName: string;
     remark: string;
+    editor: string;
     clinicalSignificance: string;
 }

@@ -132,11 +132,17 @@ export class NGSService {
 		return segmentTagsModel;
 	}
 
-	async addBlacklist(addSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
+	async addBlacklist(addSegmentTags: SegmentTag[], userName: string): Promise<SegmentTag[]> {
+		addSegmentTags.forEach(data => {
+			data.editor=userName
+		});
 		const blacklist = await this.segmentTagRepository.save(addSegmentTags);
 		return blacklist;
 	}
-	async addWhitelist(addSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
+	async addWhitelist(addSegmentTags: SegmentTag[], userName: string): Promise<SegmentTag[]> {
+		addSegmentTags.forEach(data => {
+			data.editor=userName
+		});
 		const whitelist = await this.segmentTagRepository.save(addSegmentTags);
 		return whitelist;
 	}

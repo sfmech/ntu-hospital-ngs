@@ -14,8 +14,8 @@ const initialState = {
 	setFilterlist: (filterlist: SegmentTag[]) => {},
 	deleteBlacklist: (ids: string[]) => {},
 	deleteWhitelist: (ids: string[]) => {},
-	addBlacklist: (segmentTags: Segment[]) => {},
-	addWhitelist: (segmentTags: Segment[]) => {}
+	addBlacklist: (segmentTags: Segment[], userName: string) => {},
+	addWhitelist: (segmentTags: Segment[], userName: string) => {}
 };
 
 export const SegmentTagContext = createContext(initialState);
@@ -83,17 +83,17 @@ export const SegmentTagProvider = ({ children }) => {
 		});
 	}
 
-	function addBlacklist(segmentTags: Segment[]) {
+	function addBlacklist(segmentTags: Segment[], userName: string) {
 		dispatch({
 			type: 'ADDBLACKLIST',
-			payload: segmentTags
+			payload: {'segmentTags':segmentTags, 'userName': userName}
 		});
 	}
 
-	function addWhitelist(segmentTags: Segment[]) {
+	function addWhitelist(segmentTags: Segment[], userName: string) {
 		dispatch({
 			type: 'ADDWHITELIST',
-			payload: segmentTags
+			payload: {'segmentTags':segmentTags, 'userName': userName}
 		});
 	}
 

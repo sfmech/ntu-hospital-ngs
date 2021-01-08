@@ -19,6 +19,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { SegmentTag } from '../../models/segmentTag.model';
 import { Backdrop, CircularProgress, FormControl, Input, MenuItem, Select } from '@material-ui/core';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
+import useCookies from 'react-cookie/cjs/useCookies';
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -64,7 +65,8 @@ const headCells: HeadCell[] = [
 	{ id: 'HGVSc', numeric: true, disablePadding: false, label: 'HGVSc' },
 	{ id: 'HGVSp', numeric: true, disablePadding: false, label: 'HGVSp' },
 	{ id: 'clinicalSignificance', numeric: false, disablePadding: false, label: 'Clinical significance' },
-	{ id: 'remark', numeric: false, disablePadding: false, label: 'remark' }
+	{ id: 'remark', numeric: false, disablePadding: false, label: 'remark' },
+	{ id: 'editor', numeric: false, disablePadding: false, label: 'editor' }
 ];
 
 interface EnhancedTableProps {
@@ -222,6 +224,8 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 	const [ page, setPage ] = React.useState(0);
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(5);
 	const [ rows, setRows ] = useState(new Array<SegmentTag>());
+	const [ cookies ] = useCookies();
+
 	useEffect(
 		() => {
 			setSelected([]);
@@ -298,6 +302,7 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 		const { id } = row;
 		const newRows = rows.map((row) => {
 			if (row.id === id) {
+				row.editor = cookies['user-name'];
 				return { ...row, [name]: value };
 			}
 			return row;
@@ -397,6 +402,7 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 														row.remark
 													)}
 												</TableCell>
+												<TableCell align="right">{row.editor}</TableCell>
 											</TableRow>
 										);
 									})

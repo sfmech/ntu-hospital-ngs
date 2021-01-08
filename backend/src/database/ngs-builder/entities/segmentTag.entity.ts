@@ -24,6 +24,9 @@ export class SegmentTag {
     @Column({ name: "remark" })
     remark: string;
 
+    @Column({ name: "editor" })
+    editor: string;
+
     @Column({ name: "clinical_significance" })
     clinicalSignificance: string;
 }
