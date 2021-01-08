@@ -157,11 +157,12 @@ export class NGSService {
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
-			.map((file: string) => `${file.split('.')[0]}_${file.split('_')[1]}`);
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
 		const mutationQC = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((mutationQC: string) => mutationQC.match(/(\d)*_(\w)*_Target_SOMATIC_Mutation_QC.csv/))
-			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
+			.filter((element, index, arr) => arr.indexOf(element) === index);
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
