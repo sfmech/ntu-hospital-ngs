@@ -158,9 +158,9 @@ export class NGSService {
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
 			.map((file: string) => `${file.split('.')[0]}`);
-		const coverage = fs
+		const mutationQC = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((coverage: string) => coverage.match(/(\d)*_(\w)*_coverage.csv/))
+			.filter((mutationQC: string) => mutationQC.match(/(\d)*_(\w)*_Target_SOMATIC_Mutation_QC.csv/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
@@ -180,7 +180,7 @@ export class NGSService {
 					disease = unknown;
 				}
 			}
-			if (coverage.includes(file)) {
+			if (mutationQC.includes(file)) {
 				return { status: FileStatus.Analysed, name: file, disease: disease };
 			} else if (bams.includes(file)) {
 				return { status: FileStatus.Analysing, name: file, disease: disease };
