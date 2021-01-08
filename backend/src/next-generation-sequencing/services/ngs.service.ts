@@ -156,7 +156,7 @@ export class NGSService {
 			.filter((align: string) => align.match(/Aligned.csv/));
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((bam: string) => bam.match(/(\d)*_(\w)*_coverage.csv/))
+			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
 			.map((file: string) => `${file.split('.')[0]}`);
 		const annotations = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
@@ -180,7 +180,6 @@ export class NGSService {
 					disease = unknown;
 				}
 			}
-			console.log(bams)
 			if (annotations.includes(file)) {
 				return { status: FileStatus.Analysed, name: file, disease: disease };
 			} else if (bams.includes(file)) {
