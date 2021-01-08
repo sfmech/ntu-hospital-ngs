@@ -157,7 +157,7 @@ export class NGSService {
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
-			.map((file: string) => `${file.split('.')[0]}`);
+			.map((file: string) => `${file.split('.')[0]}_${file.split('_')[1]}`);
 		const mutationQC = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((mutationQC: string) => mutationQC.match(/(\d)*_(\w)*_Target_SOMATIC_Mutation_QC.csv/))
