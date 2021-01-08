@@ -180,11 +180,11 @@ export class NGSService {
 					disease = unknown;
 				}
 			}
-
+			console.log(bams)
 			if (annotations.includes(file)) {
-				return { status: FileStatus.Analysing, name: file, disease: disease };
-			} else if (bams.includes(file)) {
 				return { status: FileStatus.Analysed, name: file, disease: disease };
+			} else if (bams.includes(file)) {
+				return { status: FileStatus.Analysing, name: file, disease: disease };
 			} else {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease };
 			}

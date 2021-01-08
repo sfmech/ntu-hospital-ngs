@@ -17,6 +17,7 @@ import { Disease } from '../../models/disease.model';
 import { FileContext } from '../../contexts/files.context';
 import { File } from '../../models/file.model';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { FileStatus } from '../../models/file.state.enum';
 
 type FileListProp = {
 	diseases: Array<Disease>;
@@ -47,7 +48,7 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 			<Paper className="mt-3" elevation={3}>
 				<List>
 					{files.map((file) => (
-						<ListItem selected={file.status === 1} classes={{ selected: classes.listItemSelected }}>
+						<ListItem selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
 							<ListItemIcon>
 								<DescriptIcon />
 							</ListItemIcon>
@@ -65,7 +66,7 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 									)}
 								/>
 							) : null}
-							{file.status === 2 ? <CircularProgress /> : null}
+							{file.status === FileStatus.Analysing ? <CircularProgress /> : null}
 						</ListItem>
 					))}
 				</List>
