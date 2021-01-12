@@ -178,6 +178,13 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 			})}
 		>
 			{numSelected > 0 ? (
+				<Tooltip title="add">
+					<IconButton aria-label="add"  onClick={() => setShowModal(true)}>
+						<AddIcon />
+					</IconButton>
+				</Tooltip>
+			) : null}
+			{numSelected > 0 ? (
 				<Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
 					{numSelected} selected
 				</Typography>
@@ -187,13 +194,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 					</Typography>
 				)}
 			<AddSegmentTagModal show={showModal} title={props.title} onSave={(segments: Segment[]) => handleAdd(segments)} onClose={() => setShowModal(false)} segments={rows.filter((data) => selected.includes(data.segmentId))}></AddSegmentTagModal>
-			{numSelected > 0 ? (
-				<Tooltip title="add">
-					<IconButton aria-label="add"  onClick={() => setShowModal(true)}>
-						<AddIcon />
-					</IconButton>
-				</Tooltip>
-			) : null}
+			
 		</Toolbar>
 	);
 };

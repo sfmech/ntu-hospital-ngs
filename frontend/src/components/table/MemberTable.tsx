@@ -161,16 +161,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 				[classes.highlight]: numSelected > 0
 			})}
 		>
-			{numSelected > 0 ? (
-				<Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-					{numSelected} selected
-				</Typography>
-			) : (
-				<Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-					{props.title}
-				</Typography>
-			)}
-            <Tooltip title="Add">
+			<Tooltip title="Add">
 					<IconButton aria-label="add" onClick={() => setShowModal(true)}>
 						<AddIcon />
 					</IconButton>
@@ -183,6 +174,16 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 					</IconButton>
 				</Tooltip>
 			) : null}
+			{numSelected > 0 ? (
+				<Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
+					{numSelected} selected
+				</Typography>
+			) : (
+				<Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+					{props.title}
+				</Typography>
+			)}
+            
 		</Toolbar>
 	);
 };

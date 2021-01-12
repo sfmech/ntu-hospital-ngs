@@ -171,6 +171,13 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 			})}
 		>
 			{numSelected > 0 ? (
+				<Tooltip title="delete">
+					<IconButton aria-label="delete" onClick={() => handleDelete(selected)}>
+						<DeleteIcon />
+					</IconButton>
+				</Tooltip>
+			) : null}
+			{numSelected > 0 ? (
 				<Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
 					{numSelected} selected
 				</Typography>
@@ -179,13 +186,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 					{props.title}
 				</Typography>
 			)}
-			{numSelected > 0 ? (
-				<Tooltip title="delete">
-					<IconButton aria-label="delete" onClick={() => handleDelete(selected)}>
-						<DeleteIcon />
-					</IconButton>
-				</Tooltip>
-			) : null}
+			
 		</Toolbar>
 	);
 };
