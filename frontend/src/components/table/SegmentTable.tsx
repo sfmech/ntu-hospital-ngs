@@ -21,6 +21,7 @@ import { Backdrop, CircularProgress, FormControl, MenuItem, Select } from '@mate
 import { ResultContext } from '../../contexts/result.context';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
 import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
+import { SegmentTagContext } from '../../contexts/segmentTag.context';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -61,7 +62,7 @@ interface HeadCell {
 }
 
 const headCells: HeadCell[] = [
-	{ id: 'chr', numeric: false, disablePadding: true, label: 'Chr' },
+	{ id: 'chr', numeric: false, disablePadding: false, label: 'Chr' },
 	{ id: 'position', numeric: false, disablePadding: false, label: 'Position' },
 	{ id: 'dbSNP', numeric: false, disablePadding: false, label: 'dbSNP' },
 	{ id: 'freq', numeric: true, disablePadding: false, label: 'Freq' },
@@ -89,10 +90,11 @@ interface EnhancedTableProps {
 	orderBy: string;
 	rowCount: number;
 	isEditable: boolean;
+	isAdd: boolean;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-	const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, isEditable } = props;
+	const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, isEditable, isAdd } = props;
 	const createSortHandler = (property: keyof Segment) => (event: React.MouseEvent<unknown>) => {
 		onRequestSort(event, property);
 	};
@@ -101,7 +103,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 		<TableHead>
 			<TableRow>
 				<TableCell padding="checkbox">
-					{!isEditable?
+					{isAdd?
 						<Checkbox
 							indeterminate={numSelected > 0 && numSelected < rowCount}
 							checked={rowCount > 0 && numSelected === rowCount}
@@ -161,29 +163,29 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 interface EnhancedTableToolbarProps {
 	numSelected: number;
 	title: string;
-	rows: Segment[];
-	selected: number[];
-	handleAdd: (segments: Segment[]) => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 	const classes = useToolbarStyles();
-	const { selected, numSelected, handleAdd, rows } = props;
-    const [ showModal, setShowModal ] = useState(false);
+	const { numSelected } = props;
 
-	return (
-		<Toolbar
-			className={clsx(classes.root, {
-				[classes.highlight]: numSelected > 0
-			})}
-		>
-			{numSelected > 0 ? (
+/**
+ * {numSelected > 0 ? (
 				<Tooltip title="add">
 					<IconButton aria-label="add"  onClick={() => setShowModal(true)}>
 						<AddIcon />
 					</IconButton>
 				</Tooltip>
 			) : null}
+
+	<AddSegmentTagModal show={showModal} title={props.title} onSave={(segments: Segment[]) => handleAdd(segments)} onClose={() => setShowModal(false)} segments={rows.filter((data) => selected.includes(data.segmentId))}></AddSegmentTagModal>
+ */
+	return (
+		<Toolbar
+			className={clsx(classes.root, {
+				[classes.highlight]: numSelected > 0
+			})}
+		>
 			{numSelected > 0 ? (
 				<Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
 					{numSelected} selected
@@ -193,8 +195,6 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 						{props.title}
 					</Typography>
 				)}
-			<AddSegmentTagModal show={showModal} title={props.title} onSave={(segments: Segment[]) => handleAdd(segments)} onClose={() => setShowModal(false)} segments={rows.filter((data) => selected.includes(data.segmentId))}></AddSegmentTagModal>
-			
 		</Toolbar>
 	);
 };
@@ -230,14 +230,14 @@ type SegmentTable = {
 	setSelectSegments: (segments: Segment[]) => void
 	title: string;
 	isEditMode: boolean;
-	handleAdd: (segments: Segment[]) => void;
+	isAddMode: boolean;
 };
 
 export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
 	const [order, setOrder] = React.useState<Order>('asc');
-	const { updateSegment } = useContext(ResultContext);
+	const { updateSegment } = useContext(ResultContext)
 	const [orderBy, setOrderBy] = React.useState<keyof Segment>('chr');
 	const [selected, setSelected] = React.useState<number[]>([]);
 	const [page, setPage] = React.useState(0);
@@ -245,6 +245,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 	const [rows, setRows] = useState(new Array<Segment>());
 	useEffect(() => {
 		setSelected([]);
+		props.setSelectSegments([]);
 		setOrder('asc');
 		setOrderBy('chr');
 		setPage(0)
@@ -254,18 +255,13 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 
 			return d;
 		}));
-	}, [props.data])
-	const handleAdd = async (segments: Segment[]) => {
-		try {
-			setOpen(true);
-			props.handleAdd(segments)
-		} catch (error) {
-			console.log(error);
-		} finally {
-			setOpen(false);
-			setSelected([]);
-		}
-	};
+	}, [props.data]);
+
+	useEffect(()=>{
+		setSelected([]);
+		props.setSelectSegments([]);
+	},[props.isAddMode]);
+	
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Segment) => {
 		const isAsc = orderBy === property && order === 'asc';
@@ -277,9 +273,11 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 		if (event.target.checked) {
 			const newSelecteds = rows.map((n) => n.segmentId);
 			setSelected(newSelecteds);
+			props.setSelectSegments(rows);
 			return;
 		}
 		setSelected([]);
+		props.setSelectSegments([])
 	};
 
 	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
@@ -297,6 +295,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 		}
 
 		setSelected(newSelected);
+		props.setSelectSegments(rows.filter((data) => newSelected.includes(data.segmentId)));
 	};
 
 	const handleChangePage = (event: unknown, newPage: number) => {
@@ -337,9 +336,6 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 				<EnhancedTableToolbar
 					numSelected={selected.length}
 					title={props.title}
-					handleAdd={handleAdd}
-					rows={rows}
-					selected={selected}
 				/>
 				<TableContainer>
 					<Table
@@ -357,6 +353,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 							onRequestSort={handleRequestSort}
 							rowCount={rows.length}
 							isEditable={props.isEditMode}
+							isAdd={props.isAddMode}
 						/>
 						<TableBody>
 							{rows.length > 0 ? (
@@ -369,15 +366,17 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 										return (
 											<TableRow
 												hover
-												role={!props.isEditMode?"checkbox":""}
+												role={props.isAddMode?"checkbox":""}
 												aria-checked={isItemSelected}
-												onClick={!props.isEditMode?(event) => handleClick(event, row.segmentId):()=>{}}
+												onClick={props.isAddMode?(event) => handleClick(event, row.segmentId):()=>{}}
 												tabIndex={-1}
 												key={row.segmentId}
 												selected={isItemSelected}
+												style={{backgroundColor: row.clinicalSignificance===ClinicalSignificance.Benign?"#28a745":(row.clinicalSignificance===ClinicalSignificance.Pathogenic?"#DF686A":(row.clinicalSignificance===ClinicalSignificance.unknown?"white":"orange"))}}
+
 											>
 												<TableCell padding="checkbox">
-													{!props.isEditMode?
+													{props.isAddMode?
 														<Checkbox
 															checked={isItemSelected}
 															inputProps={{ 'aria-labelledby': labelId }}

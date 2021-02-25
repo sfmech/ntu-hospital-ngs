@@ -31,6 +31,7 @@ import axios from 'axios';
 import EditIcon from "@material-ui/icons/EditOutlined";
 import SearchIcon from '@material-ui/icons/Search';
 import DoneIcon from "@material-ui/icons/Done";
+import AddIcon from '@material-ui/icons/Add';
 import { ApiUrl } from '../../constants/constants';
 import DescriptIcon from '@material-ui/icons/Description';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -49,6 +50,7 @@ import { CoverageTable } from '../table/CoverageTable';
 import { MutationQCCollapsibleTable } from '../table/MutationQCCollapsibleTable';
 import { ResultContext } from '../../contexts/result.context';
 import useCookies from 'react-cookie/cjs/useCookies';
+import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -64,6 +66,8 @@ type StyledTreeItemProps = TreeItemProps & {
 	handleSelectClick: (event: React.ChangeEvent, id: number, isSample: boolean) => void;
 	isSample: boolean;
 	isSelected?: boolean;
+	rowCount: number;
+	numSelected: number;
 };
 
 const useTreeItemStyles = makeStyles((theme: Theme) =>
@@ -121,7 +125,7 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 
   function StyledTreeItem(props: StyledTreeItemProps) {
 	const classes = useTreeItemStyles();
-	const { labelText, labelInfo, color, bgColor, nodeId, isSample, handleSelectClick, isSelected, ...other } = props;
+	const { labelText, labelInfo, color, bgColor, nodeId, isSample, handleSelectClick, isSelected, rowCount, numSelected, ...other } = props;
   
 	return (
 	  <TreeItem
@@ -130,6 +134,7 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 			  <Checkbox 
 			  	id = {nodeId}
 				checked={isSelected}
+				indeterminate={numSelected > 0 && numSelected < rowCount}
 				onClick={e => (e.stopPropagation())}
 				onChange={(event)=>handleSelectClick(event, parseInt(nodeId), isSample)}
 				inputProps={{ 'aria-labelledby': nodeId }}
@@ -202,18 +207,22 @@ const useStyles = makeStyles((theme: Theme) =>
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const { sampleResults, segmentResults, coverageResults, mutationQCResults, setSamples } = useContext(ResultContext);
-	const { blacklist, whitelist, filterlist, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
+	const { blacklist, whitelist, filterlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
 	const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
 	const [ otherSegments, setOtherSegments ] = useState(Array<Segment>());
 	const [ selectedSegments, setSelectedSegments ] = useState<Array<Segment>>(new Array<Segment>());
+	const [ selectedAddSegments, setSelectedAddSegments ] = useState<Array<Segment>>(new Array<Segment>());
 	const [ selectedCoverages, setSelectedCoverages ] = useState<Array<Coverage>>(new Array<Coverage>());
 	const [ selectedMutationQCs, setSelectedMutationQCs ] = useState<Array<MutationQC>>(new Array<MutationQC>());
 	const [ selectedSample, setSelectedSample ] = useState<Sample>(new Sample());
 	const [ showModal, setShowModal ] = useState<boolean>(false);
 	const [ showUploadModal, setShowUploadModal ] = useState<boolean>(false);
+	const [ showAddSegmentModal, setShowAddSegmentModal ] = useState<boolean>(false);
+	const [ title, setTitle ] = useState<string>("blacklist");
 	const [ showEditDiseaseModal, setShowEditDiseaseModal ] = useState<boolean>(false);
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState<boolean>(false);
 	const [ isEditable, setIsEditable ] = useState<boolean>(false);
+	const [ isAdd, setIsAdd ] = useState<boolean>(false);
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
@@ -227,6 +236,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	useEffect(
 		() => {
 			setIsEditable(false);
+			setIsAdd(false);
 		},
 		[ selectedSegments ]
 	);
@@ -334,6 +344,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 			console.log(error);
 		} finally {
 			addBlacklist(segments, cookies['user-name']);
+			setSelectedTarget([]);
+			setSelectedOther([]);
 		}
 	};
 	const handleWhitelistAdd = async (segments: Segment[]) => {
@@ -345,6 +357,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 			console.log(error);
 		} finally {
 			addWhitelist(segments, cookies['user-name']);
+			setSelectedTarget([]);
+			setSelectedOther([]);
 		}
 	};
 	function filterSegments(segments) {
@@ -420,6 +434,19 @@ export const NgsResult: FunctionComponent = (prop) => {
 		if (coverageResults[sample.sampleId]) setSelectedCoverages(coverageResults[sample.sampleId]);
 		else setSelectedCoverages([]);
 	};
+
+	const handleBlacklistAddClick = () => {
+		setSelectedAddSegments(selectedTarget.concat(selectedOther));
+		setTitle("blacklist");
+		setShowAddSegmentModal(true);
+	};
+
+	const handleWhitelistAddClick = () => {
+		setSelectedAddSegments(selectedTarget.concat(selectedOther));
+		setTitle("whitelist");
+		setShowAddSegmentModal(true);
+	};
+
 	const handleExportClick = () => {
 		setExportData(getExportData());
 		setShowModal(true);
@@ -468,16 +495,90 @@ export const NgsResult: FunctionComponent = (prop) => {
 			});
 			setSelectedSegments(segmentResults[selectedSample.sampleId])
 		}
-		setIsEditable(!isEditable)
-		
+		setIsEditable(!isEditable);
 	};
 	
+
+	const onToggleAddMode =  () => {
+		setIsAdd(!isAdd);
+	};
+
 	const handleInputChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 		setInput(event.target.value as string);
 	};
-	const handleSearchClick = () => {
-		console.log(input);
-	};
+
+	const renderSampleButtons = () => {
+        if(!isAdd && !isEditable){
+			return (
+				<>
+					<Button
+						aria-label="edit"
+						onClick={onToggleEditMode}
+						variant="contained"
+						color="default"
+						startIcon={<EditIcon />}
+						className="mb-1"
+					>
+						Edit
+					</Button>
+					<Button
+						aria-label="add"
+						onClick={onToggleAddMode}
+						variant="contained"
+						color="default"
+						startIcon={<AddIcon />}
+						className="mb-1 mx-2"
+					>
+						Add to list
+					</Button>
+				</>
+			)
+		}
+		else if (isAdd){
+			return(
+				<>
+					<Button
+						onClick={handleBlacklistAddClick}
+						variant="contained"
+						color="default"
+						className="mb-1"
+					>
+						Add to blacklist
+					</Button>
+					<Button
+						onClick={handleWhitelistAddClick}
+						variant="contained"
+						color="default"
+						className="mb-1 mx-2"
+					>
+						Add to whitelist
+					</Button>
+					<Button
+						onClick={onToggleAddMode}
+						variant="contained"
+						color="secondary"
+						className="mb-1"
+					>
+						Back
+					</Button>
+				</>
+			)
+		}
+		else if (isEditable){
+			return (
+				<>
+					<Button
+						onClick={onToggleEditMode}
+						variant="contained"
+						color="default"
+						className="mb-1"
+					>
+						Save
+					</Button>
+				</>
+			)
+		}
+    }
 
 	return (
 		<React.Fragment>
@@ -489,11 +590,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 							value={input}
 							onChange={handleInputChange}
 							className={classes.input}
-							placeholder="Disease Name"
+							placeholder="Sample Name or Disease Name"
 						/>
-						<IconButton type="submit" aria-label="search" onClick={handleSearchClick}>
-							<SearchIcon />
-						</IconButton>
 					</Paper>
 					<Grid container alignItems="center" justify="center">							
 						<Grid item xs={4}>
@@ -537,14 +635,16 @@ export const NgsResult: FunctionComponent = (prop) => {
 							<StyledTreeItem
 								nodeId={String(sampleResults[key][0].run.runId)}
 								labelText={
-									sampleResults[key][0].run.runName + '  (' + sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1).length + ' records)'
+									sampleResults[key][0].run.runName + '  (' + sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1 || sampleRow.sampleName.split('_')[0].indexOf(input)!==-1).length + ' records)'
 								}
 								isSample={false}
 								handleSelectClick={handleSelectClick}
 								isSelected={isSelected(sampleResults[key].map((sample) => sample.sampleId), false)}
+								rowCount={sampleResults[key].length}
+								numSelected={sampleResults[key].map((sample) => sample.sampleId).filter((s)=>selected.indexOf(s)===-1).length}
 							>
 								{sampleResults[key].map((sampleRow: Sample) => (
-									sampleRow.disease.enName.indexOf(input)!==-1?
+									sampleRow.disease.enName.indexOf(input)!==-1 || sampleRow.sampleName.split('_')[0].indexOf(input)!==-1?
 									<StyledTreeItem
 										nodeId={String(sampleRow.sampleId)}
 										labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
@@ -554,6 +654,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 										onDoubleClick={() => handleDoubleClick(sampleRow)}
 										handleSelectClick={handleSelectClick}
 										isSelected={isSelected(sampleRow.sampleId, true)}
+										rowCount={0}
+										numSelected={0}
 									/>:null
 								))}
 							</StyledTreeItem>
@@ -570,43 +672,22 @@ export const NgsResult: FunctionComponent = (prop) => {
 							</TabList>
 						</AppBar>
 						<TabPanel value="1">
-							{isEditable ? (
-									<Button
-										onClick={onToggleEditMode}
-										aria-label="done"
-										variant="contained"
-										color="default"
-										startIcon={<DoneIcon />}
-										className="mb-1"
-									>
-										儲存
-									</Button>
-							) : (
-									<Button
-										aria-label="edit"
-										onClick={onToggleEditMode}
-										variant="contained"
-										color="default"
-										startIcon={<EditIcon />}
-										className="mb-1"
-									>
-										編輯
-									</Button>
-							)}
+							{renderSampleButtons()}
 							<SegmentTable
 								data={targetSegments}
-								setSelectSegments={(segments: Segment[])=>setSelectedSegments(segments)}
+								setSelectSegments={(segments: Segment[])=>setSelectedTarget(segments)}
 								title="targets"
 								isEditMode={isEditable}
-								handleAdd={handleBlacklistAdd}
+								isAddMode={isAdd}
 							/>
 							<SegmentTable
 								data={otherSegments}
-								setSelectSegments={(segments: Segment[])=>setSelectedSegments(segments)}
+								setSelectSegments={(segments: Segment[])=>setSelectedOther(segments)}
 								title="others"
 								isEditMode={isEditable}
-								handleAdd={handleWhitelistAdd}
+								isAddMode={isAdd}
 							/>
+							<AddSegmentTagModal show={showAddSegmentModal} title={title} onSave={title==="blacklist"?handleBlacklistAdd:handleWhitelistAdd} onClose={() => setShowAddSegmentModal(false)} segments={selectedAddSegments}></AddSegmentTagModal>
 						</TabPanel>
 						<TabPanel value="2">
 							<CoverageTable data={selectedCoverages} title="Coverage" />
