@@ -372,7 +372,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 												tabIndex={-1}
 												key={row.segmentId}
 												selected={isItemSelected}
-												style={{backgroundColor: row.clinicalSignificance===ClinicalSignificance.Benign?"#28a745":(row.clinicalSignificance===ClinicalSignificance.Pathogenic?"#DF686A":(row.clinicalSignificance===ClinicalSignificance.unknown?"white":"orange"))}}
+												style={{backgroundColor: row.clinicalSignificance===ClinicalSignificance.Benign?"#66f988":(row.clinicalSignificance===ClinicalSignificance.Pathogenic?"#ffbdc4":(row.clinicalSignificance===ClinicalSignificance.unknown?"white":"#ffd68c"))}}
 
 											>
 												<TableCell padding="checkbox">
