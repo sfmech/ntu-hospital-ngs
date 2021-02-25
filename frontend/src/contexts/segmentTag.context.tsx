@@ -9,9 +9,13 @@ const initialState = {
 	blacklist: new Array<SegmentTag>(),
 	whitelist: new Array<SegmentTag>(),
 	filterlist: new Array<SegmentTag>(),
+	selectedTarget: new Array<Segment>(),
+	selectedOther: new Array<Segment>(),
 	setBlacklist: (blacklist: SegmentTag[]) => {},
 	setWhitelist: (whitelist: SegmentTag[]) => {},
 	setFilterlist: (filterlist: SegmentTag[]) => {},
+	setSelectedTarget: (selectedlist: Segment[]) => {},
+	setSelectedOther: (selectedlist: Segment[]) => {},
 	deleteBlacklist: (ids: string[]) => {},
 	deleteWhitelist: (ids: string[]) => {},
 	addBlacklist: (segmentTags: Segment[], userName: string) => {},
@@ -69,6 +73,20 @@ export const SegmentTagProvider = ({ children }) => {
 		});
 	}
 
+	function setSelectedTarget(selectedlist: Segment[]) {
+		dispatch({
+			type: 'SETSELECTEDTARGET',
+			payload: selectedlist
+		});
+	}
+
+	function setSelectedOther(selectedlist: Segment[]) {
+		dispatch({
+			type: 'SETSELECTEDOTHER',
+			payload: selectedlist
+		});
+	}
+
 	function deleteBlacklist(ids: string[]) {
 		dispatch({
 			type: 'DELETEBLACKLIST',
@@ -103,9 +121,13 @@ export const SegmentTagProvider = ({ children }) => {
 				blacklist: state.blacklist,
 				whitelist: state.whitelist,
 				filterlist: state.filterlist,
+				selectedTarget: state.selectedTarget,
+				selectedOther: state.selectedOther,
 				setBlacklist,
 				setWhitelist,
 				setFilterlist,
+				setSelectedTarget,
+				setSelectedOther,
 				deleteBlacklist,
 				deleteWhitelist,
 				addBlacklist,
