@@ -196,7 +196,7 @@ function Row(props: { row: MutationQC[], index: string}) {
 									{stableSort(row, getComparator(order, orderBy)).map((mutationQCRow) => (
 										<TableRow
 											key={mutationQCRow.mutationId}
-											style={{backgroundColor: mutationQCRow.QC<50?"#DF686A":(mutationQCRow.QC<250?"orange":"#28a745")}}
+											style={{backgroundColor: mutationQCRow.QC<50?"#ffbdc4":(mutationQCRow.QC<250?"ffd68c":"#66f988")}}
 										>
 											<TableCell component="th" scope="row">
 												{mutationQCRow.chr}
