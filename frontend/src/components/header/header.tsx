@@ -14,7 +14,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { ANALYSIS, HOME, LOGIN, MEMBERMANAGE, RESULT, SETTING } from '../../constants/constants';
+import { ANALYSIS, HOME, LOGIN, MEMBERMANAGE, RESULT, SETTING, STATISTIC } from '../../constants/constants';
 import { Link, useHistory } from 'react-router-dom';
 import './header.css';
 import { useCookies } from 'react-cookie';
@@ -209,6 +209,14 @@ export const Header:FunctionComponent = (prop) => {
                   <ListItem  button key="Membermanage" selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4)}>
                   <ListItemIcon><img width="24px" height="24px" alt="member manage" src="/assets/memberlist.png"/></ListItemIcon>
                   <ListItemText primary="Member Manage" />
+                  </ListItem>
+              </Link>:null
+            }
+            {(role==='admin'&&token!==undefined&&token!=="")?
+              <Link to={STATISTIC} style={{ textDecoration: 'none' }}>
+                  <ListItem  button key="Statistic" selected={selectedIndex === 5} onClick={(event) => handleListItemClick(event, 5)}>
+                  <ListItemIcon><img width="24px" height="24px" alt="Statistic System" src="/assets/statistic.png"/></ListItemIcon>
+                  <ListItemText primary="Statistic System" />
                   </ListItem>
               </Link>:null
             }

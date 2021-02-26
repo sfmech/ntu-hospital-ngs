@@ -65,7 +65,7 @@ export const EditDiseaseModal: FunctionComponent<EditDiseaseModalProps> = (props
 	};
 	return (
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
-			<DialogTitle>Edit Disease</DialogTitle>
+			<DialogTitle>{props.sample.sampleName}</DialogTitle>
 			<DialogContent className={classes.root} dividers>
 				<Autocomplete
 					options={diseases}
