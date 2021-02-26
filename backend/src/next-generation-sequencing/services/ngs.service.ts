@@ -73,6 +73,11 @@ export class NGSService {
 		return segments;
 	}
 
+	async updateRun(updatedRun: Run[]): Promise<Run[]> {
+		const runs = await this.runRepository.save(updatedRun);
+		return runs;
+	}
+
 	async getAllMutationQC(): Promise<MutationQC[]> {
 		const mutationQCs = await this.mutationQCRepository.find();
 		return mutationQCs;

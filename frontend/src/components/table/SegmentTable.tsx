@@ -168,18 +168,6 @@ interface EnhancedTableToolbarProps {
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 	const classes = useToolbarStyles();
 	const { numSelected } = props;
-
-/**
- * {numSelected > 0 ? (
-				<Tooltip title="add">
-					<IconButton aria-label="add"  onClick={() => setShowModal(true)}>
-						<AddIcon />
-					</IconButton>
-				</Tooltip>
-			) : null}
-
-	<AddSegmentTagModal show={showModal} title={props.title} onSave={(segments: Segment[]) => handleAdd(segments)} onClose={() => setShowModal(false)} segments={rows.filter((data) => selected.includes(data.segmentId))}></AddSegmentTagModal>
- */
 	return (
 		<Toolbar
 			className={clsx(classes.root, {

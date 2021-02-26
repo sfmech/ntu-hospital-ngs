@@ -7,13 +7,14 @@ import { Login } from './components/login/login';
 import { NgsAnalysis } from './components/ngs-analysis/NgsAnalysis';
 import { NgsResult } from './components/ngs-result/NgsResult';
 import { Setting } from './components/setting/Setting';
-import { ANALYSIS, HOME, LOGIN, MEMBERMANAGE, RESULT, SETTING } from './constants/constants';
+import { ANALYSIS, HOME, LOGIN, MEMBERMANAGE, RESULT, SETTING, STATISTIC } from './constants/constants';
 import { FileProvider } from './contexts/files.context';
 import { ResultProvider } from './contexts/result.context';
 import { SegmentTagProvider } from './contexts/segmentTag.context';
 import { useCookies } from 'react-cookie';
 import { MemberManage } from './components/member-list/MemberManage';
 import { CookiesProvider } from 'react-cookie';
+import { NgsStatistic } from './components/ngs-statistic/NgsStatistic';
 
 function PrivateRoute ({ children,role, ...rest }) {
 	return (
@@ -49,6 +50,9 @@ export const App: FunctionComponent = () => {
 								<Route exact path={`${LOGIN}`}  component={Login} />
 								<PrivateRoute path={`${MEMBERMANAGE}`} role={role}>
 									<MemberManage />
+								</PrivateRoute>
+								<PrivateRoute path={`${STATISTIC}`} role={role}>
+									<NgsStatistic />
 								</PrivateRoute>
 								<Route exact path={`${HOME}`} component={Home} />
 							</Switch>

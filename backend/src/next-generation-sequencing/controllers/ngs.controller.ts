@@ -107,6 +107,12 @@ export class NGSController {
 		return this.ngsService.updateSegmentTag(body.data);
 	}
 
+	@Post('/updateRun')
+	@UseGuards(AuthGuard('jwt'))
+	updateRun(@Body() body): Promise<Run[]> {
+		return this.ngsService.updateRun(body.data);
+	}
+
 	@Post('/runscript')
 	@UseGuards(AuthGuard('jwt'))
 	runscript() {

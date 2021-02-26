@@ -51,6 +51,8 @@ import { MutationQCCollapsibleTable } from '../table/MutationQCCollapsibleTable'
 import { ResultContext } from '../../contexts/result.context';
 import useCookies from 'react-cookie/cjs/useCookies';
 import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
+import { Run } from '../../models/run.model';
+import { EditRunDateModal } from '../modals/EditRunDateModal';
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -68,12 +70,14 @@ type StyledTreeItemProps = TreeItemProps & {
 	isSelected?: boolean;
 	rowCount: number;
 	numSelected: number;
+	labelInfoClickListener?;
 };
 
 const useTreeItemStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		root: {
 			color: theme.palette.text.secondary,
+			userSelect: 'none',
 			'&:hover > $content': {
 				backgroundColor: theme.palette.action.hover
 			},
@@ -125,12 +129,12 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 
   function StyledTreeItem(props: StyledTreeItemProps) {
 	const classes = useTreeItemStyles();
-	const { labelText, labelInfo, color, bgColor, nodeId, isSample, handleSelectClick, isSelected, rowCount, numSelected, ...other } = props;
+	const { labelText, labelInfo, color, bgColor, nodeId, isSample, handleSelectClick, isSelected, rowCount, numSelected, labelInfoClickListener, ...other } = props;
   
 	return (
 	  <TreeItem
 		label={
-		  <div className={classes.labelRoot}>
+		  <div className={classes.labelRoot} onDoubleClick={labelInfoClickListener}>
 			  <Checkbox 
 			  	id = {nodeId}
 				checked={isSelected}
@@ -215,11 +219,13 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selectedCoverages, setSelectedCoverages ] = useState<Array<Coverage>>(new Array<Coverage>());
 	const [ selectedMutationQCs, setSelectedMutationQCs ] = useState<Array<MutationQC>>(new Array<MutationQC>());
 	const [ selectedSample, setSelectedSample ] = useState<Sample>(new Sample());
+	const [ selectedRun, setSelectedRun ] = useState<Run>(new Run());
 	const [ showModal, setShowModal ] = useState<boolean>(false);
 	const [ showUploadModal, setShowUploadModal ] = useState<boolean>(false);
 	const [ showAddSegmentModal, setShowAddSegmentModal ] = useState<boolean>(false);
 	const [ title, setTitle ] = useState<string>("blacklist");
 	const [ showEditDiseaseModal, setShowEditDiseaseModal ] = useState<boolean>(false);
+	const [ showEditRunDateModal, setShowEditRunDateModal ] = useState<boolean>(false);
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState<boolean>(false);
 	const [ isEditable, setIsEditable ] = useState<boolean>(false);
 	const [ isAdd, setIsAdd ] = useState<boolean>(false);
@@ -424,6 +430,11 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const handleDoubleClick = (sample: Sample) => {
 		setSelectedSample(sample);
 		setShowEditDiseaseModal(true);
+	};
+
+	const handleRunDoubleClick = (run: Run) => {
+		setSelectedRun(run);
+		setShowEditRunDateModal(true);
 	};
 
 	const handleClick = (segments: Segment[], sample: Sample) => {
@@ -637,8 +648,10 @@ export const NgsResult: FunctionComponent = (prop) => {
 								labelText={
 									sampleResults[key][0].run.runName + '  (' + sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1 || sampleRow.sampleName.split('_')[0].indexOf(input)!==-1).length + ' records)'
 								}
+								labelInfo={new Date(sampleResults[key][0].run.startTime).toLocaleDateString()}
 								isSample={false}
 								handleSelectClick={handleSelectClick}
+								labelInfoClickListener={()=>handleRunDoubleClick(sampleResults[key][0].run)}
 								isSelected={isSelected(sampleResults[key].map((sample) => sample.sampleId), false)}
 								rowCount={sampleResults[key].length}
 								numSelected={sampleResults[key].map((sample) => sample.sampleId).filter((s)=>selected.indexOf(s)===-1).length}
@@ -704,6 +717,11 @@ export const NgsResult: FunctionComponent = (prop) => {
 				show={showEditDiseaseModal}
 				sample={selectedSample}
 				onClose={() => setShowEditDiseaseModal(false)}
+			/>
+			<EditRunDateModal
+				show={showEditRunDateModal}
+				run={selectedRun}
+				onClose={() => setShowEditRunDateModal(false)}
 			/>
 			<Dialog
 				open={showConfirmDialog}
