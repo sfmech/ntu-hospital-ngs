@@ -12,8 +12,9 @@ export class InitialDatabase1596699016177 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "diseases" (disease_id SERIAL NOT NULL, zh_name character varying, en_name character varying, abbr character varying, CONSTRAINT diseases_pkey PRIMARY KEY (disease_id))`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "mutation_qc" (mutation_id SERIAL NOT NULL, sample_id integer NOT NULL, gene_name character varying, "HGVS.c" character varying, "HGVS.p" character varying, cosmic character varying, chr character varying, position character varying, qc integer, CONSTRAINT mutation_pkey PRIMARY KEY (mutation_id), CONSTRAINT "foreign_mutation" FOREIGN KEY ("sample_id") REFERENCES public.samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "coverage" (coverage_id SERIAL NOT NULL, sample_id integer NOT NULL, chr character varying, amplicon_start character varying, amplicon_end character varying, amplion_name character varying, amplion_mean_coverge numeric, CONSTRAINT coverage_pkey PRIMARY KEY (coverage_id), CONSTRAINT foreign_coverage FOREIGN KEY (sample_id) REFERENCES public.samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
-        await queryRunner.query(`CREATE TABLE IF NOT EXISTS  public.users(user_id serial NOT NULL,user_name character varying NOT NULL,password character varying NOT NULL,user_role character varying NOT NULL, CONSTRAINT users_pkey PRIMARY KEY (user_id))`);
+        await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "users" (user_id serial NOT NULL,user_name character varying NOT NULL,password character varying NOT NULL,user_role character varying NOT NULL, CONSTRAINT users_pkey PRIMARY KEY (user_id))`);
         await queryRunner.query(`INSERT INTO users(user_name, password, user_role) select 'admin', 'admin', 'admin' WHERE NOT EXISTS (SELECT 1 FROM users where user_name='admin' and password='admin' and user_role='admin');`);
+        await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "aligned"(aligned_id SERIAL NOT NULL, sample_id SERIAL NOT NULL, alignment_rate numeric,  mean_coverage numeric, cover_region_percentage numeric, control_1 numeric, control_2 numeric, control_3 numeric, CONSTRAINT aligned_pkey PRIMARY KEY (aligned_id), CONSTRAINT foreign_sample FOREIGN KEY (sample_id) REFERENCES samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -26,6 +27,7 @@ export class InitialDatabase1596699016177 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "mutation_qc"`);
         await queryRunner.query(`DROP TABLE "coverage"`);
         await queryRunner.query(`DROP TABLE "users"`);
+        await queryRunner.query(`DROP TABLE "aligned"`);
 
     }
 
