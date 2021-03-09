@@ -442,6 +442,25 @@ export class NGSService {
 				return temp;
 			});
 			const samplesResponse = await this.sampleRepository.save(sampleResults);
+			let alignedArray = new Array<Aligned>();
+			const alignedStream = fs
+			.createReadStream(
+				`${this.configService.get<string>(
+					'ngs.path'
+				)}/${runsResponse.runName}/Aligned.csv`
+			)
+			.pipe(csv({ headers: false, skipLines: 1 }))
+			.on('data', (data) => {
+				let temp = new Aligned();
+				temp.sample.sampleName = data['0'];
+				temp.alignmentRate = data['1'];
+				temp.meanCoverage = data['2'];
+				temp.coverRegionPercentage = data['3'];
+				temp.control1 = data['4'];
+				temp.control2 = data['5'];
+				temp.control3 = data['6'];
+				alignedArray.push(temp);
+			});
 			samplesResponse.forEach((element: Sample, index: number) => {
 				const segmentResults = new Array<Segment>();
 				const mutationQCResults = new Array<MutationQC>();
@@ -498,7 +517,11 @@ export class NGSService {
 							}
 						})
 						.on('end', async () => {
-							const samplesResponse = await this.segmentRepository.save(segmentResults);
+							const segmentsResponse = await this.segmentRepository.save(segmentResults);
+							let alignedEntitys = alignedArray
+							.filter(d => d.sample.sampleName === element.sampleName)
+							.map(d => {d.sample.sampleId = element.sampleId;return d;});
+							const alignedResponse = await this.alignedRepository.save(alignedEntitys);
 						});
 						const stream2 = fs
 					.createReadStream(
