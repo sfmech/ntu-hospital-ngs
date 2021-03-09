@@ -5,6 +5,7 @@ import { LoggerModule } from 'src/logger/logger.module';
 import { LoggerService } from 'src/logger/logger.service';
 import { DatabaseLogger } from 'src/logger/utils/database.logger';
 import { BuilderDbConfigFactory } from './config/course-builder-db.config';
+import { Aligned } from './entities/aligned.entity';
 import { Coverage } from './entities/coverage.entity';
 import { Disease } from './entities/disease.entity';
 import { MutationQC } from './entities/mutationQC.entity';
@@ -32,7 +33,7 @@ import { User } from './entities/user.entity';
                 },
             inject: [ConfigService, LoggerService],
         }),
-        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User]),
+        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User, Aligned]),
     ],
     providers: [],
     exports: [TypeOrmModule]

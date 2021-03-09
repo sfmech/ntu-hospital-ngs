@@ -10,6 +10,7 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
+	Fab,
 	FormControl,
 	Grid,
 	IconButton,
@@ -19,7 +20,9 @@ import {
 	Select,
 	Tab,
 	Theme,
-	Typography
+	Typography,
+	useScrollTrigger,
+	Zoom
 } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
@@ -29,7 +32,7 @@ import { Segment } from '../../models/segment.model';
 import { Sample } from '../../models/sample.model';
 import axios from 'axios';
 import EditIcon from "@material-ui/icons/EditOutlined";
-import SearchIcon from '@material-ui/icons/Search';
+import KeyboardArrowUpIcon  from '@material-ui/icons/KeyboardArrowUp';
 import DoneIcon from "@material-ui/icons/Done";
 import AddIcon from '@material-ui/icons/Add';
 import { ApiUrl } from '../../constants/constants';
@@ -53,6 +56,8 @@ import useCookies from 'react-cookie/cjs/useCookies';
 import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
 import { Run } from '../../models/run.model';
 import { EditRunDateModal } from '../modals/EditRunDateModal';
+import { AnalysisSummaryTable } from '../table/AnalysisSummaryTable';
+import { Aligned } from '../../models/aligned.model';
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -170,6 +175,45 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 	);
   }
 
+  const useStyles2 = makeStyles((theme) => ({
+	root: {
+	  position: 'fixed',
+	  bottom: theme.spacing(2),
+	  right: theme.spacing(2),
+	},
+  }));
+  
+  function ScrollTop(props) {
+	const { children, window } = props;
+	const classes = useStyles2();
+	// Note that you normally won't need to set the window ref as useScrollTrigger
+	// will default to window.
+	// This is only being set here because the demo is in an iframe.
+	const trigger = useScrollTrigger({
+	  target: window ? window() : undefined,
+	  disableHysteresis: true,
+	  threshold: 100,
+	});
+  
+	const handleClick = (event) => {
+	  const anchor = (event.target.ownerDocument || document).querySelector('#back-to-top-anchor');
+  
+	  if (anchor) {
+		anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+	  }
+	};
+  
+	return (
+	  <Zoom in={trigger}>
+		<div onClick={handleClick} role="presentation" className={classes.root}>
+		  {children}
+		</div>
+	  </Zoom>
+	);
+  }
+  
+
+
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		root: {
@@ -210,13 +254,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
-	const { sampleResults, segmentResults, coverageResults, mutationQCResults, setSamples } = useContext(ResultContext);
+	const { sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults, setSamples } = useContext(ResultContext);
 	const { blacklist, whitelist, filterlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
 	const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
 	const [ otherSegments, setOtherSegments ] = useState(Array<Segment>());
 	const [ selectedSegments, setSelectedSegments ] = useState<Array<Segment>>(new Array<Segment>());
 	const [ selectedAddSegments, setSelectedAddSegments ] = useState<Array<Segment>>(new Array<Segment>());
 	const [ selectedCoverages, setSelectedCoverages ] = useState<Array<Coverage>>(new Array<Coverage>());
+	const [ selectedAligneds, setSelectedAligneds ] = useState<Array<Aligned>>(new Array<Aligned>());
 	const [ selectedMutationQCs, setSelectedMutationQCs ] = useState<Array<MutationQC>>(new Array<MutationQC>());
 	const [ selectedSample, setSelectedSample ] = useState<Sample>(new Sample());
 	const [ selectedRun, setSelectedRun ] = useState<Run>(new Run());
@@ -444,6 +489,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 		else setSelectedMutationQCs([]);
 		if (coverageResults[sample.sampleId]) setSelectedCoverages(coverageResults[sample.sampleId]);
 		else setSelectedCoverages([]);
+		if (alignedResults[sample.sampleId]) setSelectedAligneds(alignedResults[sample.sampleId]);
+		else setSelectedAligneds([]);
 	};
 
 	const handleBlacklistAddClick = () => {
@@ -675,13 +722,14 @@ export const NgsResult: FunctionComponent = (prop) => {
 						))}
 					</TreeView>
 				</div>
-				<div className="col-9">
+				<div className="col-9" >
 					<TabContext value={value}>
-						<AppBar position="static">
+						<AppBar position="static" id="back-to-top-anchor">
 							<TabList value={value} onChange={handleTabChange}>
 								<Tab value="1" label="All Segments" />
 								<Tab value="2" label="Sample Coverage" />
 								<Tab value="3" label="Mutation QC" />
+								<Tab value="4" label="Analysis Summary" />
 							</TabList>
 						</AppBar>
 						<TabPanel value="1">
@@ -708,9 +756,17 @@ export const NgsResult: FunctionComponent = (prop) => {
 						<TabPanel value="3">
 							<MutationQCCollapsibleTable mutationQCs={selectedMutationQCs} />
 						</TabPanel>
+						<TabPanel value="4">
+							<AnalysisSummaryTable data={selectedAligneds} title="Analysis Summary" />
+						</TabPanel>
 					</TabContext>
 				</div>
 			</div>
+			<ScrollTop {...prop}>
+				<Fab color="secondary" size="small" aria-label="scroll back to top">
+					<KeyboardArrowUpIcon />
+				</Fab>
+			</ScrollTop>
 			<ExportModal show={showModal} exportData={exportData} onClose={() => setShowModal(false)} />
 			<UploadFolderModal show={showUploadModal} onClose={() => setShowUploadModal(false)} />
 			<EditDiseaseModal

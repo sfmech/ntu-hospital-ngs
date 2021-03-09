@@ -1,3 +1,4 @@
+import { Aligned } from '../models/aligned.model';
 import { Coverage } from '../models/coverage.model';
 import { MutationQC } from '../models/mutationQC.model';
 import { Sample } from '../models/sample.model';
@@ -52,6 +53,18 @@ export const ResultReducer = (state, action) => {
 			return {
 				...state,
 				coverageResults: groupCoverages
+			};  
+		case "SETALIGNEDS":
+			const ungroupAligneds = action.payload as Aligned[];
+			const groupAligneds=ungroupAligneds.reduce((groups, item) => {
+				const val = item.sample.sampleId;
+				groups[val] = groups[val] || [];
+				groups[val].push(item);
+				return groups;
+			}, {})
+			return {
+				...state,
+				alignedResults: groupAligneds
 			};  
 		case "UPDATESEGMENT":
 			const updatedSegment = action.payload as Segment;

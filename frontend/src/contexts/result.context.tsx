@@ -6,16 +6,19 @@ import { ResultReducer } from './result.reducer';
 import { Sample } from '../models/sample.model';
 import { Coverage } from '../models/coverage.model';
 import { MutationQC } from '../models/mutationQC.model';
+import { Aligned } from '../models/aligned.model';
 
 const initialState = {
 	segmentResults: {} as Record<string, Segment[]>,
 	sampleResults: {} as Record<string, Sample[]>,
 	coverageResults: {} as Record<string, Coverage[]>,
 	mutationQCResults: {} as Record<string, MutationQC[]>,
+	alignedResults: {} as Record<string, Aligned[]>,
 	setSamples: (samples: Sample[]) => {},
 	setSegments: (segments: Segment[]) => {},
 	setCoverages: (coverages: Coverage[]) => {},
 	setMutationQCs: (mutationQCs: MutationQC[]) => {},
+	setAligneds: (aligneds: Aligned[]) => {},
 	updateSegment: (segment: Segment) => {},
 };
 
@@ -58,10 +61,19 @@ export const ResultProvider = ({ children }) => {
 				console.log(error);
 			}
 		};
+		const getAllAligneds = async () => {
+			try {
+				const response = await axios(`${ApiUrl}/api/aligned`);
+				setAligneds(response.data);
+			} catch (error) {
+				console.log(error);
+			}
+		};
 		getAllSamples();
 		getAllSegments();
 		getAllCoverages();
 		getAllMutationQCs();
+		getAllAligneds();
 	}, []);
 
 	function setSamples(samples: Sample[]) {
@@ -91,6 +103,12 @@ export const ResultProvider = ({ children }) => {
             payload: mutationQCs
         });
 	}
+	function setAligneds(aligneds: Aligned[]) {
+        dispatch({
+            type: 'SETALIGNEDS',
+            payload: aligneds
+        });
+	}
 
 	function updateSegment(segment: Segment) {
         dispatch({
@@ -105,10 +123,12 @@ export const ResultProvider = ({ children }) => {
 				segmentResults: state.segmentResults,
 				mutationQCResults: state.mutationQCResults,
 				coverageResults: state.coverageResults,
+				alignedResults: state.alignedResults,
 				setSamples,
 				setSegments,
 				setMutationQCs,
 				setCoverages,
+				setAligneds,
 				updateSegment
 			}}
 		>

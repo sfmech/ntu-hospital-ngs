@@ -190,8 +190,9 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		paper: {
-			width: '100%',
-			marginBottom: theme.spacing(2)
+
+			marginBottom: theme.spacing(2),
+			width: '64vw'
 		},
 		table: {
 			minWidth: 900

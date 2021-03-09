@@ -11,6 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from '../models/user.model';
 import { CustomJwtService } from 'src/auth/jwt/jwt.service';
 import { response } from 'express';
+import { Aligned } from '../models/aligned.model';
 
 @Controller('api')
 export class NGSController {
@@ -50,6 +51,12 @@ export class NGSController {
 	@UseGuards(AuthGuard('jwt'))
 	getAllCoverage(): Promise<Coverage[]> {
 		return this.ngsService.getAllCoverage();
+	}
+
+	@Get('/aligned')
+	@UseGuards(AuthGuard('jwt'))
+	getAllaligned(): Promise<Aligned[]> {
+		return this.ngsService.getAllAligned();
 	}
 
 	@Get('/mutationQCs')
