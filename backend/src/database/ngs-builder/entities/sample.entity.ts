@@ -1,4 +1,5 @@
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, Index, OneToMany, ManyToOne, JoinColumn } from "typeorm";
+import { Aligned } from "./aligned.entity";
 import { Coverage } from "./coverage.entity";
 import { Disease } from "./disease.entity";
 import { MutationQC } from "./mutationQC.entity";
@@ -22,6 +23,9 @@ export class Sample {
 
     @OneToMany(type => Coverage, coverage => coverage.sample)
     coverage: Coverage[];
+
+    @OneToMany(type => Aligned, aligned => aligned.sample)
+    aligned: Aligned[];
 
     @Column({ name: "sample_name" })
     sampleName: string;

@@ -9,6 +9,7 @@ import { Disease as DiseaseEntity } from 'src/database/ngs-builder/entities/dise
 import { MutationQC as MutationQCEntity } from 'src/database/ngs-builder/entities/mutationQC.entity';
 import { Coverage as CoverageEntity } from 'src/database/ngs-builder/entities/coverage.entity';
 import { User as UserEntity } from 'src/database/ngs-builder/entities/user.entity';
+import { Aligned as AlignedEntity } from 'src/database/ngs-builder/entities/aligned.entity';
 
 import { Repository } from 'typeorm';
 
@@ -22,6 +23,7 @@ import { MutationQC } from '../models/mutationQC.model';
 import { Coverage } from '../models/coverage.model';
 import { Run } from '../models/run.model';
 import { User } from '../models/user.model';
+import { Aligned } from '../models/aligned.model';
 
 var cp = require('child_process');
 const fs = require('fs');
@@ -37,6 +39,7 @@ export class NGSService {
 		@InjectRepository(DiseaseEntity) private diseaseRepository: Repository<DiseaseEntity>,
 		@InjectRepository(MutationQCEntity) private mutationQCRepository: Repository<MutationQCEntity>,
 		@InjectRepository(CoverageEntity) private coverageRepository: Repository<CoverageEntity>,
+		@InjectRepository(AlignedEntity) private alignedRepository: Repository<AlignedEntity>,
 		@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
 		private configService: ConfigService
 	) {}
@@ -86,6 +89,11 @@ export class NGSService {
 	async getAllCoverage(): Promise<Coverage[]> {
 		const coverages = await this.coverageRepository.find();
 		return coverages;
+	}
+
+	async getAllAligned(): Promise<Aligned[]> {
+		const aligned = await this.alignedRepository.find();
+		return aligned;
 	}
 
 	async getFilterlist(): Promise<SegmentTag[]> {
@@ -250,12 +258,12 @@ export class NGSService {
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
-		console.log(files)
+
 		const runResults = {
 			runName: folder
 		};
 		const runsResponse = await this.runRepository.save(runResults);
-		console.log(runsResponse);
+
 		const diseases = await this.diseaseRepository.find();
 		const sampleResults = files.map((file) => {
 			const temp = new Sample();
@@ -267,6 +275,25 @@ export class NGSService {
 			return temp;
 		});
 		const samplesResponse = await this.sampleRepository.save(sampleResults);
+		let alignedArray = new Array<Aligned>();
+		const alignedStream = fs
+			.createReadStream(
+				`${this.configService.get<string>(
+					'ngs.path'
+				)}/${runsResponse.runName}/Aligned.csv`
+			)
+			.pipe(csv({ headers: false, skipLines: 1 }))
+			.on('data', (data) => {
+				let temp = new Aligned();
+				temp.sample.sampleName = data['0'];
+				temp.alignmentRate = data['1'];
+				temp.meanCoverage = data['2'];
+				temp.coverRegionPercentage = data['3'];
+				temp.control1 = data['4'];
+				temp.control2 = data['5'];
+				temp.control3 = data['6'];
+				alignedArray.push(temp);
+			});
 		samplesResponse.forEach((element: Sample, index: number) => {
 			const segmentResults = new Array<Segment>();
 			const mutationQCResults = new Array<MutationQC>();
@@ -324,8 +351,11 @@ export class NGSService {
 						}
 					})
 					.on('end', async () => {
-						console.log(`end ${element.sampleName}`);
-						const samplesResponse = await this.segmentRepository.save(segmentResults);
+						const segmentsResponse = await this.segmentRepository.save(segmentResults);
+						let alignedEntitys = alignedArray
+						.filter(d => d.sample.sampleName === element.sampleName)
+						.map(d => {d.sample.sampleId = element.sampleId;return d;});
+						const alignedResponse = await this.alignedRepository.save(alignedEntitys);
 					});
 					const stream2 = fs
 					.createReadStream(
@@ -371,10 +401,14 @@ export class NGSService {
 					.on('end', async () => {
 						const coverageResponse = await this.coverageRepository.save(coverageResults)
 					});
+
+					
 			} catch (error) {
 				console.log('error', error);
 			}
+			
 		});
+
 		return ;
 	}
 	

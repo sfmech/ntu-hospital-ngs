@@ -64,9 +64,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 			</div>
 			<FileList diseases={diseases}/>
 			<div className="row justify-content-center mt-3">
-
 				<Button variant="contained" color="primary" disabled={files.length === 0|| analysis>0 } onClick={handleClick}>
-
 					開始分析
 				</Button>
 			</div>
