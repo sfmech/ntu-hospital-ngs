@@ -56,4 +56,10 @@ export class Segment {
 
     @Column({ name: "ASN_AF" })
     ASNAF: number;
+
+    @Column({ name: "category"})
+    category: string;
+
+    @Column({ name: "note"})
+    note: string;
 }

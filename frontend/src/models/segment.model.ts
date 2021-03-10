@@ -21,4 +21,6 @@ export class Segment {
     alert: string;
     remark: string;
     editor: string;
+    category: string;
+    note: string;
 }

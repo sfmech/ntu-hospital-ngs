@@ -17,11 +17,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import { Segment } from '../../models/segment.model';
-import { Backdrop, CircularProgress, FormControl, MenuItem, Select } from '@material-ui/core';
+import { Backdrop, CircularProgress, FormControl, Input, MenuItem, Select } from '@material-ui/core';
 import { ResultContext } from '../../contexts/result.context';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
 import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
 import { SegmentTagContext } from '../../contexts/segmentTag.context';
+import { SegmentCategory } from '../../models/segment.category.enum';
+import { useCookies } from 'react-cookie';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -72,13 +74,15 @@ const headCells: HeadCell[] = [
 	{ id: 'HGVSc', numeric: false, disablePadding: false, label: 'HGVS.c' },
 	{ id: 'HGVSp', numeric: false, disablePadding: false, label: 'HGVS.p' },
 	{ id: 'clinicalSignificance', numeric: false, disablePadding: false, label: 'Clinical significance' },
+	{ id: 'category', numeric: false, disablePadding: false, label: 'category' },
+	{ id: 'note', numeric: false, disablePadding: false, label: 'note' },
 	{ id: 'remark', numeric: false, disablePadding: false, label: 'remark' },
 	{ id: 'editor', numeric: false, disablePadding: false, label: 'editor' },
 	{ id: 'globalAF', numeric: true, disablePadding: false, label: 'Global_AF' },
 	{ id: 'AFRAF', numeric: true, disablePadding: false, label: 'AFR_AF' },
 	{ id: 'AMRAF', numeric: true, disablePadding: false, label: 'AMR_AF' },
 	{ id: 'EURAF', numeric: true, disablePadding: false, label: 'EUR_AF' },
-	{ id: 'ASNAF', numeric: true, disablePadding: false, label: 'ASN_AF' }
+	{ id: 'ASNAF', numeric: true, disablePadding: false, label: 'ASN_AF' },
 ];
 
 interface EnhancedTableProps {
@@ -224,6 +228,7 @@ type SegmentTable = {
 
 export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 	const classes = useStyles();
+	const [ cookies, setCookie, removeCookie ] = useCookies();
 	const [open, setOpen] = React.useState(false);
 	const [order, setOrder] = React.useState<Order>('asc');
 	const { updateSegment } = useContext(ResultContext)
@@ -232,6 +237,8 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 	const [rows, setRows] = useState(new Array<Segment>());
+	let userName: string = cookies['user-name'];
+
 	useEffect(() => {
 		setSelected([]);
 		props.setSelectSegments([]);
@@ -311,7 +318,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 		const { segmentId } = row;
 		const newRows = rows.map(row => {
 			if (row.segmentId === segmentId) {
-				updateSegment({ ...row, [name]: value })
+				updateSegment({ ...row, [name]: value, editor: userName})
 				return { ...row, [name]: value };
 			}
 			return row;
@@ -400,6 +407,34 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 													) : (
 															row.clinicalSignificance
 														)
+													}
+												</TableCell>
+												<TableCell align="right">
+													{props.isEditMode ? (
+														<FormControl variant="outlined">
+														<Select
+															labelId="demo-simple-select-outlined-label2"
+															value={row.category}
+															name={"category"}
+															onChange={e => onChange(e, row)}
+														>
+															{Object.keys(SegmentCategory).map((result) => {
+																return <MenuItem value={SegmentCategory[result]}>{SegmentCategory[result]}</MenuItem>;
+															})}
+														</Select>
+													</FormControl>
+													) : (
+															row.category
+														)
+													}
+												</TableCell>
+												<TableCell align="right">
+													{props.isEditMode?
+													<Input
+														defaultValue={row.note}
+														name={'note'}
+														onChange={(e) => onChange(e, row)}
+													/>:row.note
 													}
 												</TableCell>
 												<TableCell align="right">{row.remark}</TableCell>
