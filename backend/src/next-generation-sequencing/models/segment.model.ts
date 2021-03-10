@@ -18,4 +18,6 @@ export class Segment {
     AMRAF: number| null;
     EURAF: number| null;
     ASNAF: number| null;
+    category: string;
+    note: string;
 }

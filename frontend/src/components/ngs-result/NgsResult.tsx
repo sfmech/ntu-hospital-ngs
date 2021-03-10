@@ -58,6 +58,7 @@ import { Run } from '../../models/run.model';
 import { EditRunDateModal } from '../modals/EditRunDateModal';
 import { AnalysisSummaryTable } from '../table/AnalysisSummaryTable';
 import { Aligned } from '../../models/aligned.model';
+import { SegmentCategory } from '../../models/segment.category.enum';
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -424,7 +425,13 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					return;
 				}
-				if (
+				if (segment.category===SegmentCategory.Target){
+					tempTarget.push(segment);
+				}
+				else if (segment.category===SegmentCategory.Other){
+					tempOther.push(segment);
+				}
+				else if (
 					blacklist.findIndex(
 						(tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`
 					) !== -1
