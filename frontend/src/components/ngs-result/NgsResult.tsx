@@ -33,7 +33,6 @@ import { Sample } from '../../models/sample.model';
 import axios from 'axios';
 import EditIcon from "@material-ui/icons/EditOutlined";
 import KeyboardArrowUpIcon  from '@material-ui/icons/KeyboardArrowUp';
-import DoneIcon from "@material-ui/icons/Done";
 import AddIcon from '@material-ui/icons/Add';
 import { ApiUrl } from '../../constants/constants';
 import DescriptIcon from '@material-ui/icons/Description';
@@ -584,7 +583,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 						startIcon={<EditIcon />}
 						className="mb-1"
 					>
-						Edit
+						編輯
 					</Button>
 					<Button
 						aria-label="add"
@@ -594,7 +593,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 						startIcon={<AddIcon />}
 						className="mb-1 mx-2"
 					>
-						Add to list
+						加入名單
 					</Button>
 				</>
 			)
@@ -608,7 +607,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 						color="default"
 						className="mb-1"
 					>
-						Add to blacklist
+						加到黑名單
 					</Button>
 					<Button
 						onClick={handleWhitelistAddClick}
@@ -616,7 +615,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 						color="default"
 						className="mb-1 mx-2"
 					>
-						Add to whitelist
+						加到白名單
 					</Button>
 					<Button
 						onClick={onToggleAddMode}
@@ -624,7 +623,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 						color="secondary"
 						className="mb-1"
 					>
-						Back
+						返回
 					</Button>
 				</>
 			)
@@ -638,7 +637,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 						color="default"
 						className="mb-1"
 					>
-						Save
+						儲存
 					</Button>
 				</>
 			)

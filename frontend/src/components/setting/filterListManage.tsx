@@ -14,7 +14,13 @@ import { ApiUrl } from '../../constants/constants';
 import axios from 'axios';
 import { Button } from '@material-ui/core';
 import EditIcon from "@material-ui/icons/EditOutlined";
+import ImportExportIcon from '@material-ui/icons/ImportExport';
 import DoneIcon from "@material-ui/icons/Done";
+import DescriptIcon from '@material-ui/icons/Description';
+import { ExportDataToCsv } from '../../utils/exportDataToCsv';
+import CSVReader from 'react-csv-reader';
+import { UploadCSVModal } from '../modals/UploadCsvModal';
+
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -37,15 +43,20 @@ const useStyles = makeStyles((theme: Theme) =>
 		}
 	})
 );
+const prettyLink  = {
+	color: '#fff'
+  };
 
 export const FilterListManage: FunctionComponent = (prop) => {
 	const classes = useStyles();
+	const now = new Date(Date.now())
 	const [ condition, setCondition ] = useState('geneName');
 	const [ input, setInput ] = useState('');
 	const [ isEditable, setIsEditable ] = useState<boolean>(false);
 	const { blacklist, whitelist, deleteBlacklist, deleteWhitelist, setBlacklist, setWhitelist } = useContext(SegmentTagContext);
 	const [ showBlacklist, setShowBlacklist ] = useState<SegmentTag[]>(blacklist);
 	const [ showWhitelist, setShowWhitelist ] = useState<SegmentTag[]>(whitelist);
+	const [ showImportCSVModal, setShowImportCSVModal] = useState(false);
 
 	useEffect(
 		() => {
@@ -105,9 +116,38 @@ export const FilterListManage: FunctionComponent = (prop) => {
 		
 	};
 
+	const handleImportClick = (data)=>{
+		axios.post(`${ApiUrl}/api/updateSegmentTag`, {
+			data:  data
+		}).then(()=>{
+			window.location.reload(false);
+		})
+
+	};
+
 	return (
 		<React.Fragment>
-			<div className="row ml-3 mt-3">
+			<div className="row ml-3 mt-3">	
+				<Button
+					variant="contained"
+					color="primary"
+					startIcon={<ImportExportIcon />}
+					className={"mx-2"}
+				>
+					<ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}_filterlist.csv`} data={blacklist.concat(whitelist)} style={prettyLink}>
+                    	匯出
+                	</ExportDataToCsv>
+				</Button>
+
+				<Button
+					variant="contained"
+					color="primary"
+					startIcon={<DescriptIcon />}
+					className={"mx-2"}
+					onClick={()=>setShowImportCSVModal(true)}
+				>
+					上傳
+				</Button>
 				{isEditable ? (
 					<Button
 						onClick={onToggleEditMode}
@@ -131,6 +171,9 @@ export const FilterListManage: FunctionComponent = (prop) => {
 						編輯
 					</Button>
 				)}
+				
+			</div>
+			<div className="row ml-3 mt-3">
 				<FormControl variant="outlined" className={classes.formControl}>
 					<Select native value={condition} onChange={handleChange}>
 						<option value="geneName">Gene Name</option>
@@ -170,6 +213,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 					isEditMode={isEditable}
 				/>
 			</div>
+			<UploadCSVModal handleImportClick={handleImportClick} show={showImportCSVModal} onClose={() => setShowImportCSVModal(false)} />
 		</React.Fragment>
 	);
 };

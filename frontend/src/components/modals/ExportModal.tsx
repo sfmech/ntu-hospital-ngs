@@ -30,6 +30,8 @@ const headers = [
 ];
 export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
     const [ step, setStep] = useState<number>(0)
+    const now = new Date(Date.now())
+
     const [ template, setTemplate] = useState<number>(0)
     const LISHeader = {
         sampleName: true,
@@ -128,10 +130,16 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
 				<Button onClick={()=>setStep(1)} color="primary">
 					確認
                 </Button>:(template===1?
-                <ExportDataToCsv data={props.exportData} onClose={props.onClose} headers={headers.filter((h)=>LISHeader[h.key])}>
+                <ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`} data={props.exportData.map((d)=>{
+                    d.sampleName = d.sample.sampleName;
+                    return d;
+                })} onClose={props.onClose} headers={headers.filter((h)=>LISHeader[h.key])}>
                     匯出
                 </ExportDataToCsv>:
-                <ExportDataToCsv data={props.exportData} onClose={props.onClose} headers={headers.filter((h)=>header[h.key])}>
+                <ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`} data={props.exportData.map((d)=>{
+                    d.sampleName = d.sample.sampleName;
+                    return d;
+                })} onClose={props.onClose} headers={headers.filter((h)=>header[h.key])}>
                     匯出
                 </ExportDataToCsv>)
                 }
