@@ -1,3 +1,4 @@
+import { Button, createStyles, makeStyles, Paper, TextField, Theme, Typography } from '@material-ui/core';
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { ResultContext } from '../../contexts/result.context';
 import { SegmentTagContext } from '../../contexts/segmentTag.context';
@@ -5,13 +6,34 @@ import { Segment } from '../../models/segment.model';
 import { StatisticGeneNameData } from '../../models/statistic.geneName.model';
 import { StatistcGeneNameTable } from '../table/StatisticGeneNameTable';
 import { Title } from '../title/Title';
+const useStyles = makeStyles((theme: Theme) =>
+	createStyles({
+		root: {
+			width: 400,
+			
+		},
+		container: {
+			display: 'flex',
+			flexWrap: 'wrap',
+		  },
+		  textField: {
+			marginLeft: theme.spacing(1),
+			marginRight: theme.spacing(1),
+			width: 200,
+		  },
+    })
+);
 
 
 export const NgsStatistic: FunctionComponent = (prop) => {
+	const classes = useStyles();
     const { segmentResults} = useContext(ResultContext);
     const { blacklist, whitelist, filterlist } = useContext(SegmentTagContext);
-
-    const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
+	const now = new Date(Date.now());
+	const [selectedStartDate, setSelectedStartDate] = React.useState(`${now.getFullYear()-3}-${(now.getMonth() > 8) ? (now.getMonth() + 1) : ('0' + (now.getMonth() + 1))}-${(now.getDate() > 9) ? now.getDate() : ('0' + now.getDate())}`);
+	const [selectedEndDate, setSelectedEndDate] = React.useState(`${now.getFullYear()}-${(now.getMonth() > 8) ? (now.getMonth() + 1) : ('0' + (now.getMonth() + 1))}-${(now.getDate() > 9) ? now.getDate() : ('0' + now.getDate())}`);
+    const [ selectSegments, setSelectSegments ] = useState(Array<Segment>());
+	const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
     const [ otherSegments, setOtherSegments ] = useState(Array<Segment>());
 
     const [ statisticGeneNameData, setStatisticGeneNameData] = useState(Array<StatisticGeneNameData>());
@@ -119,9 +141,71 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 		return [ tempOther, tempTarget ];
     }
     
+	const handleDateStartChange = (event: React.ChangeEvent<{ value: unknown }>) => {	
+		setSelectedStartDate(event.target.value as string);
+  };
+  	const handleEndDateChange = (event: React.ChangeEvent<{ value: unknown }>) => {	
+		setSelectedEndDate(event.target.value as string);
+	};
+
+	const handleOnClick=()=>{
+		if(new Date(selectedEndDate) >= new Date(selectedStartDate)){
+			let tempAllTarget: Segment[] = []
+			let tempAllOther: Segment[] = []
+			Object.keys(segmentResults).forEach(sampleId => {
+				if(new Date(segmentResults[sampleId][0].sample.run.startTime) >= new Date(selectedStartDate) && 
+				new Date(segmentResults[sampleId][0].sample.run.startTime) < new Date(selectedEndDate)){
+					let [tempOtherSegment, tempTargetSegment] = filterSegments(segmentResults[sampleId]);
+
+					tempAllTarget = tempAllTarget.concat(tempTargetSegment);
+					tempAllOther = tempAllOther.concat(tempOtherSegment);
+				}
+			});
+			setTargetSegments(tempAllTarget);
+			setOtherSegments(tempAllOther);
+		}
+	};
 	return (
 		<React.Fragment>
 			<Title>Statistic System</Title>
+			<Paper className="my-3">
+			<form className={classes.container} noValidate>
+				<TextField
+							id="startdate"
+							label="start date"
+							type="date"
+							defaultValue={selectedStartDate}
+							onChange={handleDateStartChange}
+							className={classes.textField+" my-3 ml-3"}
+							InputLabelProps={{
+							shrink: true,
+							}}
+				/> 
+				<Typography variant="h5" display="inline" style={{lineHeight:"80px"}}>~</Typography>
+				<TextField
+							id="enddate"
+							label="end date"
+							type="date"
+							defaultValue={selectedEndDate}
+							onChange={handleEndDateChange}
+							className={classes.textField+" my-3"}
+							InputLabelProps={{
+							shrink: true,
+							}}
+				/>
+				<Button
+					variant="contained"
+					color="primary"
+					className={"mx-2 my-3"}
+					onClick={handleOnClick}
+					style={{height:40}}
+				>
+					搜尋
+				</Button>
+			</form>
+			
+			</Paper>
+
             <StatistcGeneNameTable data={statisticGeneNameData} title="Gene Name" />
 		</React.Fragment>
 	);
