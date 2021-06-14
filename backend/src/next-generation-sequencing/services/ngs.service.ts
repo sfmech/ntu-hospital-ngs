@@ -154,7 +154,7 @@ export class NGSService {
 	}
 	async getFilelist(): Promise<{}> {
 		let status = FileStatus.NotAnalyse;
-		fs.readFile('status.txt', 'utf-8',(err, data) => {
+		fs.readFile(`${this.configService.get<string>('ngs.path')}/status.txt`, 'utf-8',(err, data) => {
 			status = data
 		});
 		const aligned = fs
@@ -404,7 +404,7 @@ export class NGSService {
 	}
 	
 	async runScript(): Promise<void> {
-		fs.writeFile('status.txt',FileStatus.Analysing, 'utf-8',(err)=>{});
+		fs.writeFile(`${this.configService.get<string>('ngs.path')}/status.txt`,"1", 'utf-8',(err)=>{});
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
