@@ -6,4 +6,9 @@ export class Sample {
     sampleName: string;
     run: Run = new Run();
     disease: Disease;
+    medicalRecordNo: string;
+    SID: string;
+    departmentNo: string;
+    checkDate: Date;
+
 }

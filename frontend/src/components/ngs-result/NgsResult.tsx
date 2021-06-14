@@ -14,11 +14,13 @@ import {
 	FormControl,
 	Grid,
 	IconButton,
+	Input,
 	InputBase,
 	makeStyles,
 	Paper,
 	Select,
 	Tab,
+	TextField,
 	Theme,
 	Typography,
 	useScrollTrigger,
@@ -58,6 +60,9 @@ import { EditRunDateModal } from '../modals/EditRunDateModal';
 import { AnalysisSummaryTable } from '../table/AnalysisSummaryTable';
 import { Aligned } from '../../models/aligned.model';
 import { SegmentCategory } from '../../models/segment.category.enum';
+import { QueryBox } from './QueryBox';
+import { ResultOptionContext } from '../../contexts/result-option.context';
+import { QueryCondition } from '../../models/query.condition.enum';
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -216,22 +221,17 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
+		paper: {
+			paddingTop: theme.spacing(2),
+			paddingBottom: theme.spacing(2),
+			marginTop: theme.spacing(2),
+			marginBottom: theme.spacing(2),
+			width: '64vw'
+		},
 		root: {
 			maxHeight: '80vh',
 			overflow: 'auto',
 			flexGrow: 1
-		},
-		searchBar: {
-			padding: '2px 4px',
-			display: 'flex',
-			alignItems: 'center',
-			'& .Mui-focused': {
-				color: 'green'
-			}
-		},
-		input: {
-			marginLeft: theme.spacing(1),
-			flex: 1
 		},
 		formControl: {
 			margin: theme.spacing(1),
@@ -249,13 +249,19 @@ const useStyles = makeStyles((theme: Theme) =>
 			'& hr': {
 				margin: theme.spacing(0, 0.5)
 			}
+		},
+		textField: {
+			marginLeft: theme.spacing(1),
+			marginRight: theme.spacing(1),
+			width: 200,
 		}
 	})
 );
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const { sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults, setSamples } = useContext(ResultContext);
-	const { blacklist, whitelist, filterlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
+	const { blacklist, whitelist, filterlist, hotspotlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
+	const { input, condition } = useContext(ResultOptionContext);
 	const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
 	const [ otherSegments, setOtherSegments ] = useState(Array<Segment>());
 	const [ selectedSegments, setSelectedSegments ] = useState<Array<Segment>>(new Array<Segment>());
@@ -278,7 +284,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
 	const [ value, setValue ] = React.useState('1');
-	const [ input, setInput ] = useState('');
 	const [ cookies ] = useCookies();
 
 	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
@@ -424,6 +429,18 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					return;
 				}
+				if (
+					hotspotlist.findIndex(
+						(tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName
+					) !== -1
+				) {
+					const finding = hotspotlist.find((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName)
+					segment.clinicalSignificance = finding?.clinicalSignificance;
+					segment.remark = finding?.remark;
+					segment.editor = finding?.editor;
+					tempTarget.push(segment);
+					return;
+				}
 				if (segment.category===SegmentCategory.Target){
 					tempTarget.push(segment);
 				}
@@ -436,9 +453,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 					) !== -1
 				) {
 					const finding = blacklist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
-					segment.remark = finding?.remark
-					segment.editor = finding?.editor
-					segment.clinicalSignificance = finding?.clinicalSignificance
+					segment.remark = finding?.remark;
+					segment.editor = finding?.editor;
+					segment.clinicalSignificance = finding?.clinicalSignificance;
 					tempOther.push(segment);
 				}
 				else if (
@@ -447,9 +464,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 					) !== -1
 				) {
 					const finding = whitelist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
-					segment.remark = finding?.remark
-					segment.editor = finding?.editor
-					segment.clinicalSignificance = finding?.clinicalSignificance
+					segment.remark = finding?.remark;
+					segment.editor = finding?.editor;
+					segment.clinicalSignificance = finding?.clinicalSignificance;
 					tempTarget.push(segment);
 				}
 				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1){
@@ -528,6 +545,14 @@ export const NgsResult: FunctionComponent = (prop) => {
 		}
 	};
 
+	const handleSampleChange =  (e) => {
+		const value = e.target.value;
+		const name = e.target.name;
+		selectedSample[name] = value;
+		setSelectedSample(selectedSample);
+		
+	};
+
 	const getExportData = () => {
 		let newExportData: Segment[] = [];
 		selected.forEach((id: number) => {
@@ -557,6 +582,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 			axios.post(`${ApiUrl}/api/updateSegment`, {
 				data: segmentResults[selectedSample.sampleId] 
 			});
+			axios.post(`${ApiUrl}/api/updateSample`, {
+				data: selectedSample 
+			});
 			setSelectedSegments(segmentResults[selectedSample.sampleId])
 		}
 		setIsEditable(!isEditable);
@@ -566,10 +594,13 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const onToggleAddMode =  () => {
 		setIsAdd(!isAdd);
 	};
+	const betweenDate = (date ,inputDate)=>{
+		var startTime = new Date(inputDate.split("~")[0]);
+		var endTime = new Date(inputDate.split("~")[1]);
+		var runDate = new Date(date);
+		return runDate >= startTime && runDate <= endTime;
+	}
 
-	const handleInputChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-		setInput(event.target.value as string);
-	};
 
 	const renderSampleButtons = () => {
         if(!isAdd && !isEditable){
@@ -649,15 +680,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 			<Title>Results Overview</Title>
 			<div className="row">
 				<div className="col-3">
-					<Paper className={classes.searchBar}>
-						<InputBase
-							value={input}
-							onChange={handleInputChange}
-							className={classes.input}
-							placeholder="Sample Name or Disease Name"
-						/>
-					</Paper>
-					<Grid container alignItems="center" justify="center">							
+					<QueryBox />
+					<Grid container alignItems="center" justify="center" className="mt-2">							
 						<Grid item xs={4}>
 							<Button
 								variant="contained"
@@ -698,8 +722,16 @@ export const NgsResult: FunctionComponent = (prop) => {
 						{Object.keys(sampleResults).map((key) => (
 							<StyledTreeItem
 								nodeId={String(sampleResults[key][0].run.runId)}
-								labelText={
-									sampleResults[key][0].run.runName + '  (' + sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1 || sampleRow.sampleName.split('_')[0].indexOf(input)!==-1).length + ' records)'
+								labelText={sampleResults[key][0].run.runName + '  (' +(()=>{
+									switch(condition){
+										case QueryCondition.StartDate:
+											return 	sampleResults[key].filter((sampleRow)=>betweenDate(sampleRow.run.startTime, input)).length;
+										case QueryCondition.SampleName:
+											return sampleResults[key].filter((sampleRow)=> sampleRow.sampleName.split('_')[0].indexOf(input)!==-1).length;
+										case QueryCondition.DiseaseEnName:
+											return sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1).length;
+									}
+								})() + ' records)'
 								}
 								labelInfo={new Date(sampleResults[key][0].run.startTime).toLocaleDateString()}
 								isSample={false}
@@ -740,6 +772,73 @@ export const NgsResult: FunctionComponent = (prop) => {
 						</AppBar>
 						<TabPanel value="1">
 							{renderSampleButtons()}
+							<Paper className={classes.paper}>
+								<h4 className='row mx-2'>報告基本資料</h4>
+								<div className='row mx-2 my-3'>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											SID:
+										</div>
+										<div  className='col-6'>
+											{isEditable? 
+												<Input
+													defaultValue={selectedSample.SID}
+													name={'SID'}
+													onChange={(e) => handleSampleChange(e)}
+												/>:selectedSample.SID
+											}
+										</div>
+									</div>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											病歷號:
+										</div>
+										<div  className='col-6'>
+											{isEditable? 
+												<Input
+													defaultValue={selectedSample.medicalRecordNo}
+													name={'medicalRecordNo'}
+													onChange={(e) => handleSampleChange(e)}
+												/>:selectedSample.medicalRecordNo
+											}
+										</div>
+									</div>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											科分號:
+										</div>
+										<div  className='col-6'>
+											{isEditable? 
+												<Input
+													defaultValue={selectedSample.departmentNo}
+													name={'departmentNo'}
+													onChange={(e) => handleSampleChange(e)}
+												/>:selectedSample.departmentNo
+											}
+										</div>
+									</div>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											診斷日期:
+										</div>
+										<div  className='col-6'>
+											{isEditable? 
+											<TextField
+											name="checkDate"
+											type="date"
+											defaultValue={`${new Date(selectedSample.checkDate).getFullYear()}-${(new Date(selectedSample.checkDate).getMonth()-3 > 8) ? (new Date(selectedSample.checkDate).getMonth()-3 + 1) : ('0' + (new Date(selectedSample.checkDate).getMonth()-3 + 1))}-${(new Date(selectedSample.checkDate).getDate() > 9) ? new Date(selectedSample.checkDate).getDate() : ('0' + new Date(selectedSample.checkDate).getDate())}`}
+											onChange={(e) => handleSampleChange(e)}
+											className={classes.textField}
+											InputLabelProps={{
+												shrink: true,
+											}} />:new Date(selectedSample.checkDate).toLocaleDateString()
+											}
+										</div>
+									</div>
+								
+								</div>
+								
+							</Paper>
 							<SegmentTable
 								data={targetSegments}
 								setSelectSegments={(segments: Segment[])=>setSelectedTarget(segments)}

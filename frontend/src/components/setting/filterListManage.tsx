@@ -20,6 +20,7 @@ import DescriptIcon from '@material-ui/icons/Description';
 import { ExportDataToCsv } from '../../utils/exportDataToCsv';
 import CSVReader from 'react-csv-reader';
 import { UploadCSVModal } from '../modals/UploadCsvModal';
+import { HotspotTable } from '../table/HotspotTable';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -53,17 +54,19 @@ export const FilterListManage: FunctionComponent = (prop) => {
 	const [ condition, setCondition ] = useState('geneName');
 	const [ input, setInput ] = useState('');
 	const [ isEditable, setIsEditable ] = useState<boolean>(false);
-	const { blacklist, whitelist, deleteBlacklist, deleteWhitelist, setBlacklist, setWhitelist } = useContext(SegmentTagContext);
+	const { blacklist, whitelist, hotspotlist, deleteBlacklist, deleteWhitelist, deleteHotspotlist, setBlacklist, setWhitelist, setHotspotlist } = useContext(SegmentTagContext);
 	const [ showBlacklist, setShowBlacklist ] = useState<SegmentTag[]>(blacklist);
 	const [ showWhitelist, setShowWhitelist ] = useState<SegmentTag[]>(whitelist);
+	const [ showHotspotlist, setShowHotspotlist ] = useState<SegmentTag[]>(hotspotlist);
 	const [ showImportCSVModal, setShowImportCSVModal] = useState(false);
 
 	useEffect(
 		() => {
 			setShowBlacklist(blacklist);
 			setShowWhitelist(whitelist);
+			setShowHotspotlist(hotspotlist);
 		},
-		[ blacklist, whitelist ]
+		[ blacklist, whitelist, hotspotlist ]
 	);
 
 	const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -78,6 +81,19 @@ export const FilterListManage: FunctionComponent = (prop) => {
 	const handleSearchClick = () => {
 		if (blacklist.length > 0) setShowBlacklist(blacklist.filter((data) => data[condition].indexOf(input) !== -1));
 		if (whitelist.length > 0) setShowWhitelist(whitelist.filter((data) => data[condition].indexOf(input) !== -1));
+	};
+
+	const handleHotspotlistDelete = async (ids: string[]) => {
+		try {
+			await axios.post(`${ApiUrl}/api/deleteHotspotlist`, {
+				data: showHotspotlist.filter((data) => ids.includes(data.id))
+			});
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setShowHotspotlist(showHotspotlist.filter((data) => !ids.includes(data.id)));
+			deleteHotspotlist(ids);
+		}
 	};
 
 	const handleBlacklistDelete = async (ids: string[]) => {
@@ -117,6 +133,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 	};
 
 	const handleImportClick = (data)=>{
+		console.log(data);
 		axios.post(`${ApiUrl}/api/updateSegmentTag`, {
 			data:  data
 		}).then(()=>{
@@ -194,6 +211,15 @@ export const FilterListManage: FunctionComponent = (prop) => {
 						<SearchIcon />
 					</IconButton>
 				</Paper>
+			</div>
+			<div className="row justify-content-center mt-3 px-4">
+				<HotspotTable
+					data={showHotspotlist}
+					title="Hotspot"
+					handleChange={setHotspotlist}
+					handleDelete={handleHotspotlistDelete}
+					isEditMode={isEditable}
+				/>
 			</div>
 			<div className="row justify-content-center mt-3 px-4">
 				<SegmentTagTable

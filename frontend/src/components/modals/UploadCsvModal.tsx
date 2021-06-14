@@ -44,7 +44,7 @@ export const UploadCSVModal: FunctionComponent<UploadCSVModalProps> = (props) =>
 			<DialogContent dividers >
 			
 				<div className="row justify-content-center">
-				<CSVReader onFileLoaded={(data, fileInfo) => setData(data)} parserOptions={{header:true}} ></CSVReader>
+				<CSVReader onFileLoaded={(data, fileInfo) => setData(data)} parserOptions={{header:true, skipEmptyLines: true}} ></CSVReader>
 				</div>
             </DialogContent>
 			<DialogActions>

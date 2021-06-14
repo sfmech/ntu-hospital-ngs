@@ -9,17 +9,20 @@ const initialState = {
 	blacklist: new Array<SegmentTag>(),
 	whitelist: new Array<SegmentTag>(),
 	filterlist: new Array<SegmentTag>(),
+	hotspotlist: new Array<SegmentTag>(),
 	selectedTarget: new Array<Segment>(),
 	selectedOther: new Array<Segment>(),
 	setBlacklist: (blacklist: SegmentTag[]) => {},
 	setWhitelist: (whitelist: SegmentTag[]) => {},
+	setHotspotlist: (hotspotlist: SegmentTag[]) => {},
 	setFilterlist: (filterlist: SegmentTag[]) => {},
 	setSelectedTarget: (selectedlist: Segment[]) => {},
 	setSelectedOther: (selectedlist: Segment[]) => {},
 	deleteBlacklist: (ids: string[]) => {},
 	deleteWhitelist: (ids: string[]) => {},
+	deleteHotspotlist: (ids: string[]) => {},
 	addBlacklist: (segmentTags: Segment[], userName: string) => {},
-	addWhitelist: (segmentTags: Segment[], userName: string) => {}
+	addWhitelist: (segmentTags: Segment[], userName: string) => {},
 };
 
 export const SegmentTagContext = createContext(initialState);
@@ -44,6 +47,8 @@ export const SegmentTagProvider = ({ children }) => {
 						setWhitelist(groupByCategory.whitelist);
 					if(groupByCategory.filterlist)
 						setFilterlist(groupByCategory.filterlist);
+					if(groupByCategory.hotspotlist)
+						setHotspotlist(groupByCategory.hotspotlist);
 				}
 			} catch (error) {
 				console.log(error);
@@ -70,6 +75,13 @@ export const SegmentTagProvider = ({ children }) => {
 		dispatch({
 			type: 'SETFILTERLIST',
 			payload: filterlist
+		});
+	}
+
+	function setHotspotlist(hotspotlist: SegmentTag[]) {
+		dispatch({
+			type: 'SETHOTSPOTLIST',
+			payload: hotspotlist
 		});
 	}
 
@@ -101,6 +113,13 @@ export const SegmentTagProvider = ({ children }) => {
 		});
 	}
 
+	function deleteHotspotlist(ids: string[]) {
+		dispatch({
+			type: 'DELETEHOTSPOTLIST',
+			payload: ids
+		});
+	}
+
 	function addBlacklist(segmentTags: Segment[], userName: string) {
 		dispatch({
 			type: 'ADDBLACKLIST',
@@ -121,15 +140,18 @@ export const SegmentTagProvider = ({ children }) => {
 				blacklist: state.blacklist,
 				whitelist: state.whitelist,
 				filterlist: state.filterlist,
+				hotspotlist: state.hotspotlist,
 				selectedTarget: state.selectedTarget,
 				selectedOther: state.selectedOther,
 				setBlacklist,
 				setWhitelist,
 				setFilterlist,
+				setHotspotlist,
 				setSelectedTarget,
 				setSelectedOther,
 				deleteBlacklist,
 				deleteWhitelist,
+				deleteHotspotlist,
 				addBlacklist,
 				addWhitelist
 			}}

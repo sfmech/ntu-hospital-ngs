@@ -81,6 +81,11 @@ export class NGSService {
 		return runs;
 	}
 
+	async updateSample(updatedSample: Sample[]): Promise<Sample[]> {
+		const samples = await this.sampleRepository.save(updatedSample);
+		return samples;
+	}
+
 	async getAllMutationQC(): Promise<MutationQC[]> {
 		const mutationQCs = await this.mutationQCRepository.find();
 		return mutationQCs;
@@ -126,39 +131,23 @@ export class NGSService {
 		return;
 	}
 
-	async deleteBlacklist(deleteSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
-		const blacklist = await this.segmentTagRepository.remove(deleteSegmentTags);
-		const segmentTagsModel = blacklist.map((segmentTag) => {
+	async deleteFilterlist(deleteSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
+		const filterlist = await this.segmentTagRepository.remove(deleteSegmentTags);
+		const segmentTagsModel = filterlist.map((segmentTag) => {
 			let temp = Object.assign(new SegmentTag(), segmentTag);
 			temp.id = `${segmentTag.chr}_${segmentTag.position}_${segmentTag.HGVSc}_${segmentTag.HGVSp}`;
 			return temp;
 		});
 		return segmentTagsModel;
 	}
-	async deleteWhitelist(deleteSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
-		const whitelist = await this.segmentTagRepository.remove(deleteSegmentTags);
-		const segmentTagsModel = whitelist.map((segmentTag) => {
-			let temp = Object.assign(new SegmentTag(), segmentTag);
-			temp.id = `${segmentTag.chr}_${segmentTag.position}_${segmentTag.HGVSc}_${segmentTag.HGVSp}`;
-			return temp;
-		});
-		return segmentTagsModel;
-	}
-
-	async addBlacklist(addSegmentTags: SegmentTag[], userName: string): Promise<SegmentTag[]> {
+	async addFilterlist(addSegmentTags: SegmentTag[], userName: string): Promise<SegmentTag[]> {
 		addSegmentTags.forEach(data => {
 			data.editor=userName
 		});
-		const blacklist = await this.segmentTagRepository.save(addSegmentTags);
-		return blacklist;
+		const filterlist = await this.segmentTagRepository.save(addSegmentTags);
+		return filterlist;
 	}
-	async addWhitelist(addSegmentTags: SegmentTag[], userName: string): Promise<SegmentTag[]> {
-		addSegmentTags.forEach(data => {
-			data.editor=userName
-		});
-		const whitelist = await this.segmentTagRepository.save(addSegmentTags);
-		return whitelist;
-	}
+	
 	async updateSegmentTag(updateSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
 		const segmentTags = await this.segmentTagRepository.save(updateSegmentTags);
 		return segmentTags;
@@ -342,13 +331,10 @@ export class NGSService {
 						if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
 						//}
 						
-						if (temp.freq > 5) {
+						if (temp.freq >= 3) {
 							temp.sample.sampleId = element.sampleId;
 							segmentResults.push(temp);
-						} else if (temp.freq >= 3 && temp.clinicalSignificance === 'Pathogenic') {
-							temp.sample.sampleId = element.sampleId;
-							segmentResults.push(temp);
-						}
+						} 
 					})
 					.on('end', async () => {
 						const segmentsResponse = await this.segmentRepository.save(segmentResults);

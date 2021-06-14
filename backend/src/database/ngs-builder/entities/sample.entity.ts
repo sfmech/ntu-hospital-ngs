@@ -34,4 +34,16 @@ export class Sample {
     @JoinColumn({ name: "disease_id" })
     disease: Disease;
 
+    @Column({ name: "medical_record_no"})
+    medicalRecordNo: string;
+    
+    @Column({ name: "SID"})
+    SID: string;
+
+    @Column({ name: "department_no"})
+    departmentNo: string;
+
+    @CreateDateColumn({type: 'timestamp with time zone', name: "check_date" })
+    checkDate: Date;
+
 }

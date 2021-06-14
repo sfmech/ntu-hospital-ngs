@@ -62,4 +62,6 @@ export class Segment {
 
     @Column({ name: "note"})
     note: string;
+
+
 }

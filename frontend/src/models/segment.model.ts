@@ -23,4 +23,5 @@ export class Segment {
     editor: string;
     category: string;
     note: string;
+
 }

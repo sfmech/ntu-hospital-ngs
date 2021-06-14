@@ -19,6 +19,11 @@ export const SegmentTagReducer = (state, action) => {
 				...state,
 				filterlist: action.payload
 			};
+		case 'SETHOTSPOTLIST':
+			return {
+				...state,
+				hotspotlist: action.payload
+			};
 		case 'SETSELECTEDTARGET':
 			return {
 				...state,
@@ -43,6 +48,14 @@ export const SegmentTagReducer = (state, action) => {
 			return {
 				...state,
 				whitelist: deletedWhitelist
+			};
+		case 'DELETEHOTSPOTLIST':
+			const deleteHotspotIds = action.payload as string[];
+			const deletedHotspotlist = state.hotspotlist.filter((data) => !deleteHotspotIds.includes(data.id));
+
+			return {
+				...state,
+				hotspotlist: deletedHotspotlist
 			};
 		case 'ADDBLACKLIST':
 			const addBlackSegments = action.payload as {segmentTags: Segment[], userName: string};

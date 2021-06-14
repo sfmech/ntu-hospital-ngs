@@ -74,12 +74,31 @@ export class NGSController {
 	@Post('/deleteBlacklist')
 	@UseGuards(AuthGuard('jwt'))
 	deleteBlacklist(@Body() body): Promise<SegmentTag[]> {
-		return this.ngsService.deleteBlacklist(body.data);
+		return this.ngsService.deleteFilterlist(body.data);
 	}
 	@Post('/deleteWhitelist')
 	@UseGuards(AuthGuard('jwt'))
 	deleteWhitelist(@Body() body): Promise<SegmentTag[]> {
-		return this.ngsService.deleteWhitelist(body.data);
+		return this.ngsService.deleteFilterlist(body.data);
+	}
+	@Post('/deleteHotspotlist')
+	@UseGuards(AuthGuard('jwt'))
+	deleteHotspotlist(@Body() body): Promise<SegmentTag[]> {
+		return this.ngsService.deleteFilterlist(body.data);
+	}
+
+	@Post('/addHotspotlist')
+	@UseGuards(AuthGuard('jwt'))
+	addHotspotlist(@Req() request, @Body() body): Promise<SegmentTag[]> {
+		const payload: User = this.jwtService.verifyToken(request.cookies['jwt-auth-token']);
+
+		const data = body.data.map((element: Segment) => {
+			let temp = Object.assign(new SegmentTag(), element);
+			temp.category = 'hotspotlist';
+			return temp;
+		});
+
+		return this.ngsService.addFilterlist(data, payload.userName);
 	}
 
 	@Post('/addBlacklist')
@@ -93,7 +112,7 @@ export class NGSController {
 			return temp;
 		});
 
-		return this.ngsService.addBlacklist(data, payload.userName);
+		return this.ngsService.addFilterlist(data, payload.userName);
 	}
 	@Post('/addWhitelist')
 	@UseGuards(AuthGuard('jwt'))
@@ -105,7 +124,7 @@ export class NGSController {
 			temp.category = 'whitelist';
 			return temp;
 		});
-		return this.ngsService.addWhitelist(data, payload.userName);
+		return this.ngsService.addFilterlist(data, payload.userName);
 	}
 
 	@Post('/updateSegmentTag')
@@ -118,6 +137,12 @@ export class NGSController {
 	@UseGuards(AuthGuard('jwt'))
 	updateRun(@Body() body): Promise<Run[]> {
 		return this.ngsService.updateRun(body.data);
+	}
+
+	@Post('/updateSample')
+	@UseGuards(AuthGuard('jwt'))
+	updateSample(@Body() body): Promise<Sample[]> {
+		return this.ngsService.updateSample(body.data);
 	}
 
 	@Post('/runscript')

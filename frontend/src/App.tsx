@@ -15,6 +15,7 @@ import { useCookies } from 'react-cookie';
 import { MemberManage } from './components/member-list/MemberManage';
 import { CookiesProvider } from 'react-cookie';
 import { NgsStatistic } from './components/ngs-statistic/NgsStatistic';
+import { ResultOptionProvider } from './contexts/result-option.context';
 
 function PrivateRoute ({ children,role, ...rest }) {
 	return (
@@ -32,6 +33,7 @@ export const App: FunctionComponent = () => {
 	return (
 		<Router>
 			<CookiesProvider>
+			<ResultOptionProvider>
 			<ResultProvider>
 				<SegmentTagProvider>
 					<FileProvider>
@@ -60,6 +62,7 @@ export const App: FunctionComponent = () => {
 					</FileProvider>
 				</SegmentTagProvider>
 			</ResultProvider>
+			</ResultOptionProvider>
 			</CookiesProvider>
 		</Router>
 	);
