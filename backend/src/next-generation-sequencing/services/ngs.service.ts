@@ -196,7 +196,7 @@ export class NGSService {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease };
 			}*/
 		});
-		return { analysis: aligned.length, files: response };
+		return { analysis: status, files: response };
 	}
 
 

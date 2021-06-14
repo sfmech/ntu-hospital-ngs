@@ -37,7 +37,7 @@ export class Sample {
     @Column({ name: "medical_record_no"})
     medicalRecordNo: string;
     
-    @Column({ name: "SID"})
+    @Column({ name: "sid"})
     SID: string;
 
     @Column({ name: "department_no"})
