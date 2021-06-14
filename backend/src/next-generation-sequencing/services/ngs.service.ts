@@ -153,6 +153,10 @@ export class NGSService {
 		return segmentTags;
 	}
 	async getFilelist(): Promise<{}> {
+		let status = FileStatus.NotAnalyse;
+		fs.readFile('status.txt', 'utf-8',(err, data) => {
+			status = data
+		});
 		const aligned = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((align: string) => align.match(/Aligned.csv/));
@@ -183,13 +187,14 @@ export class NGSService {
 					disease = unknown;
 				}
 			}
-			if (mutationQC.includes(file)) {
+			return {status: status, name: file, disease: disease };
+			/*if (mutationQC.includes(file)) {
 				return { status: FileStatus.Analysed, name: file, disease: disease };
 			} else if (bams.includes(file)) {
 				return { status: FileStatus.Analysing, name: file, disease: disease };
 			} else {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease };
-			}
+			}*/
 		});
 		return { analysis: aligned.length, files: response };
 	}
@@ -399,6 +404,7 @@ export class NGSService {
 	}
 	
 	async runScript(): Promise<void> {
+		fs.writeFile('status.txt',FileStatus.Analysing, 'utf-8',(err)=>{});
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
@@ -410,6 +416,7 @@ export class NGSService {
 		});
 
 		child.on('close', async (code) => {
+			fs.writeFile('status.txt',FileStatus.NotAnalyse, 'utf-8',(err)=>{});
 			const now = new Date(Date.now());
 			const runResults = {
 				runName: `${now.getFullYear()}-${('0' + (now.getMonth() + 1)).slice(-2)}-${('0' + now.getDate()).slice(
