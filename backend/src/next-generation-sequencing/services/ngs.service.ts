@@ -153,10 +153,13 @@ export class NGSService {
 		return segmentTags;
 	}
 	async getFilelist(): Promise<{}> {
-		let status = FileStatus.NotAnalyse;
-		fs.readFile(`${this.configService.get<string>('ngs.path')}/status.txt`, 'utf-8',(err, data) => {
-			status = data
-		});
+		var status;
+		try {
+			status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/status.txt`, 'utf-8');
+		} catch (error) {
+			status = FileStatus.NotAnalyse;
+		}
+
 		const aligned = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((align: string) => align.match(/Aligned.csv/));
@@ -187,14 +190,14 @@ export class NGSService {
 					disease = unknown;
 				}
 			}
-			return {status: status, name: file, disease: disease };
-			/*if (mutationQC.includes(file)) {
+			//return {status: status, name: file, disease: disease };
+			if (mutationQC.includes(file)) {
 				return { status: FileStatus.Analysed, name: file, disease: disease };
 			} else if (bams.includes(file)) {
 				return { status: FileStatus.Analysing, name: file, disease: disease };
 			} else {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease };
-			}*/
+			}
 		});
 		return { analysis: status, files: response };
 	}
