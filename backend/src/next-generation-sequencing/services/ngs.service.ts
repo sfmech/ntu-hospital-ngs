@@ -416,7 +416,7 @@ export class NGSService {
 		});
 
 		child.on('close', async (code) => {
-			fs.writeFile('status.txt',FileStatus.NotAnalyse, 'utf-8',(err)=>{});
+			fs.writeFile(`${this.configService.get<string>('ngs.path')}/status.txt`,FileStatus.NotAnalyse, 'utf-8',(err)=>{});
 			const now = new Date(Date.now());
 			const runResults = {
 				runName: `${now.getFullYear()}-${('0' + (now.getMonth() + 1)).slice(-2)}-${('0' + now.getDate()).slice(
