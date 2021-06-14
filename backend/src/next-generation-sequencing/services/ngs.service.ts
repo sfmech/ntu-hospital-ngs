@@ -262,6 +262,10 @@ export class NGSService {
 		const sampleResults = files.map((file) => {
 			const temp = new Sample();
 			temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
+			temp.SID = "";
+			temp.checkDate = new Date();
+			temp.departmentNo = "";
+			temp.medicalRecordNo = "";
 			temp.disease = diseases.find(
 				(d) => (d.abbr === (file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1]))
 			);
@@ -428,6 +432,10 @@ export class NGSService {
 			const sampleResults = files.map((file) => {
 				const temp = new Sample();
 				temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
+				temp.SID = "";
+				temp.checkDate = new Date();
+				temp.departmentNo = "";
+				temp.medicalRecordNo = "";
 				temp.disease = diseases.find(
 					(d) => (d.abbr === (file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1]))
 				);
