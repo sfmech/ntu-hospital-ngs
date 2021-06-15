@@ -13,7 +13,8 @@ const initialState = {
 	files: new Array<File>(),
 	setAnalysis: (analysis: number)=>{},
 	setFiles: (files: Array<File>)=>{},
-	updateFile: (file: File)=>{}
+	updateFile: (file: File)=>{},
+	updateFileInfo: (file: File)=>{}
 };
 
 export const FileContext = createContext(initialState);
@@ -26,8 +27,8 @@ export const FileProvider = ({ children }) => {
 			try {
 				axios(`${ApiUrl}/api/filelist`).then((res) => {
 					if (res.data.files.length > 0) {
-						setAnalysis(res.data.analysis)
 						setFiles(res.data.files);
+						setAnalysis(parseInt(res.data.analysis));
 					}
 				});
 			} catch (error) {
@@ -58,6 +59,13 @@ export const FileProvider = ({ children }) => {
             payload: file
         });
     }
+
+	function updateFileInfo(file: File) {
+        dispatch({
+            type: 'UPDATEFILEINFO',
+            payload: file
+        });
+    }
 	
 	
 	return (
@@ -67,7 +75,8 @@ export const FileProvider = ({ children }) => {
 				files: state.files,
 				setAnalysis,
 				setFiles,
-				updateFile
+				updateFile,
+				updateFileInfo
 
 			}}
 		>

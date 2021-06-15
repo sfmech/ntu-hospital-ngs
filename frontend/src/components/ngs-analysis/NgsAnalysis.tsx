@@ -23,9 +23,10 @@ const useStyles = makeStyles((theme: Theme) =>
 export const NgsAnalysis: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
-	const [ diseases, setDiseases ] = useState<Array<Disease>>([])
-	const { analysis, files } = useContext(FileContext);
+	const [ diseases, setDiseases ] = useState<Array<Disease>>([]);
+	const { analysis, files, setFiles, setAnalysis } = useContext(FileContext);
 
+	
 
 	useEffect(() => {
 		const getDiseases = () => {
@@ -40,11 +41,12 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		getDiseases();
 	}, []);
 
+
 	const handleClick = () => {
 		const runScripts = async () => {
 			try {
 				setOpen(true);
-				await axios.post(`${ApiUrl}/api/runscript`);
+				await axios.post(`${ApiUrl}/api/runscript`, {data: files});
 			} catch (error) {
 				console.log(error);
 			} finally {

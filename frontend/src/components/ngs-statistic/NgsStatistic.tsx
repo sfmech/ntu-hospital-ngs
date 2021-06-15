@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const NgsStatistic: FunctionComponent = (prop) => {
 	const classes = useStyles();
     const { segmentResults} = useContext(ResultContext);
-    const { blacklist, whitelist, filterlist } = useContext(SegmentTagContext);
+    const { blacklist, whitelist, filterlist, hotspotlist } = useContext(SegmentTagContext);
 	const now = new Date(Date.now());
 	const [selectedStartDate, setSelectedStartDate] = React.useState(`${now.getFullYear()-3}-${(now.getMonth() > 8) ? (now.getMonth() + 1) : ('0' + (now.getMonth() + 1))}-${(now.getDate() > 9) ? now.getDate() : ('0' + now.getDate())}`);
 	const [selectedEndDate, setSelectedEndDate] = React.useState(`${now.getFullYear()}-${(now.getMonth() > 8) ? (now.getMonth() + 1) : ('0' + (now.getMonth() + 1))}-${(now.getDate() > 9) ? now.getDate() : ('0' + now.getDate())}`);
@@ -90,6 +90,18 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 						(tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`
 					) !== -1
 				) {
+					return;
+				}
+				if (
+					hotspotlist.findIndex(
+						(tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName
+					) !== -1
+				) {
+					const finding = hotspotlist.find((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName)
+					segment.clinicalSignificance = finding?.clinicalSignificance;
+					segment.remark = finding?.remark;
+					segment.editor = finding?.editor;
+					tempTarget.push(segment);
 					return;
 				}
 				if (

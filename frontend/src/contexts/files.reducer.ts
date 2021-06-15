@@ -5,10 +5,18 @@ import { ApiUrl } from '../constants/constants';
 export const FileReducer = (state, action) => {
 	switch (action.type) {
 		case 'SETFILES':
-			return {
-				...state,
-				files: action.payload
-			};
+			const newFile = action.payload as File[];
+			const results = newFile.filter(({ name: id1 }) => !state.files.some(({ name: id2 }) => id2 === id1));
+			const results2 = state.files.filter(({ name: id1 }) => !newFile.some(({ name: id2 }) => id2 === id1));
+			if (results.length>0 || results2.length>0){
+				return {
+					...state,
+					files: action.payload
+				};
+			}else{
+				return state;
+			}
+			
 		case 'SETANALYSIS':
 			return{
 				...state,
@@ -35,6 +43,19 @@ export const FileReducer = (state, action) => {
 			return{
 				...state,
 				files: updatedFiles
+			}
+		case 'UPDATEFILEINFO':
+			const updatedFileInfo = action.payload as File;
+			
+            const updatedFilesInfo = state.files.map((file: File) => {
+                if (file.name.split("_")[0] === updatedFileInfo.name.split("_")[0]){
+					return updatedFileInfo;
+				}
+                return file;
+            });
+			return{
+				...state,
+				files: updatedFilesInfo
 			}
 		default:
 			return state;

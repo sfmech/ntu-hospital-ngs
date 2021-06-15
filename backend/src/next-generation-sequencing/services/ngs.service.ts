@@ -24,6 +24,7 @@ import { Coverage } from '../models/coverage.model';
 import { Run } from '../models/run.model';
 import { User } from '../models/user.model';
 import { Aligned } from '../models/aligned.model';
+import { File } from '../models/file.model';
 
 var cp = require('child_process');
 const fs = require('fs');
@@ -192,11 +193,11 @@ export class NGSService {
 			}
 			//return {status: status, name: file, disease: disease };
 			if (mutationQC.includes(file)) {
-				return { status: FileStatus.Analysed, name: file, disease: disease };
+				return { status: FileStatus.Analysed, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString() };
 			} else if (bams.includes(file)) {
-				return { status: FileStatus.Analysing, name: file, disease: disease };
+				return { status: FileStatus.Analysing, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
 			} else {
-				return { status: FileStatus.NotAnalyse, name: file, disease: disease };
+				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
 			}
 		});
 		return { analysis: status, files: response };
@@ -325,14 +326,18 @@ export class NGSService {
 						temp.geneName = data['10'] || '';
 						temp.HGVSc = data['12'] || '';
 						temp.HGVSp = data['13'] || '';
-						if ((data['22'] + data['23'] || '').indexOf('Pathogenic') !== -1) {
+						if ((data['22'] +" "+ data['23'] || '').indexOf('Likely Pathogenic') !== -1) {
+							temp.clinicalSignificance = 'Likely Pathogenic';
+						} else if ((data['22'] +" "+ data['23'] || '').indexOf('Pathogenic') !== -1) {
 							temp.clinicalSignificance = 'Pathogenic';
-						} else if ((data['22'] + data['23'] || '').indexOf('Benign') !== -1) {
+						} else if ((data['22'] +" "+ data['23'] || '').indexOf('Benign') !== -1) {
 							temp.clinicalSignificance = 'Benign';
-						} else if ((data['22'] + data['23'] || '').indexOf('uncertain significant') !== -1) {
+						} else if ((data['22'] +" "+ data['23'] || '').indexOf('uncertain significant') !== -1) {
 							temp.clinicalSignificance = 'uncertain significant';
-						} else if ((data['22'] + data['23'] || '').indexOf('not_provided') !== -1) {
+						} else if ((data['22'] +" "+ data['23'] || '').indexOf('not_provided') !== -1) {
 							temp.clinicalSignificance = 'not_provided';
+						} else if ((data['22'] +" "+ data['23'] || '').indexOf('VUS') !== -1) {
+							temp.clinicalSignificance = 'VUS';
 						} else {
 							temp.clinicalSignificance = '';
 						}
@@ -410,7 +415,7 @@ export class NGSService {
 		return ;
 	}
 	
-	async runScript(): Promise<void> {
+	async runScript(data:File[]): Promise<void> {
 		fs.writeFile(`${this.configService.get<string>('ngs.path')}/status.txt`,"1", 'utf-8',(err)=>{});
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
@@ -435,10 +440,10 @@ export class NGSService {
 			const sampleResults = files.map((file) => {
 				const temp = new Sample();
 				temp.sampleName = `${file.split('_')[0]}_${file.split('_')[1]}`;
-				temp.SID = "";
-				temp.checkDate = new Date();
-				temp.departmentNo = "";
-				temp.medicalRecordNo = "";
+				temp.SID = data.find((d)=>d.name===file)?.SID;
+				temp.checkDate = data.find((d)=>d.name===file)?.checkDate;
+				temp.departmentNo = data.find((d)=>d.name===file)?.departmentNo;
+				temp.medicalRecordNo = data.find((d)=>d.name===file)?.medicalRecordNo;
 				temp.disease = diseases.find(
 					(d) => (d.abbr === (file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1]))
 				);
@@ -494,7 +499,9 @@ export class NGSService {
 							temp.geneName = data['10'] || '';
 							temp.HGVSc = data['12'] || '';
 							temp.HGVSp = data['13'] || '';
-							if ((data['22'] +" "+ data['23'] || '').indexOf('Pathogenic') !== -1) {
+							if ((data['22'] +" "+ data['23'] || '').indexOf('Likely Pathogenic') !== -1) {
+								temp.clinicalSignificance = 'Likely Pathogenic';
+							} else if ((data['22'] +" "+ data['23'] || '').indexOf('Pathogenic') !== -1) {
 								temp.clinicalSignificance = 'Pathogenic';
 							} else if ((data['22'] +" "+ data['23'] || '').indexOf('Benign') !== -1) {
 								temp.clinicalSignificance = 'Benign';
@@ -502,6 +509,8 @@ export class NGSService {
 								temp.clinicalSignificance = 'uncertain significant';
 							} else if ((data['22'] +" "+ data['23'] || '').indexOf('not_provided') !== -1) {
 								temp.clinicalSignificance = 'not_provided';
+							} else if ((data['22'] +" "+ data['23'] || '').indexOf('VUS') !== -1) {
+								temp.clinicalSignificance = 'VUS';
 							} else {
 								temp.clinicalSignificance = '';
 							}

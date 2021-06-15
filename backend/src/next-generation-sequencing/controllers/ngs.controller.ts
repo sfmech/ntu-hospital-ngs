@@ -147,8 +147,9 @@ export class NGSController {
 
 	@Post('/runscript')
 	@UseGuards(AuthGuard('jwt'))
-	runscript() {
-		return this.ngsService.runScript();
+	runscript(@Req() request, @Body() body) {
+		console.log(body.data);
+		//return this.ngsService.runScript(body.data);
 	}
 
 	@Get('/filelist')
