@@ -17,6 +17,12 @@ import { Aligned } from '../models/aligned.model';
 export class NGSController {
 	constructor(private readonly ngsService: NGSService, private jwtService: CustomJwtService) {}
 
+	@Get('/init')
+	@UseGuards(AuthGuard('jwt'))
+	getAll(): {'samples': Promise<Sample[]>, segments: Promise<Segment[]>, coverage: Promise<Coverage[]>,mutationQC: Promise<MutationQC[]>, aligned: Promise<Aligned[]>} {
+		return {samples:this.ngsService.getAllSamples(), segments: this.ngsService.getAllSegments(), coverage: this.ngsService.getAllCoverage(), mutationQC:this.ngsService.getAllMutationQC(), aligned: this.ngsService.getAllAligned()};
+	}
+
 	@Get('/runs')
 	@UseGuards(AuthGuard('jwt'))
 	getAllRuns(): Promise<Run[]> {

@@ -28,6 +28,18 @@ export const ResultProvider = ({ children }) => {
 	const [ state, dispatch ] = useReducer(ResultReducer, initialState);
 	
 	useEffect(() => {
+		const getAll = async () => {
+			try {
+				const response = await axios(`${ApiUrl}/api/init`);
+				setSamples(response.data['samples']);
+				setSegments(response.data['segments']);
+				setCoverages(response.data['coverage']);
+				setMutationQCs(response.data['mutationQC']);
+				setAligneds(response.data['aligned']);
+			} catch (error) {
+				console.log(error);
+			}
+		};
 		const getAllSamples = async () => {
 			try {
 				const response = await axios(`${ApiUrl}/api/samples`);
@@ -69,11 +81,8 @@ export const ResultProvider = ({ children }) => {
 				console.log(error);
 			}
 		};
-		getAllSamples();
-		getAllSegments();
-		getAllCoverages();
-		getAllMutationQCs();
-		getAllAligneds();
+		getAll();
+
 	}, []);
 
 	function setSamples(samples: Sample[]) {
