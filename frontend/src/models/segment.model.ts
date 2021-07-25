@@ -6,7 +6,7 @@ export class Segment {
     chr: string;
     position: string;
     dbSNP: string| null;
-    freq: number| null;
+    freq: number;
     depth: number| null;
     annotation: string;
     geneName: string;

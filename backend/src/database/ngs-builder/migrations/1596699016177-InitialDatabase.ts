@@ -4,8 +4,8 @@ export class InitialDatabase1596699016177 implements MigrationInterface {
     name = 'InitialDatabase1596699016177'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE  IF NOT EXISTS  "runs" ("run_id" SERIAL NOT NULL, "run_name" character varying NOT NULL, "start_time" timestamp with time zone DEFAULT now(), CONSTRAINT "runs_pkey" PRIMARY KEY ("run_id"))`);
-        await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "samples" ("sample_id" SERIAL NOT NULL, "run_id" SERIAL NOT NULL, "sample_name" character varying, "disease_id" SERIAL NOT NULL, CONSTRAINT "samples_pkey" PRIMARY KEY ("sample_id") , CONSTRAINT "foreign_run" FOREIGN KEY ("run_id") REFERENCES public.runs (run_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
+        await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "runs" ("run_id" SERIAL NOT NULL, "run_name" character varying NOT NULL, "start_time" timestamp with time zone DEFAULT now(), CONSTRAINT "runs_pkey" PRIMARY KEY ("run_id"))`);
+        await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "samples" ("sample_id" SERIAL NOT NULL, "run_id" SERIAL NOT NULL, "sample_name" character varying, "disease_id" SERIAL NOT NULL, specimen_no character varying, patient_name character varying, patient_sex character varying, specimen_type character varying, specimen_status character varying, patient_birth date, note1 character varying, note2 character varying, note3 character varying, CONSTRAINT "samples_pkey" PRIMARY KEY ("sample_id") , CONSTRAINT "foreign_run" FOREIGN KEY ("run_id") REFERENCES public.runs (run_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "segments" ("segment_id" SERIAL NOT NULL, "sample_id"  SERIAL NOT NULL, "chr" character varying NOT NULL, "position" character varying NOT NULL, "dbSNP" character varying, "freq" numeric, "depth" integer, "annotation" character varying, "gene_name" character varying, "HGVS.p" character varying NOT NULL, "HGVS.c" character varying NOT NULL, "clinical_significance" character varying, "global_AF" numeric, "AFR_AF" numeric, "AMR_AF" numeric, "EUR_AF" numeric, "ASN_AF" numeric, CONSTRAINT "segments_pkey" PRIMARY KEY ("segment_id"), CONSTRAINT "foreign_sample" FOREIGN KEY ("sample_id") REFERENCES public.samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "filterlist" (gene_name character varying, chr character varying NOT NULL, "position" character varying NOT NULL, "HGVS.c" character varying  NOT NULL, "HGVS.p" character varying  NOT NULL, category character varying NOT NULL, "clinical_significance" character varying, remark character varying, editor character varying, CONSTRAINT pk_filterlist PRIMARY KEY (chr, "position", "HGVS.c", "HGVS.p"))`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "setting" (id SERIAL NOT NULL, "name" character varying NOT NULL, "value" character varying  NOT NULL, CONSTRAINT setting_pkey PRIMARY KEY (id))`);
@@ -15,6 +15,7 @@ export class InitialDatabase1596699016177 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "users" (user_id serial NOT NULL,user_name character varying NOT NULL,password character varying NOT NULL,user_role character varying NOT NULL, CONSTRAINT users_pkey PRIMARY KEY (user_id))`);
         await queryRunner.query(`INSERT INTO users(user_name, password, user_role) select 'admin', 'admin', 'admin' WHERE NOT EXISTS (SELECT 1 FROM users where user_name='admin' and password='admin' and user_role='admin');`);
         await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "aligned"(aligned_id SERIAL NOT NULL, sample_id SERIAL NOT NULL, alignment_rate numeric,  mean_coverage numeric, cover_region_percentage numeric, control_1 numeric, control_2 numeric, control_3 numeric, CONSTRAINT aligned_pkey PRIMARY KEY (aligned_id), CONSTRAINT foreign_sample FOREIGN KEY (sample_id) REFERENCES samples (sample_id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE)`);
+        await queryRunner.query(`CREATE TABLE IF NOT EXISTS  "health_care_workers"(worker_id serial NOT NULL, name character varying, “number” character varying, CONSTRAINT health_care_workers_pkey PRIMARY KEY (worker_id))`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -28,6 +29,7 @@ export class InitialDatabase1596699016177 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "coverage"`);
         await queryRunner.query(`DROP TABLE "users"`);
         await queryRunner.query(`DROP TABLE "aligned"`);
+        await queryRunner.query(`DROP TABLE "health_care_workers"`);
 
     }
 

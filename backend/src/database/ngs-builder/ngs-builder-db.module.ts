@@ -8,6 +8,7 @@ import { BuilderDbConfigFactory } from './config/course-builder-db.config';
 import { Aligned } from './entities/aligned.entity';
 import { Coverage } from './entities/coverage.entity';
 import { Disease } from './entities/disease.entity';
+import { HealthCareWorkers } from './entities/healthCareWorkers.entity';
 import { MutationQC } from './entities/mutationQC.entity';
 import { Run } from './entities/run.entity';
 import { Sample } from './entities/sample.entity';
@@ -33,7 +34,7 @@ import { User } from './entities/user.entity';
                 },
             inject: [ConfigService, LoggerService],
         }),
-        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User, Aligned]),
+        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User, Aligned, HealthCareWorkers]),
     ],
     providers: [],
     exports: [TypeOrmModule]

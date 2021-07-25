@@ -63,6 +63,15 @@ import { SegmentCategory } from '../../models/segment.category.enum';
 import { QueryBox } from './QueryBox';
 import { ResultOptionContext } from '../../contexts/result-option.context';
 import { QueryCondition } from '../../models/query.condition.enum';
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { MyDocument } from "./ExportPdf";
+import { ExportPdfModal } from '../modals/ExportPdfModal';
+import { PdfData } from '../../models/pdf.model';
+import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
+import { endianness } from 'os';
+import { PdfDataContext } from '../../contexts/pdf-data.context';
+import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
+
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -262,6 +271,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const { sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults, setSamples } = useContext(ResultContext);
 	const { blacklist, whitelist, filterlist, hotspotlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
 	const { input, condition } = useContext(ResultOptionContext);
+	const { pdfData,  setData} = useContext(PdfDataContext);
 	const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
 	const [ otherSegments, setOtherSegments ] = useState(Array<Segment>());
 	const [ selectedSegments, setSelectedSegments ] = useState<Array<Segment>>(new Array<Segment>());
@@ -272,6 +282,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selectedSample, setSelectedSample ] = useState<Sample>(new Sample());
 	const [ selectedRun, setSelectedRun ] = useState<Run>(new Run());
 	const [ showModal, setShowModal ] = useState<boolean>(false);
+	const [ showExportPdfModal, setShowExportPdfModal ] = useState<boolean>(false);
 	const [ showUploadModal, setShowUploadModal ] = useState<boolean>(false);
 	const [ showAddSegmentModal, setShowAddSegmentModal ] = useState<boolean>(false);
 	const [ title, setTitle ] = useState<string>("blacklist");
@@ -283,9 +294,23 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
+	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
 	const [ value, setValue ] = React.useState('1');
 	const [ cookies ] = useCookies();
+	const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
+	useEffect(()=>{
+        const getMemberlist = () => {
+			try {
+				axios(`${ApiUrl}/api/getHealthCareWorkers`).then((res) => {
+					setMemberlist(res.data);
+				});
+			} catch (error){
+				console.log(error);
+			}
+		}
+        getMemberlist();
 
+    },[]);
 	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
 		setValue(newValue);
 	};
@@ -528,6 +553,11 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setShowAddSegmentModal(true);
 	};
 
+	const handleExportPdfClick = () => {
+		setExportPdfData(getExportPdfData());
+		setShowExportPdfModal(true);
+	};
+
 	const handleExportClick = () => {
 		setExportData(getExportData());
 		setShowModal(true);
@@ -552,7 +582,104 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setSelectedSample(selectedSample);
 		
 	};
+	const getExportPdfData = () => {
+		let newExportData = new Array<PdfData>();
+		
+		selected.forEach((id: number) => {
+			let pdfData = new PdfData();
+			if(segmentResults[id].length>0){
+				let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
+				pdfData['sample'] =  segmentResults[id][0].sample;
+				pdfData['runName'] = segmentResults[id][0].sample.run.runName;
+				pdfData['sampleName'] = segmentResults[id][0].sample.sampleName;
+				pdfData['SID'] = segmentResults[id][0].sample.SID===undefined?"":segmentResults[id][0].sample.SID;
+				pdfData['checkDate'] = new Date( segmentResults[id][0].sample.checkDate).toLocaleDateString();
+				pdfData['departmentNo'] = segmentResults[id][0].sample.departmentNo===undefined?"":segmentResults[id][0].sample.departmentNo;
+				if(alignedResults[id].length>0)
+					pdfData['coverage'] = 100 - alignedResults[id][0].coverRegionPercentage;
+				pdfData['medicalRecordNo'] = segmentResults[id][0].sample.medicalRecordNo===undefined?"":segmentResults[id][0].sample.medicalRecordNo;
+				pdfData['patientBirth'] = new Date( segmentResults[id][0].sample.patientBirth).toLocaleDateString();
+				pdfData['patientName'] = segmentResults[id][0].sample.patientName===undefined?"":segmentResults[id][0].sample.patientName;
+				pdfData['patientSex'] = segmentResults[id][0].sample.patientSex;
+				pdfData['specimenNo'] = segmentResults[id][0].sample.specimenNo===undefined?"":segmentResults[id][0].sample.specimenNo;
+				pdfData['specimenStatus'] = segmentResults[id][0].sample.specimenStatus===undefined?"":segmentResults[id][0].sample.specimenStatus;
+				pdfData['specimenType'] = segmentResults[id][0].sample.specimenType===undefined?"":segmentResults[id][0].sample.specimenType;
+				pdfData['note1'] = segmentResults[id][0].sample.note1===undefined?"":segmentResults[id][0].sample.note1;
+				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
+				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
+				pdfData['list1'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.Pathogenic);
+				pdfData['list2'] = tempTarget.filter((segment)=>segment.freq<=5);
+				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS);
+				pdfData['checker'] = segmentResults[id][0].sample.checker;
+				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;
+				pdfData['reportDoctor'] = segmentResults[id][0].sample.reportDoctor;
+				pdfData['confirmer'] = segmentResults[id][0].sample.confirmer;
+				let coverageTemplate = coverageResults[id].sort((a, b)=>{
+					if(parseInt(a.ampliconStart)<parseInt(b.ampliconStart)){
+						return -1;
+					}else if(parseInt(a.ampliconStart)>parseInt(b.ampliconStart)){
+						return 1;
+					}else{
+						return 0;
+					}
+				});
 
+				const testmutationqcs = mutationQCResults[id].reduce((groups, item) => {
+					const val = item.geneName;
+					groups[val] = groups[val] || [];
+					groups[val].push(item);
+					return groups;
+				}, {})
+				let list4 = new Array();
+				Object.keys(testmutationqcs).map((key)=>{
+					let start = -1;
+					let end = -1;
+
+					testmutationqcs[key].forEach((mutationQC: MutationQC, index, array: MutationQC[]) => {
+						if(mutationQC.QC<50 && start===-1){
+							if(parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconStart))
+								start = parseInt(mutationQC.position);
+						}else if(mutationQC.QC<50 && start !==-1){
+							if (index != array.length-1){
+								if(array[index+1].QC>50){
+									if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
+										end = parseInt(mutationQC.position);
+										let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
+										let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end)[0];
+										if(coverageStartIndex===coverageEndIndex){
+											let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+											list4.push({"gene": key, 'exon': exon, 'from': start, 'to':end});
+										}else{
+											let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+											let finalExon = exon;
+											for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
+												const elementExon = coverageTemplate[i].amplionName.split('-')[1].split('.')[0];
+												if(finalExon!==elementExon){
+													exon += ", "+elementExon;
+													finalExon=elementExon;
+												}
+											}
+											list4.push({"gene": key, 'exon': exon, 'from': start, 'to':end});
+										}
+										start = -1;
+					 					end = -1;
+									}
+								}
+							}
+						}
+						
+					}); 
+				});		
+				pdfData['list4'] = list4;	
+				newExportData.push(pdfData);	
+			}
+			
+			
+			
+		});
+		setData(newExportData);
+		return newExportData;
+	};
 	const getExportData = () => {
 		let newExportData: Segment[] = [];
 		selected.forEach((id: number) => {
@@ -682,17 +809,29 @@ export const NgsResult: FunctionComponent = (prop) => {
 				<div className="col-3">
 					<QueryBox />
 					<Grid container alignItems="center" justify="center" className="mt-2">							
-						<Grid item xs={4}>
+						<Grid container alignItems="center" justify="center" xs={6}>
 							<Button
 								variant="contained"
 								color="primary"
 								startIcon={<ImportExportIcon />}
 								onClick={handleExportClick}
 							>
-								匯出
+								匯出csv
 							</Button>
 						</Grid>
-						<Grid item xs={4}>
+						<Grid container alignItems="center" justify="center" xs={6}>
+								<Button
+									variant="contained"
+									color="primary"
+									startIcon={<ImportExportIcon />}
+									onClick={handleExportPdfClick}
+								>
+									匯出pdf
+								</Button>
+						</Grid>
+					</Grid>
+					<Grid container alignItems="center" justify="center" className="mt-2">							
+						<Grid container alignItems="center" justify="center" xs={6}>
 							<Button
 								variant="contained"
 								color="primary"
@@ -702,7 +841,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								上傳
 							</Button>
 						</Grid>
-						<Grid item xs={4}>
+						<Grid container alignItems="center" justify="center" xs={6}>
 							<Button
 								variant="contained"
 								color="secondary"
@@ -719,45 +858,99 @@ export const NgsResult: FunctionComponent = (prop) => {
 						defaultExpandIcon={<ArrowRightIcon />}
 						defaultEndIcon={<div style={{ width: 24 }} />}
 					>
-						{Object.keys(sampleResults).map((key) => (
-							<StyledTreeItem
-								nodeId={String(sampleResults[key][0].run.runId)}
-								labelText={sampleResults[key][0].run.runName + '  (' +(()=>{
-									switch(condition){
-										case QueryCondition.StartDate:
-											return 	sampleResults[key].filter((sampleRow)=>betweenDate(sampleRow.run.startTime, input)).length;
-										case QueryCondition.SampleName:
-											return sampleResults[key].filter((sampleRow)=> sampleRow.sampleName.split('_')[0].indexOf(input)!==-1).length;
-										case QueryCondition.DiseaseEnName:
-											return sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1).length;
-									}
-								})() + ' records)'
-								}
-								labelInfo={new Date(sampleResults[key][0].run.startTime).toLocaleDateString()}
-								isSample={false}
-								handleSelectClick={handleSelectClick}
-								labelInfoClickListener={()=>handleRunDoubleClick(sampleResults[key][0].run)}
-								isSelected={isSelected(sampleResults[key].map((sample) => sample.sampleId), false)}
-								rowCount={sampleResults[key].length}
-								numSelected={sampleResults[key].map((sample) => sample.sampleId).filter((s)=>selected.indexOf(s)===-1).length}
-							>
-								{sampleResults[key].map((sampleRow: Sample) => (
-									sampleRow.disease.enName.indexOf(input)!==-1 || sampleRow.sampleName.split('_')[0].indexOf(input)!==-1?
-									<StyledTreeItem
-										nodeId={String(sampleRow.sampleId)}
-										labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
-										onClick={() =>
-											handleClick(segmentResults[sampleRow.sampleId], sampleRow)}
-										isSample={true}
-										onDoubleClick={() => handleDoubleClick(sampleRow)}
-										handleSelectClick={handleSelectClick}
-										isSelected={isSelected(sampleRow.sampleId, true)}
-										rowCount={0}
-										numSelected={0}
-									/>:null
-								))}
-							</StyledTreeItem>
-						))}
+						{Object.keys(sampleResults).map((key) => ((()=>{
+							let len = 0;
+							switch(condition){
+								case QueryCondition.StartDate:
+									len = sampleResults[key].filter((sampleRow)=>betweenDate(sampleRow.run.startTime, input)).length;
+									if(len>0)
+										return (	
+										<StyledTreeItem
+											nodeId={String(sampleResults[key][0].run.runId)}
+											labelText={sampleResults[key][0].run.runName + '  (' + len + ' records)'}
+											labelInfo={new Date(sampleResults[key][0].run.startTime).toLocaleDateString()}
+											isSample={false}
+											handleSelectClick={handleSelectClick}
+											labelInfoClickListener={()=>handleRunDoubleClick(sampleResults[key][0].run)}
+											isSelected={isSelected(sampleResults[key].map((sample) => sample.sampleId), false)}
+											rowCount={sampleResults[key].length}
+											numSelected={sampleResults[key].map((sample) => sample.sampleId).filter((s)=>selected.indexOf(s)===-1).length}
+										>
+											{sampleResults[key].map((sampleRow: Sample) => (betweenDate(sampleRow.run.startTime, input)?
+											<StyledTreeItem
+												nodeId={String(sampleRow.sampleId)}
+												labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
+												onClick={() =>
+													handleClick(segmentResults[sampleRow.sampleId], sampleRow)}
+												isSample={true}
+												onDoubleClick={() => handleDoubleClick(sampleRow)}
+												handleSelectClick={handleSelectClick}
+												isSelected={isSelected(sampleRow.sampleId, true)}
+												rowCount={0}
+												numSelected={0}
+											/>:null))}
+										</StyledTreeItem>);
+
+								case QueryCondition.SampleName:
+									len = sampleResults[key].filter((sampleRow)=> sampleRow.sampleName.split('_')[0].indexOf(input)!==-1).length;
+									if(len>0)
+										return 	(
+										<StyledTreeItem
+											nodeId={String(sampleResults[key][0].run.runId)}
+											labelText={sampleResults[key][0].run.runName + '  (' + len + ' records)'}
+											labelInfo={new Date(sampleResults[key][0].run.startTime).toLocaleDateString()}
+											isSample={false}
+											handleSelectClick={handleSelectClick}
+											labelInfoClickListener={()=>handleRunDoubleClick(sampleResults[key][0].run)}
+											isSelected={isSelected(sampleResults[key].map((sample) => sample.sampleId), false)}
+											rowCount={sampleResults[key].length}
+											numSelected={sampleResults[key].map((sample) => sample.sampleId).filter((s)=>selected.indexOf(s)===-1).length}
+										>
+											{sampleResults[key].map((sampleRow: Sample) => ((sampleRow.sampleName.split('_')[0].indexOf(input)!==-1)?
+											<StyledTreeItem
+												nodeId={String(sampleRow.sampleId)}
+												labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
+												onClick={() =>
+													handleClick(segmentResults[sampleRow.sampleId], sampleRow)}
+												isSample={true}
+												onDoubleClick={() => handleDoubleClick(sampleRow)}
+												handleSelectClick={handleSelectClick}
+												isSelected={isSelected(sampleRow.sampleId, true)}
+												rowCount={0}
+												numSelected={0}
+											/>:null))}
+										</StyledTreeItem>);
+								case QueryCondition.DiseaseEnName:
+									len = sampleResults[key].filter((sampleRow)=>sampleRow.disease.enName.indexOf(input)!==-1).length;
+									if(len>0)
+										return 	(
+										<StyledTreeItem
+											nodeId={String(sampleResults[key][0].run.runId)}
+											labelText={sampleResults[key][0].run.runName + '  (' + len + ' records)'}
+											labelInfo={new Date(sampleResults[key][0].run.startTime).toLocaleDateString()}
+											isSample={false}
+											handleSelectClick={handleSelectClick}
+											labelInfoClickListener={()=>handleRunDoubleClick(sampleResults[key][0].run)}
+											isSelected={isSelected(sampleResults[key].map((sample) => sample.sampleId), false)}
+											rowCount={sampleResults[key].length}
+											numSelected={sampleResults[key].map((sample) => sample.sampleId).filter((s)=>selected.indexOf(s)===-1).length}
+										>
+											{sampleResults[key].map((sampleRow: Sample) => ((sampleRow.disease.enName.indexOf(input)!==-1)?
+											<StyledTreeItem
+												nodeId={String(sampleRow.sampleId)}
+												labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
+												onClick={() =>
+													handleClick(segmentResults[sampleRow.sampleId], sampleRow)}
+												isSample={true}
+												onDoubleClick={() => handleDoubleClick(sampleRow)}
+												handleSelectClick={handleSelectClick}
+												isSelected={isSelected(sampleRow.sampleId, true)}
+												rowCount={0}
+												numSelected={0}
+											/>:null))}
+										</StyledTreeItem>);
+							};
+						})()))}
 					</TreeView>
 				</div>
 				<div className="col-9" >
@@ -872,6 +1065,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 					<KeyboardArrowUpIcon />
 				</Fab>
 			</ScrollTop>
+			<ExportPdfModal show={showExportPdfModal} exportData={exportPdfData} onClose={() => setShowExportPdfModal(false)} />
 			<ExportModal show={showModal} exportData={exportData} onClose={() => setShowModal(false)} />
 			<UploadFolderModal show={showUploadModal} onClose={() => setShowUploadModal(false)} />
 			<EditDiseaseModal

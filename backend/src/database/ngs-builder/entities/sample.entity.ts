@@ -46,4 +46,43 @@ export class Sample {
     @CreateDateColumn({type: 'timestamp with time zone', name: "check_date" })
     checkDate: Date;
 
+    @CreateDateColumn({name: "patient_birth" })
+    patientBirth : Date;
+
+    @Column({ name: "specimen_no"})
+    specimenNo: string;
+
+    @Column({ name: "patient_name"})
+    patientName: string;
+
+    @Column({ name: "patient_sex"})
+    patientSex : string;
+
+    @Column({ name: "specimen_type"})
+    specimenType : string;
+
+    @Column({ name: "specimen_status"})
+    specimenStatus : string;
+
+    @Column({ name: "note1"})
+    note1 : string;
+    
+    @Column({ name: "note2"})
+    note2 : string;
+
+    @Column({ name: "note3"})
+    note3 : string;
+
+    @Column({ name: "checker"})
+    checker : number;
+
+    @Column({ name: "quality_manager"})
+    qualityManager : number;
+    
+    @Column({ name: "report_doctor"})
+    reportDoctor : number;
+
+    @Column({ name: "confirmer"})
+    confirmer : number;
+
 }

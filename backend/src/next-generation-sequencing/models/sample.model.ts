@@ -10,4 +10,17 @@ export class Sample {
     SID: string;
     departmentNo: string;
     checkDate: Date;
+    patientBirth : Date;
+    specimenNo: string;
+    patientName: string;
+    patientSex : string;
+    specimenType : string;
+    specimenStatus : string;
+    note1 : string;
+    note2 : string;
+    note3 : string;
+    checker: number;
+    qualityManager: number;
+    reportDoctor: number;
+    confirmer: number;
 }

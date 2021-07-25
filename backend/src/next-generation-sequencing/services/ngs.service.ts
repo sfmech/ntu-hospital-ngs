@@ -10,6 +10,7 @@ import { MutationQC as MutationQCEntity } from 'src/database/ngs-builder/entitie
 import { Coverage as CoverageEntity } from 'src/database/ngs-builder/entities/coverage.entity';
 import { User as UserEntity } from 'src/database/ngs-builder/entities/user.entity';
 import { Aligned as AlignedEntity } from 'src/database/ngs-builder/entities/aligned.entity';
+import { HealthCareWorkers as HealthCareWorkersEntity } from 'src/database/ngs-builder/entities/healthCareWorkers.entity';
 
 import { Repository } from 'typeorm';
 
@@ -24,6 +25,7 @@ import { Coverage } from '../models/coverage.model';
 import { Run } from '../models/run.model';
 import { User } from '../models/user.model';
 import { Aligned } from '../models/aligned.model';
+import { HealthCareWorkers } from '../models/healthCareWorkers.model';
 import { File } from '../models/file.model';
 
 var cp = require('child_process');
@@ -42,6 +44,7 @@ export class NGSService {
 		@InjectRepository(CoverageEntity) private coverageRepository: Repository<CoverageEntity>,
 		@InjectRepository(AlignedEntity) private alignedRepository: Repository<AlignedEntity>,
 		@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
+		@InjectRepository(HealthCareWorkersEntity) private healthCareWorkersRepository: Repository<HealthCareWorkersEntity>,
 		private configService: ConfigService
 	) {}
 	
@@ -129,6 +132,22 @@ export class NGSService {
 
 	async deleteUser(users: User[]): Promise<void> {
 		const response = await this.userRepository.remove(users);
+		return;
+	}
+
+	async getHealthCareWorkers(): Promise<HealthCareWorkers[]>{
+		const healthCareWorkerslist = await this.healthCareWorkersRepository.find();
+		return healthCareWorkerslist;
+	}
+
+	async addHealthCareWorkers(healthCareWorkers: HealthCareWorkers){
+		const response = await this.healthCareWorkersRepository.save(healthCareWorkers);
+		
+		return response;
+	}
+
+	async deleteHealthCareWorkers(healthCareWorkers: HealthCareWorkers[]): Promise<void> {
+		const response = await this.healthCareWorkersRepository.remove(healthCareWorkers);
 		return;
 	}
 

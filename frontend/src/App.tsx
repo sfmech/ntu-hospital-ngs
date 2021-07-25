@@ -16,6 +16,7 @@ import { MemberManage } from './components/member-list/MemberManage';
 import { CookiesProvider } from 'react-cookie';
 import { NgsStatistic } from './components/ngs-statistic/NgsStatistic';
 import { ResultOptionProvider } from './contexts/result-option.context';
+import { PdfDataProvider } from './contexts/pdf-data.context';
 
 function PrivateRoute ({ children,role, ...rest }) {
 	return (
@@ -32,6 +33,7 @@ export const App: FunctionComponent = () => {
 	let token: string = cookies['jwt-auth-token'];
 	return (
 		<Router>
+			<PdfDataProvider>
 			<CookiesProvider>
 			<ResultOptionProvider>
 			<ResultProvider>
@@ -64,6 +66,7 @@ export const App: FunctionComponent = () => {
 			</ResultProvider>
 			</ResultOptionProvider>
 			</CookiesProvider>
+			</PdfDataProvider>
 		</Router>
 	);
 };

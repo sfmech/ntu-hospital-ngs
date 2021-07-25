@@ -142,6 +142,7 @@ export class NGSController {
 	@Post('/updateSample')
 	@UseGuards(AuthGuard('jwt'))
 	updateSample(@Body() body): Promise<Sample[]> {
+		console.log(body.data);
 		return this.ngsService.updateSample(body.data);
 	}
 
@@ -226,5 +227,25 @@ export class NGSController {
 	@UseGuards(AuthGuard('jwt'))
 	deleteUser(@Body() body) {
 		return this.ngsService.deleteUser(body.data);
+	}
+
+	@Get('/getHealthCareWorkers')
+	@UseGuards(AuthGuard('jwt'))
+	async getHealthCareWorkers(@Req() request) {
+		return this.ngsService.getHealthCareWorkers();
+	}
+
+	@Post('/addHealthCareWorkers')
+	@UseGuards(AuthGuard('jwt'))
+	addHealthCareWorkers(@Req() request, @Res() response, @Body() body) {
+		response.status(HttpStatus.OK)
+		this.ngsService.addHealthCareWorkers(body.data);
+		return response.send();
+	}
+
+	@Post('/deleteHealthCareWorkers')
+	@UseGuards(AuthGuard('jwt'))
+	deleteHealthCareWorkers(@Body() body) {
+		return this.ngsService.deleteHealthCareWorkers(body.data);
 	}
 }
