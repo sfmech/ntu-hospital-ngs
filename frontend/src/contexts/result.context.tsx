@@ -82,7 +82,6 @@ export const ResultProvider = ({ children }) => {
 				console.log(error);
 			}
 		};
-		getAll();
 
 	}, []);
 
