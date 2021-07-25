@@ -275,7 +275,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
-	const { sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults,setSegments, setAligneds, setMutationQCs, setCoverages, setSamples } = useContext(ResultContext);
+	const { refresh,sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults,setSegments, setAligneds, setMutationQCs, setCoverages, setSamples } = useContext(ResultContext);
 	const { blacklist, whitelist, filterlist, hotspotlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
 	const { input, condition } = useContext(ResultOptionContext);
 	const { pdfData,  setData} = useContext(PdfDataContext);
@@ -304,7 +304,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
 	const [ value, setValue ] = React.useState('1');
 	const [ cookies ] = useCookies();
-	const [creating, setCreating] = useState(false);
 	const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
 	useEffect(() => {
 		
@@ -320,23 +319,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 				console.log(error);
 			}
 		}
-		const getAll = async () => {
-			try {
-				setCreating(true);
-				const response = await axios(`${ApiUrl}/api/init`);
-				console.log(response);
-				setSamples(response.data['samples']);
-				setSegments(response.data['segments']);
-				setCoverages(response.data['coverage']);
-				setMutationQCs(response.data['mutationQC']);
-				setAligneds(response.data['aligned']);
-			} catch (error) {
-				console.log(error);
-			}finally {
-				setCreating(false);
-			}
-		};
-		getAll();
         getMemberlist();
 		
 
@@ -1132,7 +1114,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			
 		
 		
-		<Backdrop className={classes.backdrop} open={creating}>
+		<Backdrop className={classes.backdrop} open={refresh}>
 			<Box position="relative" >
 			<div className="text-center">
 				<CircularProgress color="inherit" />

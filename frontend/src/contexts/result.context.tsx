@@ -9,6 +9,7 @@ import { MutationQC } from '../models/mutationQC.model';
 import { Aligned } from '../models/aligned.model';
 
 const initialState = {
+	refresh: false,
 	segmentResults: {} as Record<string, Segment[]>,
 	sampleResults: {} as Record<string, Sample[]>,
 	coverageResults: {} as Record<string, Coverage[]>,
@@ -30,8 +31,8 @@ export const ResultProvider = ({ children }) => {
 	useEffect(() => {
 		const getAll = async () => {
 			try {
+				setRefresh(true);
 				const response = await axios(`${ApiUrl}/api/init`);
-				console.log(response);
 				setSamples(response.data['samples']);
 				setSegments(response.data['segments']);
 				setCoverages(response.data['coverage']);
@@ -39,6 +40,8 @@ export const ResultProvider = ({ children }) => {
 				setAligneds(response.data['aligned']);
 			} catch (error) {
 				console.log(error);
+			}finally {
+				setRefresh(false);
 			}
 		};
 		const getAllSamples = async () => {
@@ -82,9 +85,15 @@ export const ResultProvider = ({ children }) => {
 				console.log(error);
 			}
 		};
+		getAll();
 
 	}, []);
-
+	function setRefresh(refresh: Boolean) {
+        dispatch({
+            type: 'SETREFRESH',
+            payload: refresh
+        });
+	}
 	function setSamples(samples: Sample[]) {
         dispatch({
             type: 'SETSAMPLES',
@@ -128,6 +137,7 @@ export const ResultProvider = ({ children }) => {
 	return (
 		<ResultContext.Provider
 			value={{
+				refresh: state.refresh,
 				sampleResults: state.sampleResults,
 				segmentResults: state.segmentResults,
 				mutationQCResults: state.mutationQCResults,

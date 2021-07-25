@@ -427,10 +427,10 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 									{row.list1.map((element) => (
 										<TableRow>
 											<TableCell>{element.geneName}</TableCell>
-											<TableCell>{Reference['element.geneName']}</TableCell>
+											<TableCell>{Reference[element.geneName]}</TableCell>
 											<TableCell>{element.HGVSc}</TableCell>
 											<TableCell>{element.HGVSp}</TableCell>
-											<TableCell>{element.freq / 100}</TableCell>
+											<TableCell>{parseFloat((element.freq / 100.0).toFixed(2))}</TableCell>
 											<TableCell>{element.depth}</TableCell>
 											<TableCell>{element.clinicalSignificance}</TableCell>
 										</TableRow>
@@ -472,10 +472,10 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 									{row.list2.map((element) => (
 										<TableRow>
 											<TableCell>{element.geneName}</TableCell>
-											<TableCell>{Reference['element.geneName']}</TableCell>
+											<TableCell>{Reference[element.geneName]}</TableCell>
 											<TableCell>{element.HGVSc}</TableCell>
 											<TableCell>{element.HGVSp}</TableCell>
-											<TableCell>{element.freq / 100}</TableCell>
+											<TableCell>{parseFloat((element.freq / 100.0).toFixed(2))}</TableCell>
 											<TableCell>{element.depth}</TableCell>
 											<TableCell>{element.clinicalSignificance}</TableCell>
 										</TableRow>
@@ -517,10 +517,10 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 									{row.list3.map((element) => (
 										<TableRow>
 											<TableCell>{element.geneName}</TableCell>
-											<TableCell>{Reference['element.geneName']}</TableCell>
+											<TableCell>{Reference[element.geneName]}</TableCell>
 											<TableCell>{element.HGVSc}</TableCell>
 											<TableCell>{element.HGVSp}</TableCell>
-											<TableCell>{element.freq / 100}</TableCell>
+											<TableCell>{parseFloat((element.freq / 100.0).toFixed(2))}</TableCell>
 											<TableCell>{element.depth}</TableCell>
 											<TableCell>{element.clinicalSignificance}</TableCell>
 										</TableRow>

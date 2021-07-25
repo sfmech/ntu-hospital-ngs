@@ -200,7 +200,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 									<Text style={styles.tableCell}>{element.geneName}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '15%' } ]}>
-									<Text style={styles.tableCell}>{Reference['element.geneName']}</Text>
+									<Text style={styles.tableCell}>{Reference[element.geneName]}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '20%' } ]}>
 									<Text style={styles.tableCell}>{element.HGVSc}</Text>
@@ -262,7 +262,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 									<Text style={styles.tableCell}>{element.geneName}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '15%' } ]}>
-									<Text style={styles.tableCell}>{Reference['element.geneName']}</Text>
+									<Text style={styles.tableCell}>{Reference[element.geneName]}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '20%' } ]}>
 									<Text style={styles.tableCell}>{element.HGVSc}</Text>
@@ -323,7 +323,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 									<Text style={styles.tableCell}>{element.geneName}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '15%' } ]}>
-									<Text style={styles.tableCell}>{Reference['element.geneName']}</Text>
+									<Text style={styles.tableCell}>{Reference[element.geneName]}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '20%' } ]}>
 									<Text style={styles.tableCell}>{element.HGVSc}</Text>

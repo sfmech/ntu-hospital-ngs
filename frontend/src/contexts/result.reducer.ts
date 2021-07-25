@@ -6,6 +6,11 @@ import { Segment } from '../models/segment.model';
 
 export const ResultReducer = (state, action) => {
 	switch (action.type) {
+		case "SETREFRESH":
+			return {
+				...state,
+				refresh: action.payload
+			};  
 		case "SETSAMPLES":
 			const ungroupSamples = action.payload as Sample[];
 			const groupSamples=ungroupSamples.reduce((groups, item) => {
