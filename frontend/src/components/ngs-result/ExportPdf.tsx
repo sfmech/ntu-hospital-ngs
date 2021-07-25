@@ -7,6 +7,7 @@ import { Height } from '@material-ui/icons';
 import { PdfData } from '../../models/pdf.model';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
 import { Reference } from '../../models/reference.enum';
+import { Sex } from '../../models/sex.enum';
 Font.register({ family: 'KAIU', src: KAIU });
 Font.register({ family: 'KAIUBold', src: KAIUBold });
 Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
@@ -158,7 +159,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</View>
 				<View style={styles.containInfoView}>
 					<Text style={{ width: 175 }}>姓名 : {prop.data.patientName}</Text>
-					<Text style={{ width: 175 }}>性別 : {prop.data.patientSex}</Text>
+					<Text style={{ width: 175 }}>性別 : {Sex[prop.data.patientSex]}</Text>
 					<Text style={{ width: 175 }}>出生年月日 : {prop.data.patientBirth}</Text>
 				</View>
 				<View style={styles.containInfoView}>
@@ -208,7 +209,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 									<Text style={styles.tableCell}>{element.HGVSp}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '7%' } ]}>
-									<Text style={styles.tableCell}>{element.freq / 100}</Text>
+									<Text style={styles.tableCell}>{parseFloat((element.freq / 100.0).toFixed(2))}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '7%' } ]}>
 									<Text style={styles.tableCell}>{element.depth}</Text>
@@ -270,7 +271,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 									<Text style={styles.tableCell}>{element.HGVSp}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '7%' } ]}>
-									<Text style={styles.tableCell}>{element.freq / 100}</Text>
+									<Text style={styles.tableCell}>{parseFloat((element.freq / 100.0).toFixed(2))}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '7%' } ]}>
 									<Text style={styles.tableCell}>{element.depth}</Text>
@@ -331,7 +332,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 									<Text style={styles.tableCell}>{element.HGVSp}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '7%' } ]}>
-									<Text style={styles.tableCell}>{element.freq / 100}</Text>
+									<Text style={styles.tableCell}>{parseFloat((element.freq / 100.0).toFixed(2))}</Text>
 								</View>
 								<View style={[ styles.tableCol, { width: '7%' } ]}>
 									<Text style={styles.tableCell}>{element.depth}</Text>

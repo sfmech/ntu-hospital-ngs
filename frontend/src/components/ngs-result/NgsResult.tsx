@@ -626,7 +626,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['checkDate'] = new Date( segmentResults[id][0].sample.checkDate).toLocaleDateString();
 				pdfData['departmentNo'] = segmentResults[id][0].sample.departmentNo===undefined?"":segmentResults[id][0].sample.departmentNo;
 				if(alignedResults[id].length>0)
-					pdfData['coverage'] = 100 - alignedResults[id][0].coverRegionPercentage;
+					pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
 				pdfData['medicalRecordNo'] = segmentResults[id][0].sample.medicalRecordNo===undefined?"":segmentResults[id][0].sample.medicalRecordNo;
 				pdfData['patientBirth'] = new Date( segmentResults[id][0].sample.patientBirth).toLocaleDateString();
 				pdfData['patientName'] = segmentResults[id][0].sample.patientName===undefined?"":segmentResults[id][0].sample.patientName;
@@ -664,8 +664,10 @@ export const NgsResult: FunctionComponent = (prop) => {
 				Object.keys(testmutationqcs).map((key)=>{
 					let start = -1;
 					let end = -1;
-
+					if(key==="CEBPA")
+						return;
 					testmutationqcs[key].forEach((mutationQC: MutationQC, index, array: MutationQC[]) => {
+						
 						if(mutationQC.QC<50 && start===-1){
 							if(parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconStart))
 								start = parseInt(mutationQC.position);
