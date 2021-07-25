@@ -325,9 +325,10 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 												name={'qualityManager'}
 												onChange={handleSampleChange}
 											>
-												{memberlist[HealthCareWorkerRole['MT']].map((result) => {
+												{memberlist[HealthCareWorkerRole['MT']]!==undefined?
+												memberlist[HealthCareWorkerRole['MT']].map((result) => {
 													return <MenuItem value={result.workerId}>{result.name}</MenuItem>;
-												})}
+												}):null}
 											</Select>
 										</FormControl>
 									</div>
@@ -342,9 +343,10 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 												name={'reportDoctor'}
 												onChange={handleSampleChange}
 											>
-												{memberlist[HealthCareWorkerRole['VS']].map((result) => {
+												{memberlist[HealthCareWorkerRole['VS']]!==undefined?
+												memberlist[HealthCareWorkerRole['VS']].map((result) => {
 													return <MenuItem value={result.workerId}>{result.name}</MenuItem>;
-												})}
+												}):null}
 											</Select>
 										</FormControl>
 									</div>
@@ -361,9 +363,10 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 												name={'checker'}
 												onChange={handleSampleChange}
 											>
-												{memberlist[HealthCareWorkerRole['MT']].map((result) => {
+												{memberlist[HealthCareWorkerRole['MT']]!==undefined?
+												memberlist[HealthCareWorkerRole['MT']].map((result) => {
 													return <MenuItem value={result.workerId}>{result.name}</MenuItem>;
-												})}
+												}):null}
 											</Select>
 										</FormControl>
 									</div>
@@ -378,9 +381,10 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 												name={'confirmer'}
 												onChange={handleSampleChange}
 											>
-												{memberlist[HealthCareWorkerRole['VS']].map((result) => {
+												{memberlist[HealthCareWorkerRole['VS']]!==undefined?
+												memberlist[HealthCareWorkerRole['VS']].map((result) => {
 													return <MenuItem value={result.workerId}>{result.name}</MenuItem>;
-												})}
+												}):null}
 											</Select>
 										</FormControl>
 									</div>
