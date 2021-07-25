@@ -31,6 +31,7 @@ export const ResultProvider = ({ children }) => {
 		const getAll = async () => {
 			try {
 				const response = await axios(`${ApiUrl}/api/init`);
+				console.log(response);
 				setSamples(response.data['samples']);
 				setSegments(response.data['segments']);
 				setCoverages(response.data['coverage']);

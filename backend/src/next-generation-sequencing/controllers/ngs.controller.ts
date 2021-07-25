@@ -19,8 +19,8 @@ export class NGSController {
 
 	@Get('/init')
 	@UseGuards(AuthGuard('jwt'))
-	getAll(): {'samples': Promise<Sample[]>, segments: Promise<Segment[]>, coverage: Promise<Coverage[]>,mutationQC: Promise<MutationQC[]>, aligned: Promise<Aligned[]>} {
-		return {samples:this.ngsService.getAllSamples(), segments: this.ngsService.getAllSegments(), coverage: this.ngsService.getAllCoverage(), mutationQC:this.ngsService.getAllMutationQC(), aligned: this.ngsService.getAllAligned()};
+	async getAll(): Promise<{ 'samples': Sample[]; segments: Segment[]; coverage: Coverage[]; mutationQC: MutationQC[]; aligned: Aligned[] }> {
+		return {samples: await this.ngsService.getAllSamples(), segments: await this.ngsService.getAllSegments(), coverage: await this.ngsService.getAllCoverage(), mutationQC: await this.ngsService.getAllMutationQC(), aligned: await this.ngsService.getAllAligned()};
 	}
 
 	@Get('/runs')
