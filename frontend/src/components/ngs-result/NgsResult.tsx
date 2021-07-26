@@ -305,10 +305,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ value, setValue ] = React.useState('1');
 	const [ cookies ] = useCookies();
 	const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
-	useEffect(() => {
-		
 
-	}, []);
 	useEffect(()=>{
         const getMemberlist = () => {
 			try {
@@ -506,7 +503,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.clinicalSignificance = finding?.clinicalSignificance;
 					tempTarget.push(segment);
 				}
-				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1){
+				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1||segment.clinicalSignificance?.indexOf("VUS")!==-1){
 					tempTarget.push(segment);
 				}
 				else if(segment.clinicalSignificance?.indexOf("Benign")!==-1){
@@ -591,6 +588,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 		const value = e.target.value;
 		const name = e.target.name;
 		selectedSample[name] = value;
+		if(segmentResults[selectedSample.sampleId]!==undefined)
+			segmentResults[selectedSample.sampleId][0]['sample'][name] = value;
 		setSelectedSample(selectedSample);
 		
 	};
@@ -607,8 +606,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['SID'] = segmentResults[id][0].sample.SID===undefined?"":segmentResults[id][0].sample.SID;
 				pdfData['checkDate'] = new Date( segmentResults[id][0].sample.checkDate).toLocaleDateString();
 				pdfData['departmentNo'] = segmentResults[id][0].sample.departmentNo===undefined?"":segmentResults[id][0].sample.departmentNo;
-				if(alignedResults[id].length>0)
-					pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
+				//if(alignedResults[id].length>0)
+				//	pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
 				pdfData['medicalRecordNo'] = segmentResults[id][0].sample.medicalRecordNo===undefined?"":segmentResults[id][0].sample.medicalRecordNo;
 				pdfData['patientBirth'] = new Date( segmentResults[id][0].sample.patientBirth).toLocaleDateString();
 				pdfData['patientName'] = segmentResults[id][0].sample.patientName===undefined?"":segmentResults[id][0].sample.patientName;
@@ -626,7 +625,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;
 				pdfData['reportDoctor'] = segmentResults[id][0].sample.reportDoctor;
 				pdfData['confirmer'] = segmentResults[id][0].sample.confirmer;
-				let coverageTemplate = coverageResults[id].sort((a, b)=>{
+				let coverageTemplate = coverageResults[450].sort((a, b)=>{
 					if(parseInt(a.ampliconStart)<parseInt(b.ampliconStart)){
 						return -1;
 					}else if(parseInt(a.ampliconStart)>parseInt(b.ampliconStart)){
@@ -1033,7 +1032,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											<TextField
 											name="checkDate"
 											type="date"
-											defaultValue={`${new Date(selectedSample.checkDate).getFullYear()}-${(new Date(selectedSample.checkDate).getMonth()-3 > 8) ? (new Date(selectedSample.checkDate).getMonth()-3 + 1) : ('0' + (new Date(selectedSample.checkDate).getMonth()-3 + 1))}-${(new Date(selectedSample.checkDate).getDate() > 9) ? new Date(selectedSample.checkDate).getDate() : ('0' + new Date(selectedSample.checkDate).getDate())}`}
+											defaultValue={`${new Date(selectedSample.checkDate).getFullYear()}-${(new Date(selectedSample.checkDate).getMonth() > 8) ? (new Date(selectedSample.checkDate).getMonth() + 1) : ('0' + (new Date(selectedSample.checkDate).getMonth() + 1))}-${(new Date(selectedSample.checkDate).getDate() > 9) ? new Date(selectedSample.checkDate).getDate() : ('0' + new Date(selectedSample.checkDate).getDate())}`}
 											onChange={(e) => handleSampleChange(e)}
 											className={classes.textField}
 											InputLabelProps={{

@@ -126,7 +126,7 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 					segment.clinicalSignificance = finding?.clinicalSignificance
 					tempTarget.push(segment);
 				}
-				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1){
+				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1||segment.clinicalSignificance?.indexOf("VUS")!==-1){
 					tempTarget.push(segment);
 				}
 				else if(segment.clinicalSignificance?.indexOf("Benign")!==-1){
