@@ -22,12 +22,20 @@ import { MyDocument } from '../ngs-result/ExportPdf';
 import { ExportPdfCollapsibleTable } from '../table/ExportPdfCollapsibleTable';
 import { ApiUrl } from '../../constants/constants';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
-const XMLParser = require('react-xml-parser');
+import XLSX from "xlsx";
 
 type ExportPdfModalProps = {
 	show: boolean;
 	exportData: Array<PdfData>;
 	onClose: () => void;
+};
+
+type XMLType = {
+	DEPTASSIGNNO: string;
+	SPECIMENNO: string;
+	PTNAME: string;
+	PTBIRTHDAY: string;
+	PTSEX: string;
 };
 
 const useStyles = makeStyles({
@@ -57,7 +65,8 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 
 	useEffect(
 		() => {
-			setStep(0);     
+			setStep(0);  
+			console.log(pdfData);   
             const getMemberlist = () => {
                 try {
                     axios(`${ApiUrl}/api/getHealthCareWorkers`).then((res) => {
@@ -78,13 +87,54 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 		},
 		[ props.show ]
 	);
+
+	function processExcel(data) {
+		const workbook = XLSX.read(data, {type: 'binary'});
+		const firstSheet = workbook.SheetNames[0];
+		const excelRows: XMLType[] = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+		let newpdfData = pdfData.map( element => {
+			let xmlData = excelRows.find((r) =>String(r['DEPTASSIGNNO'])===element.departmentNo);
+			if(xmlData!==undefined){
+				if(Object.keys(xmlData).findIndex((d)=>d==="PTBIRTHDAY")!==-1){
+					element.patientBirth = xmlData.PTBIRTHDAY;
+					element.sample.patientBirth =new Date(xmlData.PTBIRTHDAY);
+				}
+					
+				if(Object.keys(xmlData).findIndex((d)=>d==="PTNAME")!==-1){
+					element.patientName = xmlData.PTNAME;
+					element.sample.patientBirth = new Date(xmlData.PTBIRTHDAY);
+				}
+					
+				if(Object.keys(xmlData).findIndex((d)=>d==="PTSEX")!==-1){
+					if(xmlData.PTSEX==="F"){
+						element.patientSex = "female";
+						element.sample.patientSex = "female";
+					}
+					else{
+						element.patientSex =  "male"
+						element.sample.patientSex = "male";
+					}
+						
+				}
+				if(Object.keys(xmlData).findIndex((d)=>String(d)==="SPECIMENNO")!==-1){
+					element.specimenNo = String(xmlData.SPECIMENNO);
+					element.sample.specimenNo = String(xmlData.SPECIMENNO);
+				}
+					
+			}
+			return element;
+        });
+		setData(newpdfData);
+		
+	}
+
 	const handleChange = (event) => {
 		var reader = new FileReader();
 		reader.onloadend = (event) => {
-			const xml = new XMLParser().parseFromString(reader.result);
-			console.log(xml);
+			processExcel(reader.result);
 		};
-		reader.readAsText(event.target.files[0]);
+		if (event.target.files.length>0)
+			reader.readAsText(event.target.files[0]);
 
 		/*
         const formData = new FormData();
@@ -125,7 +175,7 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 				})()}
 			</DialogContent>
 			<DialogActions>
-				<Button variant="contained" color="primary" onClick={handleDownloadPdf}>
+				<Button variant="contained" color="primary" onClick={handleDownloadPdf} disabled={pdfData!==undefined?pdfData.length>0:false}>
 						匯出
 				</Button>
 
@@ -133,9 +183,9 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 					switch (step) {
 						case 0:
 							return (
-								<Button component="label" color="primary" disabled>
+								<Button component="label" color="primary" disabled={pdfData!==undefined?pdfData.length>0:false} >
 									匯入xml
-									<input type="file" onChange={handleChange} hidden  disabled/>
+									<input type="file" onChange={handleChange} hidden disabled={pdfData!==undefined?pdfData.length>0:false}/>
 								</Button>
 							);
 					}

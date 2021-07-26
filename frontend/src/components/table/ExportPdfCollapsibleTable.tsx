@@ -213,7 +213,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 									<div className="col-6 text-right">檢體編號:</div>
 									<div className="col-6">
 										<Input
-											defaultValue={row.specimenNo}
+											value={row.specimenNo}
 											name={'specimenNo'}
 											onChange={handleSampleChange}
 										/>
@@ -267,7 +267,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 									<div className="col-6 text-right">姓名:</div>
 									<div className="col-6">
 										<Input
-											defaultValue={row.patientName}
+											value={row.patientName}
 											name={'patientName'}
 											onChange={handleSampleChange}
 										/>
@@ -296,7 +296,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 										<TextField
 											name="patientBirth"
 											type="date"
-											defaultValue={`${new Date(row.patientBirth).getFullYear()}-${new Date(
+											value={`${new Date(row.patientBirth).getFullYear()}-${new Date(
 												row.patientBirth
 											).getMonth() >8
 												? new Date(row.patientBirth).getMonth() + 1
@@ -406,7 +406,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 											label="Note"
 											multiline
 											rows={4}
-											defaultValue={row.note1}
+											value={row.note1}
 											name={"note1"}
 											onChange={handleSampleChange}
 											variant="outlined"
@@ -451,7 +451,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 											label="Note"
 											multiline
 											rows={4}
-											defaultValue={row.note2}
+											value={row.note2}
 											name={"note2"}
 											onChange={handleSampleChange}
 											variant="outlined"
@@ -496,7 +496,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 											label="Note"
 											multiline
 											rows={4}
-											defaultValue={row.note3}
+											value={row.note3}
 											variant="outlined"
 											name={"note3"}
 											onChange={handleSampleChange}
@@ -567,7 +567,6 @@ type ExportPdfCollapsibleTable = {
 };
 
 export const ExportPdfCollapsibleTable: FunctionComponent<ExportPdfCollapsibleTable> = (props) => {
-	const { pdfData } = useContext(PdfDataContext);
 	const classes = useStyles();
 
 	
@@ -588,7 +587,7 @@ export const ExportPdfCollapsibleTable: FunctionComponent<ExportPdfCollapsibleTa
 							<TableCell>檢查日期</TableCell>
 						</TableRow>
 					</TableHead>
-					<TableBody>{pdfData.map((row, index) => <Row key={index} row={row} index={index} memberlist={props.memberlist} />)}</TableBody>
+					<TableBody>{props.pdfData.map((row, index) => <Row key={index} row={row} index={index} memberlist={props.memberlist} />)}</TableBody>
 				</Table>
 			</TableContainer>
 		</React.Fragment>
