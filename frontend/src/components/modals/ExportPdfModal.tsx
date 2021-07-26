@@ -175,7 +175,7 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 				})()}
 			</DialogContent>
 			<DialogActions>
-				<Button variant="contained" color="primary" onClick={handleDownloadPdf} disabled={pdfData!==undefined?pdfData.length>0:false}>
+				<Button variant="contained" color="primary" onClick={handleDownloadPdf} disabled={pdfData!==undefined?pdfData.length===0:false}>
 						匯出
 				</Button>
 
@@ -183,9 +183,9 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 					switch (step) {
 						case 0:
 							return (
-								<Button component="label" color="primary" disabled={pdfData!==undefined?pdfData.length>0:false} >
+								<Button component="label" color="primary" disabled={pdfData!==undefined?pdfData.length===0:false} >
 									匯入xml
-									<input type="file" onChange={handleChange} hidden disabled={pdfData!==undefined?pdfData.length>0:false}/>
+									<input type="file" onChange={handleChange} hidden disabled={pdfData!==undefined?pdfData.length===0:false}/>
 								</Button>
 							);
 					}
