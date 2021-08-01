@@ -136,16 +136,16 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
         		pageNumber === 1 ? (
 				<View>
 					<View style={{position: 'absolute', top:0,left:0, height:2, width:496, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:0,left:0, height:700, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:0,right:0, height:700, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:700,left:0, height:2, width:496, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:0,left:0, height:680, width:2, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:0,right:0, height:680, width:2, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:680,left:0, height:2, width:496, backgroundColor:'black'}} />
 				</View>
         		):(
 				<View>
 					<View style={{position: 'absolute', top:-3,left:0, height:2, width:496, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:-2,left:0, height:753, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:-2,right:0, height:753, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:750,left:0, height:2, width:496, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:-2,left:0, height:763, width:2, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:-2,right:0, height:763, width:2, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:760,left:0, height:2, width:496, backgroundColor:'black'}} />
 				</View>
 		  		)
       		)} fixed />
@@ -169,7 +169,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</View>
 				<Text>{'\n'}Panel: NTUH LabMed Myeloid Panel</Text>
 				<Text>{'\n'}I. Variants with pathogenic relevance:</Text>
-				<View style={styles.table} wrap={false}>
+				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={[ styles.tableCol, { width: '10%' } ]}>
 							<Text style={styles.tableCell}>Gene</Text>
@@ -231,7 +231,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				<Text>
 					{'\n\n'}II. Hotspot variants with low VAF ({'<'}5%):
 				</Text>
-				<View style={styles.table} wrap={false}>
+				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={[ styles.tableCol, { width: '10%' } ]}>
 							<Text style={styles.tableCell}>Gene</Text>
@@ -292,7 +292,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				<Text>
 					{'\n\n'}III. Variants of uncertain significance (VUS):
 				</Text>
-				<View style={styles.table} wrap={false}>
+				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={[ styles.tableCol, { width: '10%' } ]}>
 							<Text style={styles.tableCell}>Gene</Text>
@@ -369,7 +369,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
                 <Text>
 					{'\n'}
 				</Text>
-				<View style={styles.table} wrap={false}>
+				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={styles.tableCol}>
 							<Text style={styles.tableCell}>ASXL1 exon 12</Text>
@@ -480,7 +480,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
                 <Text>
 					{'\n'}
 				</Text>
-				<View style={styles.table} wrap={false}>
+				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={styles.tableCol}>
 							<Text style={styles.tableCell}>Gene</Text>
