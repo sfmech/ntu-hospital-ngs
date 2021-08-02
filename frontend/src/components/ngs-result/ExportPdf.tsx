@@ -27,6 +27,21 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		lineHeight: 1.5
 	},
+	footerView: {
+		position: 'absolute',
+		flexDirection: 'row',
+		fontSize: 10,
+		bottom: '0.3cm',
+		left: '1cm'
+	},
+	footerVersionView: {
+		display: 'flex',
+		position: 'absolute',
+		flexDirection: 'row',
+		fontSize: 10,
+		bottom: '0.3cm',
+		right: '0.8cm'
+	},
 	headerView: {
 		display: 'flex',
 		fontSize: 12
@@ -37,40 +52,16 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		fontSize: 12,
 		padding: 5,
-		
 	},
-    firstBorder:{
-        position: 'absolute',
-        border: '2px solid black',
-        left: '10%',
-		right: 0,
-		top: '3cm',
-        bottom: 0,
-        height: 700,
-        width: 500,
-        backgroundColor:'red'
-    },
-    border:{
-        position: 'absolute',
-        border: '2px solid black',
-		right: 0,
-		top: 0,
-        left: 0,
-		bottom:'1cm',
-    },
 	containInfoView: {
 		display: 'flex',
 		flexDirection: 'row',
 		fontSize: 12
 	},
 	infoView: {
-		position: 'absolute',
+		display: 'flex',
+		flexDirection: 'row',
 		fontSize: 10,
-		border: '1px solid black',
-		paddingTop: 5,
-		paddingLeft: 2,
-		width: 150,
-		height: 50
 	},
 	table: {
 		width: 'auto',
@@ -101,13 +92,13 @@ const styles = StyleSheet.create({
 	},
     pageNumber: {
         position: 'absolute',
-        fontSize: 10,
+        fontSize: 11,
         bottom: 0,
         left: 0,
         right: '1cm',
-        top: '1cm',
+        top: '4.44cm',
         textAlign: 'right',
-        color: 'grey',
+
       },
 });
 
@@ -119,51 +110,40 @@ type ExportPdfProps = {
 export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 	<Document>
 		<Page size="A4" style={styles.page}>
-			<View style={styles.headerView}>
-				<View style={styles.infoView}>
-					<Text>病歷號 : {prop.data.medicalRecordNo}</Text>
-					<Text>姓  名 : {prop.data.patientName}</Text>
-					<Text>生  日 : 西元 {new Date( prop.data.patientBirth).getFullYear()}年 {new Date( prop.data.patientBirth).getMonth()+1}月 {new Date( prop.data.patientBirth).getDate()}日</Text>
-				</View>
+			<Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+                `第${pageNumber}頁`
+            )} fixed />
+			<View style={styles.headerView} fixed>
 				<View style={styles.titleView}>
 					<Text>國立臺灣大學醫學院附設醫院</Text>
 					<Text style={{fontFamily:"TimesNewRoman"}}>National Taiwan University Hospital</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>次世代定序檢驗報告</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>(檢驗醫學部)</Text>
 				</View>
+				<View style={styles.infoView}>
+					<Text style={{ fontSize: 11, width: 150 }}>病歷號 : {prop.data.medicalRecordNo}</Text>
+					<Text style={{ fontSize: 11, width: 150 }}>姓名 : {prop.data.patientName}</Text>
+					<Text style={{ fontSize: 11 }}>生日 : 西元 {new Date( prop.data.patientBirth).getFullYear()}年 {new Date( prop.data.patientBirth).getMonth()+1}月 {new Date( prop.data.patientBirth).getDate()}日</Text>
+				</View>
+				<Text>{'\n'}</Text>
 			</View>
-            <View style={{position: 'relative'}} render={({ pageNumber }) => (
-        		pageNumber === 1 ? (
+            <View style={{position: 'relative'}} fixed >
 				<View>
-					<View style={{position: 'absolute', top:0,left:0, height:2, width:496, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:0,left:0, height:680, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:0,right:0, height:680, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:680,left:0, height:2, width:496, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:-10,left:0, height:2, width:496, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:-10,left:0, height:660, width:2, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:-10,right:0, height:660, width:2, backgroundColor:'black'}} />
+					<View style={{position: 'absolute', top:650,left:0, height:2, width:496, backgroundColor:'black'}} />
 				</View>
-        		):(
-				<View>
-					<View style={{position: 'absolute', top:-3,left:0, height:2, width:496, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:-2,left:0, height:763, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:-2,right:0, height:763, width:2, backgroundColor:'black'}} />
-					<View style={{position: 'absolute', top:760,left:0, height:2, width:496, backgroundColor:'black'}} />
-				</View>
-		  		)
-      		)} fixed />
+			</View>
 
 			<View style={styles.containView}>
-				
 				<View style={styles.containInfoView}>
-					<Text style={{ width: 175 }}>病歷號 : {prop.data.medicalRecordNo}</Text>
+					<Text style={{ width: 175 }}>檢查日期 : {`${new Date( prop.data.checkDate).getFullYear()}/${(new Date( prop.data.checkDate).getMonth() > 8) ? (new Date( prop.data.checkDate).getMonth() + 1) : ('0' + (new Date( prop.data.checkDate).getMonth() + 1))}/${(new Date( prop.data.checkDate).getDate() > 9) ? new Date( prop.data.checkDate).getDate() : ('0' + new Date( prop.data.checkDate).getDate())}`}</Text>
 					<Text style={{ width: 175 }}>檢體編號 : {prop.data.specimenNo}</Text>
 					<Text style={{ width: 175 }}>科分號 : {prop.data.departmentNo}</Text>
 				</View>
 				<View style={styles.containInfoView}>
 					<Text style={{ width: 175 }}>姓名 : {prop.data.patientName}</Text>
-					<Text style={{ width: 175 }}>性別 : {Sex[prop.data.patientSex]}</Text>
-					<Text style={{ width: 175 }}>出生年月日 : {prop.data.patientBirth}</Text>
-				</View>
-				<View style={styles.containInfoView}>
-					<Text style={{ width: 175 }}>檢查日期 : {prop.data.checkDate}</Text>
 					<Text style={{ width: 175 }}>檢體類別 : {prop.data.specimenType}</Text>
 					<Text style={{ width: 175 }}>檢體狀態 : {prop.data.specimenStatus}</Text>
 				</View>
@@ -355,12 +335,12 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</Text>
 				<Text style={{ marginHorizontal: 5 }}>
                 The NTUH LabMed Myeloid NGS is an amplicon-based targeted panel NGS (as 
-                detailed below, 26 genes / 119 exons, covering 62.2Kbp genomic region) designed 
+                detailed below, 26 genes / 119 exons, covering 62.2Kb genomic region) designed 
                 to detect genetic variants in genes that are relevant in myeloid diseases. After 
-                library preparation, the genetic materials are sequenced on illumine MiniSeq 
+                library preparation, the genetic materials are sequenced on MiniSeq 
                 sequencer, 150 bp paired-end mode. Raw FASTQ files are aligned to human reference 
                 genome hg19, and subsequently single-nucleotide variants (SNV) and small 
-                insertions/deletions (indel) are detected by Varscan2 (version V2.4.4). 
+                insertions/deletions (indel) are detected by Varscan (version 2.4.4). 
                 Pindel (version 0.2.5b9) is used for detection of large indels ({'>'} 20 bp). 
                 Variants are then annotated with SnpEff (version 4.3t), and pathogenicity reporting 
                 is guided by the the National Center for Biotechnology Information (NCBI) ClinVar 
@@ -583,13 +563,33 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
                 {'\n'}
 				</Text>
                 <View style={styles.containInfoView}>
-					<Text style={{ width: 263 }}>確認日期：{new Date(Date.now()).toLocaleString().split(" ")[0]}</Text>
+					<Text style={{ width: 263 }}>確認日期：{`${new Date(Date.now()).getFullYear()}/${(new Date(Date.now()).getMonth() > 8) ? (new Date(Date.now()).getMonth() + 1) : ('0' + (new Date(Date.now()).getMonth() + 1))}/${(new Date(Date.now()).getDate() > 9) ? new Date(Date.now()).getDate() : ('0' + new Date(Date.now()).getDate())}`}</Text>
 				</View>
 			</View>
+			<View style={styles.footerView} fixed>
+				<Text style={{marginTop:8}}>西元2021年07月29日病歷委員會審核通過電子病歷版本 MR 08-13-39</Text>
+				<View style={{...styles.table, width:210, marginLeft:2}}>
+					<View style={styles.tableRow}>
+						<View style={{...styles.tableCol, width: '25%'}}>
+							<Text style={{...styles.tableCell, textAlign: 'center'}}>文件編號</Text>
+						</View>
+						<View style={{...styles.tableCol, width: '41%'}}>
+							<Text style={{...styles.tableCell, textAlign: 'center'}}>01400-4-602666</Text>
+						</View>
+						<View style={{...styles.tableCol, width: '17%'}}>
+							<Text style={{...styles.tableCell, textAlign: 'center'}}>版次</Text>
+						</View>
+						<View style={{...styles.tableCol, width: '17%'}}>
+							<Text style={{...styles.tableCell, textAlign: 'center'}}>01</Text>
+						</View>
+					</View>
+				</View>
+			</View>
+			<View style={styles.footerVersionView} fixed>
+				<Text style={{marginLeft:2, fontSize:20, borderStyle: 'solid', borderWidth: 2, borderRadius: "50%", height:25, width:25, textAlign:'center', paddingTop:2}}>3</Text>
+			</View>
             
-            <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-                `第${pageNumber}頁`
-            )} fixed />
+
 		</Page>
 	</Document>
 );
