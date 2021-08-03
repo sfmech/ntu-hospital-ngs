@@ -540,13 +540,10 @@ export class NGSService {
 							if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
 							//}
 							temp.sample.sampleId = element.sampleId;
-							if (temp.freq > 5) {
+							if (temp.freq >=3) {
 								temp.sample.sampleId = element.sampleId;
 								segmentResults.push(temp);
-							} else if (temp.freq >= 3 && temp.clinicalSignificance === 'Pathogenic') {
-								temp.sample.sampleId = element.sampleId;
-								segmentResults.push(temp);
-							}
+							} 
 						})
 						.on('end', async () => {
 							const segmentsResponse = await this.segmentRepository.save(segmentResults);
