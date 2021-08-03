@@ -615,8 +615,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['SID'] = segmentResults[id][0].sample.SID===undefined?"":segmentResults[id][0].sample.SID;
 				pdfData['checkDate'] = new Date( segmentResults[id][0].sample.checkDate).toLocaleDateString();
 				pdfData['departmentNo'] = segmentResults[id][0].sample.departmentNo===undefined?"":segmentResults[id][0].sample.departmentNo;
-				//if(alignedResults[id].length>0)
-				//	pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
+				if(alignedResults[id].length>0)
+					pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
 				pdfData['medicalRecordNo'] = segmentResults[id][0].sample.medicalRecordNo===undefined?"":segmentResults[id][0].sample.medicalRecordNo;
 				pdfData['patientBirth'] = new Date( segmentResults[id][0].sample.patientBirth).toLocaleDateString();
 				pdfData['patientName'] = segmentResults[id][0].sample.patientName===undefined?"":segmentResults[id][0].sample.patientName;
@@ -634,7 +634,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;
 				pdfData['reportDoctor'] = segmentResults[id][0].sample.reportDoctor;
 				pdfData['confirmer'] = segmentResults[id][0].sample.confirmer;
-				let coverageTemplate = coverageResults[450].sort((a, b)=>{
+				let coverageTemplate = coverageResults[id].sort((a, b)=>{
 					if(parseInt(a.ampliconStart)<parseInt(b.ampliconStart)){
 						return -1;
 					}else if(parseInt(a.ampliconStart)>parseInt(b.ampliconStart)){
