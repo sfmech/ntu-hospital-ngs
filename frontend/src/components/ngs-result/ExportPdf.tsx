@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
 	},
 	tableCol: {
 		width: '25%',
+		justifyContent: 'center',
 		borderStyle: 'solid',
 		borderWidth: 1,
 		borderLeftWidth: 0,
