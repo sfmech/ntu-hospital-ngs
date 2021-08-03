@@ -700,6 +700,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			
 		});
 		setData(newExportData);
+		setSelected([]);
 		return newExportData;
 	};
 	const getExportData = () => {
@@ -723,6 +724,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			}
 			newExportData = newExportData.concat(tempTarget);
 		});
+		setSelected([]);
 		return newExportData;
 	};
 

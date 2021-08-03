@@ -138,14 +138,14 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 
 			<View style={styles.containView}>
 				<View style={styles.containInfoView}>
-					<Text style={{ width: 175 }}>檢查日期 : {`${new Date( prop.data.checkDate).getFullYear()}/${(new Date( prop.data.checkDate).getMonth() > 8) ? (new Date( prop.data.checkDate).getMonth() + 1) : ('0' + (new Date( prop.data.checkDate).getMonth() + 1))}/${(new Date( prop.data.checkDate).getDate() > 9) ? new Date( prop.data.checkDate).getDate() : ('0' + new Date( prop.data.checkDate).getDate())}`}</Text>
-					<Text style={{ width: 175 }}>檢體編號 : {prop.data.specimenNo}</Text>
-					<Text style={{ width: 175 }}>科分號 : {prop.data.departmentNo}</Text>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢查日期 : {`${new Date( prop.data.checkDate).getFullYear()}/${(new Date( prop.data.checkDate).getMonth() > 8) ? (new Date( prop.data.checkDate).getMonth() + 1) : ('0' + (new Date( prop.data.checkDate).getMonth() + 1))}/${(new Date( prop.data.checkDate).getDate() > 9) ? new Date( prop.data.checkDate).getDate() : ('0' + new Date( prop.data.checkDate).getDate())}`}</Text>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體編號 : {prop.data.specimenNo}</Text>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>科分號 : {prop.data.departmentNo}</Text>
 				</View>
 				<View style={styles.containInfoView}>
-					<Text style={{ width: 175 }}>性別 : {prop.data.patientSex}</Text>
-					<Text style={{ width: 175 }}>檢體類別 : {prop.data.specimenType}</Text>
-					<Text style={{ width: 175 }}>檢體狀態 : {prop.data.specimenStatus}</Text>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>性別 : {prop.data.patientSex}</Text>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體類別 : {prop.data.specimenType}</Text>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體狀態 : {prop.data.specimenStatus}</Text>
 				</View>
 				<View style={styles.containInfoView}>
 					<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}Panel: </Text>
@@ -502,72 +502,72 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 					{'\n\n'}VI. Technical Notes:
 				</Text>
                 <Text>
-                {'\t'}1.	Please note, although the accuracy of this assay has been subjected to stringent clinical validation, false-positive and false-negative results may rarely occur due to suboptimal sample quality or unexpected difficulties in the library preparation and PCR amplification processes. 
+                {'  '}1.	Please note, although the accuracy of this assay has been subjected to stringent clinical validation, false-positive and false-negative results may rarely occur due to suboptimal sample quality or unexpected difficulties in the library preparation and PCR amplification processes. 
                 </Text>
                 <Text>
-                {'\t'}2.	During the development phase of this assay, the limit of detection (LOD) for single nucleotide variants (SNV) was set at 5%, and LOD for insertions/deletions (indel) was set at 10%. Variants below these LOD thresholds are not within the confidence range. In addition, regions with {"<"} 50X coverage may harbor low VAF variants that are below detection limits, and if indicated, the treating physician should consider additional testing tailored to the need of the patient. 
+                {'  '}2.	During the development phase of this assay, the limit of detection (LOD) for single nucleotide variants (SNV) was set at 5%, and LOD for insertions/deletions (indel) was set at 10%. Variants below these LOD thresholds are not within the confidence range. In addition, regions with {"<"} 50X coverage may harbor low VAF variants that are below detection limits, and if indicated, the treating physician should consider additional testing tailored to the need of the patient. 
                 </Text>
                 <Text>
-                {'\t'}3.	Hotspot variants with VAF in 3 ~ 5% range, when listed, should be evaluated at the discretion of treating clinician. Variant detection at low frequencies may be due to sample quality, tumor heterogeneity, or other reasons, and should be interpreted with caution.
+                {'  '}3.	Hotspot variants with VAF in 3 ~ 5% range, when listed, should be evaluated at the discretion of treating clinician. Variant detection at low frequencies may be due to sample quality, tumor heterogeneity, or other reasons, and should be interpreted with caution.
                 </Text>
                 <Text>
-                {'\t'}4.	Variants of uncertain significance (VUS) are variants that are detected but with insufficient evidence of pathogenicity, especially in the context of hematological malignancies. They are listed in the event that more evidence becomes available at a later time. In addition, knowledge regarding pathogenicity of a variant may change over time, and currently classified benign variants may change in significance at a later time point. 
+                {'  '}4.	Variants of uncertain significance (VUS) are variants that are detected but with insufficient evidence of pathogenicity, especially in the context of hematological malignancies. They are listed in the event that more evidence becomes available at a later time. In addition, knowledge regarding pathogenicity of a variant may change over time, and currently classified benign variants may change in significance at a later time point. 
                 </Text>
                 <Text>
-                {'\t'}5.	A VAF of about 50% can be either somatic or heterozygous germline mutations, and clinical judgement is advised. 
+                {'  '}5.	A VAF of about 50% can be either somatic or heterozygous germline mutations, and clinical judgement is advised. 
                 </Text>
                 <Text>
-                {'\t'}6.	Structural variants (SV), such as large indels ({">"} 100 bp), duplications, inversions, rearrangement events, and FLT3-ITD are not covered in this test. 
+                {'  '}6.	Structural variants (SV), such as large indels ({">"} 100 bp), duplications, inversions, rearrangement events, and FLT3-ITD are not covered in this test. 
                 </Text>
                 <Text>
-                {'\t'}7.	This report has been correlated with clinical information and other laboratory test results, such as pathology, flow cytometry, when available.
+                {'  '}7.	This report has been correlated with clinical information and other laboratory test results, such as pathology, flow cytometry, when available.
                 </Text>
                 <Text>
-                {'\t'}8.	This test was developed and its performance characteristics determined by the Department of Laboratory Medicine, National Taiwan University Hospital (NTUH). It has not been cleared or approved by the Taiwan Food and Drug Administration (FDA).
+                {'  '}8.	This test was developed and its performance characteristics determined by the Department of Laboratory Medicine, National Taiwan University Hospital (NTUH). It has not been cleared or approved by the Taiwan Food and Drug Administration (FDA).
 				</Text>
                 <Text style={{fontFamily: 'TimesNewRomanBold'}}>
 					{'\n\n'}VII. References:
 				</Text>
                 <Text>
-                {'\t'}1.	The 2016 revision to the World Health Organization classification of myeloid neoplasms and acute leukemia. Blood. 2016 May 19;127(20):2391-405.
+                {'  '}1.	The 2016 revision to the World Health Organization classification of myeloid neoplasms and acute leukemia. Blood. 2016 May 19;127(20):2391-405.
                 </Text>
                 <Text>
-                {'\t'}2.	Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med. 2013 May 30;368(22):2059-74.
+                {'  '}2.	Genomic and epigenomic landscapes of adult de novo acute myeloid leukemia. N Engl J Med. 2013 May 30;368(22):2059-74.
                 </Text>
                 <Text>
-                {'\t'}3.	Genomic Classification and Prognosis in Acute Myeloid Leukemia. N Engl J Med. 2016 Jun 9;374(23):2209-2221.
+                {'  '}3.	Genomic Classification and Prognosis in Acute Myeloid Leukemia. N Engl J Med. 2016 Jun 9;374(23):2209-2221.
                 </Text>
                 <Text>
-                {'\t'}4.	Landscape of genetic lesions in 944 patients with myelodysplastic syndromes. Leukemia. 2014 Feb;28(2):241-7.
+                {'  '}4.	Landscape of genetic lesions in 944 patients with myelodysplastic syndromes. Leukemia. 2014 Feb;28(2):241-7.
                 </Text>
                 <Text>
-                {'\t'}5.	Genetics of MDS. Blood. 2019 Mar 7;133(10):1049-1059.
+                {'  '}5.	Genetics of MDS. Blood. 2019 Mar 7;133(10):1049-1059.
                 </Text>
                 <Text>
-                {'\t'}6.	Genetic basis and molecular pathophysiology of classical myeloproliferative neoplasms. Blood. 2017 Feb 9;129(6):667-679.
+                {'  '}6.	Genetic basis and molecular pathophysiology of classical myeloproliferative neoplasms. Blood. 2017 Feb 9;129(6):667-679.
                 </Text>
                 <Text>
-                {'\t'}7.	Classification and Personalized Prognosis in Myeloproliferative Neoplasms. N Engl J Med. 2018 Oct 11;379(15):1416-1430.
+                {'  '}7.	Classification and Personalized Prognosis in Myeloproliferative Neoplasms. N Engl J Med. 2018 Oct 11;379(15):1416-1430.
                 </Text>
                 <Text>
                 {'\n\n'}
 				</Text>
                 <View style={styles.containInfoView}>
-					<Text style={{ width: 263 }}>品質主管：{prop.memberlist.find((element)=>element.workerId===prop.data.qualityManager)?.name} 醫檢師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中檢專字{prop.memberlist.find((element)=>element.workerId===prop.data.qualityManager)?.number}號</Text>
-					<Text style={{ width: 263 }}>報告醫師：{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.name} 主治醫師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中血專字{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.number}號</Text>
+					<Text style={{ width: 263, fontFamily: 'KAIU' }}>品質主管：{prop.memberlist.find((element)=>element.workerId===prop.data.qualityManager)?.name} 醫檢師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中檢專字{prop.memberlist.find((element)=>element.workerId===prop.data.qualityManager)?.number}號</Text>
+					<Text style={{ width: 263, fontFamily: 'KAIU' }}>報告醫師：{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.name} 主治醫師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中血專字{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.number}號</Text>
 				</View>
                 <Text>
                 {'\n'}
 				</Text>
                 <View style={styles.containInfoView}>
-					<Text style={{ width: 263 }}>檢 查 者：{prop.memberlist.find((element)=>element.workerId===prop.data.checker)?.name} 醫檢師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中檢專字{prop.memberlist.find((element)=>element.workerId===prop.data.checker)?.number}號</Text>
-					<Text style={{ width: 263 }}>確 認 者：{prop.memberlist.find((element)=>element.workerId===prop.data.confirmer)?.name} 主治醫師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中血專字{prop.memberlist.find((element)=>element.workerId===prop.data.confirmer)?.number}號</Text>
+					<Text style={{ width: 263, fontFamily: 'KAIU' }}>檢 查 者：{prop.memberlist.find((element)=>element.workerId===prop.data.checker)?.name} 醫檢師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中檢專字{prop.memberlist.find((element)=>element.workerId===prop.data.checker)?.number}號</Text>
+					<Text style={{ width: 263, fontFamily: 'KAIU' }}>確 認 者：{prop.memberlist.find((element)=>element.workerId===prop.data.confirmer)?.name} 主治醫師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中血專字{prop.memberlist.find((element)=>element.workerId===prop.data.confirmer)?.number}號</Text>
 				</View>
                 <Text>
                 {'\n'}
 				</Text>
                 <View style={styles.containInfoView}>
-					<Text style={{ width: 263 }}>確認日期：{`${new Date(Date.now()).getFullYear()}/${(new Date(Date.now()).getMonth() > 8) ? (new Date(Date.now()).getMonth() + 1) : ('0' + (new Date(Date.now()).getMonth() + 1))}/${(new Date(Date.now()).getDate() > 9) ? new Date(Date.now()).getDate() : ('0' + new Date(Date.now()).getDate())}`}</Text>
+					<Text style={{ width: 263, fontFamily: 'KAIU' }}>確認日期：{`${new Date(Date.now()).getFullYear()}/${(new Date(Date.now()).getMonth() > 8) ? (new Date(Date.now()).getMonth() + 1) : ('0' + (new Date(Date.now()).getMonth() + 1))}/${(new Date(Date.now()).getDate() > 9) ? new Date(Date.now()).getDate() : ('0' + new Date(Date.now()).getDate())}`}</Text>
 				</View>
 			</View>
 			<View style={styles.footerView} fixed>
