@@ -3,6 +3,7 @@ import { Font, Document, Page, Text, View, StyleSheet } from '@react-pdf/rendere
 import KAIU from '../../font/KAIU.TTF';
 import KAIUBold from '../../font/KAIUBold.TTF';
 import TimesNewRoman from '../../font/TimesNewRoman.TTF';
+import TimesNewRomanBold from '../../font/TimesNewRomanBold.TTF';
 import { Height } from '@material-ui/icons';
 import { PdfData } from '../../models/pdf.model';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
@@ -11,6 +12,7 @@ import { Sex } from '../../models/sex.enum';
 Font.register({ family: 'KAIU', src: KAIU });
 Font.register({ family: 'KAIUBold', src: KAIUBold });
 Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
+Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 // Create styles
 const styles = StyleSheet.create({
 	page: {
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
 		borderTopWidth: 0
 	},
 	tableCell: {
-		margin: 5,
+		margin: 2,
 		fontSize: 10
 	},
 	tableNoteCell: {
@@ -143,34 +145,38 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 					<Text style={{ width: 175 }}>科分號 : {prop.data.departmentNo}</Text>
 				</View>
 				<View style={styles.containInfoView}>
-					<Text style={{ width: 175 }}>姓名 : {prop.data.patientName}</Text>
+					<Text style={{ width: 175 }}>性別 : {prop.data.patientSex}</Text>
 					<Text style={{ width: 175 }}>檢體類別 : {prop.data.specimenType}</Text>
 					<Text style={{ width: 175 }}>檢體狀態 : {prop.data.specimenStatus}</Text>
 				</View>
-				<Text>{'\n'}Panel: NTUH LabMed Myeloid Panel</Text>
-				<Text>{'\n'}I. Variants with pathogenic relevance:</Text>
+				<View style={styles.containInfoView}>
+					<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}Panel: </Text>
+					<Text>{'\n'} NTUH LabMed Myeloid Panel</Text>
+				</View>
+				
+				<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}I. Variants with pathogenic relevance:</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={[ styles.tableCol, { width: '10%' } ]}>
-							<Text style={styles.tableCell}>Gene</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '15%' } ]}>
-							<Text style={styles.tableCell}>Reference</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Reference</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%' } ]}>
-							<Text style={styles.tableCell}>Nucleotide Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Nucleotide Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%' } ]}>
-							<Text style={styles.tableCell}>Protein Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Protein Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%' } ]}>
-							<Text style={styles.tableCell}>VAF</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>VAF</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%' } ]}>
-							<Text style={styles.tableCell}>Depth</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Depth</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '21%' } ]}>
-							<Text style={styles.tableCell}>Classification</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Classification</Text>
 						</View>
 					</View>
 					{
@@ -208,31 +214,31 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 						</Text>
 					</View>
 				</View>
-				<Text>
+				<Text style={{fontFamily: 'TimesNewRomanBold'}}>
 					{'\n\n'}II. Hotspot variants with low VAF ({'<'}5%):
 				</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={[ styles.tableCol, { width: '10%' } ]}>
-							<Text style={styles.tableCell}>Gene</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '15%' } ]}>
-							<Text style={styles.tableCell}>Reference</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Reference</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%' } ]}>
-							<Text style={styles.tableCell}>Nucleotide Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Nucleotide Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%' } ]}>
-							<Text style={styles.tableCell}>Protein Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Protein Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%' } ]}>
-							<Text style={styles.tableCell}>VAF</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>VAF</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%' } ]}>
-							<Text style={styles.tableCell}>Depth</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Depth</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '21%' } ]}>
-							<Text style={styles.tableCell}>Classification</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Classification</Text>
 						</View>
 					</View>
 					{
@@ -269,31 +275,31 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 						</Text>
 					</View>
 				</View>
-				<Text>
+				<Text style={{ fontFamily: 'TimesNewRomanBold'}}>
 					{'\n\n'}III. Variants of uncertain significance (VUS):
 				</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={[ styles.tableCol, { width: '10%' } ]}>
-							<Text style={styles.tableCell}>Gene</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '15%' } ]}>
-							<Text style={styles.tableCell}>Reference</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Reference</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%' } ]}>
-							<Text style={styles.tableCell}>Nucleotide Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Nucleotide Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%' } ]}>
-							<Text style={styles.tableCell}>Protein Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Protein Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%' } ]}>
-							<Text style={styles.tableCell}>VAF</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>VAF</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%' } ]}>
-							<Text style={styles.tableCell}>Depth</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Depth</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '21%' } ]}>
-							<Text style={styles.tableCell}>Classification</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Classification</Text>
 						</View>
 					</View>
 					{
@@ -330,7 +336,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 						</Text>
 					</View>
 				</View>
-				<Text>
+				<Text style={{ fontFamily: 'TimesNewRomanBold'}}>
 					{'\n\n'}IV. Methods:
 				</Text>
 				<Text style={{ marginHorizontal: 5 }}>
@@ -450,7 +456,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 					</View>
 				</View>
 
-				<Text>
+				<Text style={{ fontFamily: 'TimesNewRomanBold'}}>
 					{'\n\n'}V. Regions with Insufficient Coverage for Evaluation ({'<'}50X){' '}
 				</Text>
 				<Text>
@@ -463,16 +469,16 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>Gene</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
 						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>Exon</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Exon</Text>
 						</View>
 						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>From (codon)</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>From (codon)</Text>
 						</View>
 						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>To (codon)</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>To (codon)</Text>
 						</View>
 					</View>
 					{
@@ -494,8 +500,8 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 						))
 					}
 				</View>
-                <Text>
-					{'\n\n'}VI. Disclaimer:
+                <Text style={{ fontFamily: 'TimesNewRomanBold'}}>
+					{'\n\n'}VI. Technical Notes:
 				</Text>
                 <Text>
                 {'\t'}1.	Please note, although the accuracy of this assay has been subjected to stringent clinical validation, false-positive and false-negative results may rarely occur due to suboptimal sample quality or unexpected difficulties in the library preparation and PCR amplification processes. 
@@ -521,7 +527,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
                 <Text>
                 {'\t'}8.	This test was developed and its performance characteristics determined by the Department of Laboratory Medicine, National Taiwan University Hospital (NTUH). It has not been cleared or approved by the Taiwan Food and Drug Administration (FDA).
 				</Text>
-                <Text>
+                <Text style={{fontFamily: 'TimesNewRomanBold'}}>
 					{'\n\n'}VII. References:
 				</Text>
                 <Text>

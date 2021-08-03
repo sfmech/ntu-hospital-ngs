@@ -284,7 +284,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 												onChange={handleSampleChange}
 											>
 												{Object.keys(Sex).map((result) => {
-													return <MenuItem value={result}>{Sex[result]}</MenuItem>;
+													return <MenuItem value={Sex[result]}>{Sex[result]}</MenuItem>;
 												})}
 											</Select>
 										</FormControl>
