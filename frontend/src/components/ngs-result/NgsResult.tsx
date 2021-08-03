@@ -75,6 +75,12 @@ import { endianness } from 'os';
 import { PdfDataContext } from '../../contexts/pdf-data.context';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
 
+import { Font } from '@react-pdf/renderer';
+import KAIU from '../../font/KAIU.TTF';
+import KAIUBold from '../../font/KAIUBold.TTF';
+import TimesNewRoman from '../../font/TimesNewRoman.TTF';
+import TimesNewRomanBold from '../../font/TimesNewRomanBold.TTF';
+
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -305,7 +311,10 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ value, setValue ] = React.useState('1');
 	const [ cookies ] = useCookies();
 	const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
-
+	Font.register({ family: 'KAIU', src: KAIU });
+	Font.register({ family: 'KAIUBold', src: KAIUBold });
+	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
+	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	useEffect(()=>{
         const getMemberlist = () => {
 			try {
@@ -606,8 +615,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['SID'] = segmentResults[id][0].sample.SID===undefined?"":segmentResults[id][0].sample.SID;
 				pdfData['checkDate'] = new Date( segmentResults[id][0].sample.checkDate).toLocaleDateString();
 				pdfData['departmentNo'] = segmentResults[id][0].sample.departmentNo===undefined?"":segmentResults[id][0].sample.departmentNo;
-				if(alignedResults[id].length>0)
-					pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
+				//if(alignedResults[id].length>0)
+				//	pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
 				pdfData['medicalRecordNo'] = segmentResults[id][0].sample.medicalRecordNo===undefined?"":segmentResults[id][0].sample.medicalRecordNo;
 				pdfData['patientBirth'] = new Date( segmentResults[id][0].sample.patientBirth).toLocaleDateString();
 				pdfData['patientName'] = segmentResults[id][0].sample.patientName===undefined?"":segmentResults[id][0].sample.patientName;
@@ -625,7 +634,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;
 				pdfData['reportDoctor'] = segmentResults[id][0].sample.reportDoctor;
 				pdfData['confirmer'] = segmentResults[id][0].sample.confirmer;
-				let coverageTemplate = coverageResults[id].sort((a, b)=>{
+				let coverageTemplate = coverageResults[450].sort((a, b)=>{
 					if(parseInt(a.ampliconStart)<parseInt(b.ampliconStart)){
 						return -1;
 					}else if(parseInt(a.ampliconStart)>parseInt(b.ampliconStart)){

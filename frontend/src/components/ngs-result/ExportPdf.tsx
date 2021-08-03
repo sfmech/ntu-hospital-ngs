@@ -9,10 +9,7 @@ import { PdfData } from '../../models/pdf.model';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
 import { Reference } from '../../models/reference.enum';
 import { Sex } from '../../models/sex.enum';
-Font.register({ family: 'KAIU', src: KAIU });
-Font.register({ family: 'KAIUBold', src: KAIUBold });
-Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
-Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
+
 // Create styles
 const styles = StyleSheet.create({
 	page: {
