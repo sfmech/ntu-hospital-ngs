@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
 		position: 'relative',
 		flexDirection: 'column',
 		fontSize: 12,
+		fontFamily: 'TimesNewRoman',
 		padding: 5,
 	},
 	containInfoView: {
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
 	},
 	table: {
 		width: 'auto',
-		fontSize: 10,
+		fontSize: 11,
 		borderStyle: 'solid',
 		borderWidth: 1,
 		borderRightWidth: 0,
@@ -338,7 +339,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</Text>
 				<Text style={{ marginHorizontal: 5 }}>
                 The NTUH LabMed Myeloid NGS is an amplicon-based targeted panel NGS (as 
-                detailed below, 26 genes / 119 exons, covering 62.2Kb genomic region) designed 
+                detailed below, 26 genes/119 exons, covering 62.2 Kb genomic region) designed 
                 to detect genetic variants in genes that are relevant in myeloid diseases. After 
                 library preparation, the genetic materials are sequenced on MiniSeq 
                 sequencer, 150 bp paired-end mode. Raw FASTQ files are aligned to human reference 

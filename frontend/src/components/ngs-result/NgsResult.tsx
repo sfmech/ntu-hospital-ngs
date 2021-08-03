@@ -607,7 +607,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		
 		selected.forEach((id: number) => {
 			let pdfData = new PdfData();
-			if(segmentResults[id].length>0){
+			if(segmentResults[id]!==undefined){
 				let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
 				pdfData['sample'] =  segmentResults[id][0].sample;
 				pdfData['runName'] = segmentResults[id][0].sample.run.runName;
