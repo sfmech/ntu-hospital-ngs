@@ -156,25 +156,25 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}I. Variants with pathogenic relevance:</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
-						<View style={[ styles.tableCol, { width: '10%' } ]}>
+						<View style={[ styles.tableCol, { width: '10%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '15%' } ]}>
+						<View style={[ styles.tableCol, { width: '15%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Reference</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '20%' } ]}>
+						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Nucleotide Change</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '20%' } ]}>
+						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Protein Change</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '7%' } ]}>
+						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>VAF</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '7%' } ]}>
+						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Depth</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '21%' } ]}>
+						<View style={[ styles.tableCol, { width: '21%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Classification</Text>
 						</View>
 					</View>
@@ -218,25 +218,25 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
-						<View style={[ styles.tableCol, { width: '10%' } ]}>
+						<View style={[ styles.tableCol, { width: '10%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '15%' } ]}>
+						<View style={[ styles.tableCol, { width: '15%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Reference</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '20%' } ]}>
+						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Nucleotide Change</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '20%' } ]}>
+						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Protein Change</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '7%' } ]}>
+						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>VAF</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '7%' } ]}>
+						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Depth</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '21%' } ]}>
+						<View style={[ styles.tableCol, { width: '21%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Classification</Text>
 						</View>
 					</View>
@@ -279,25 +279,25 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
-						<View style={[ styles.tableCol, { width: '10%' } ]}>
+						<View style={[ styles.tableCol, { width: '10%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '15%' } ]}>
+						<View style={[ styles.tableCol, { width: '15%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Reference</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '20%' } ]}>
+						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Nucleotide Change</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '20%' } ]}>
+						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Protein Change</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '7%' } ]}>
+						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>VAF</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '7%' } ]}>
+						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Depth</Text>
 						</View>
-						<View style={[ styles.tableCol, { width: '21%' } ]}>
+						<View style={[ styles.tableCol, { width: '21%', alignItems: 'center' } ]}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Classification</Text>
 						</View>
 					</View>
@@ -467,16 +467,16 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
+						<View style={{...styles.tableCol, alignItems: 'center'}}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
 						</View>
-						<View style={styles.tableCol}>
+						<View style={{...styles.tableCol, alignItems: 'center'}}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Exon</Text>
 						</View>
-						<View style={styles.tableCol}>
+						<View style={{...styles.tableCol, alignItems: 'center'}}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>From (codon)</Text>
 						</View>
-						<View style={styles.tableCol}>
+						<View style={{...styles.tableCol, alignItems: 'center'}}>
 							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>To (codon)</Text>
 						</View>
 					</View>

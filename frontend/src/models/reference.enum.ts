@@ -1,6 +1,6 @@
 export enum Reference {
     ASXL1='NM_015338',
-    CARL='NM_015338',
+    CALR='NM_015338',
     CEBPA='NM_004364',
     CSF3R='NM_000760',
     DNMT3A='NM_022552',
