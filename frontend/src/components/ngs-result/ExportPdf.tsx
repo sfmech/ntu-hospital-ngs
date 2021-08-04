@@ -116,7 +116,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
             )} fixed />
 			<View style={styles.headerView} fixed>
 				<View style={styles.titleView}>
-					<Text>國立臺灣大學醫學院附設醫院</Text>
+					<Text>國 立 臺 灣 大 學 醫 學 院 附 設 醫 院</Text>
 					<Text style={{fontFamily:"TimesNewRoman"}}>National Taiwan University Hospital</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>次世代定序檢驗報告</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>(檢驗醫學部)</Text>
