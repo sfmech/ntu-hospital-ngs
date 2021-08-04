@@ -23,6 +23,7 @@ import { ExportPdfCollapsibleTable } from '../table/ExportPdfCollapsibleTable';
 import { ApiUrl } from '../../constants/constants';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
 import XLSX from "xlsx";
+import { Sex } from '../../models/sex.enum';
 
 type ExportPdfModalProps = {
 	show: boolean;
@@ -107,12 +108,12 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 					
 				if(Object.keys(xmlData).findIndex((d)=>d==="PTSEX")!==-1){
 					if(xmlData.PTSEX==="F"){
-						element.patientSex = "female";
-						element.sample.patientSex = "female";
+						element.patientSex = Sex["female"];
+						element.sample.patientSex = Sex["female"];
 					}
 					else{
-						element.patientSex =  "male"
-						element.sample.patientSex = "male";
+						element.patientSex =  Sex["male"];
+						element.sample.patientSex = Sex["male"];
 					}
 						
 				}
