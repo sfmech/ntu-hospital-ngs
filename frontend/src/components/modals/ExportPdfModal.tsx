@@ -103,7 +103,7 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 					
 				if(Object.keys(xmlData).findIndex((d)=>d==="PTNAME")!==-1){
 					element.patientName = xmlData.PTNAME;
-					element.sample.patientBirth = new Date(xmlData.PTBIRTHDAY);
+					element.sample.patientName = xmlData.PTNAME;
 				}
 					
 				if(Object.keys(xmlData).findIndex((d)=>d==="PTSEX")!==-1){
