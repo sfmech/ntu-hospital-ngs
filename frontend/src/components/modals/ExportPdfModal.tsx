@@ -94,7 +94,7 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 		const firstSheet = workbook.SheetNames[0];
 		const excelRows: XMLType[] = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
 		let newpdfData = pdfData.map( element => {
-			console.log(excelRows);
+			
 			let xmlData = excelRows.find((r) =>String(r['DEPTASSIGNNO'])===element.departmentNo);
 			if(xmlData!==undefined){
 				if(Object.keys(xmlData).findIndex((d)=>d==="PTBIRTHDAY")!==-1){
@@ -103,8 +103,8 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 				}
 					
 				if(Object.keys(xmlData).findIndex((d)=>d==="PTNAME")!==-1){
-					element.patientName = xmlData.PTNAME.trim();
-					element.sample.patientName = xmlData.PTNAME.trim();
+					element.patientName = xmlData.PTNAME.trim().replace('','');
+					element.sample.patientName = xmlData.PTNAME.trim().replace('','');
 				}
 					
 				if(Object.keys(xmlData).findIndex((d)=>d==="PTSEX")!==-1){
