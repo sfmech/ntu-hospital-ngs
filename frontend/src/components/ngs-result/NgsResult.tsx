@@ -689,6 +689,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
 									end = parseInt(mutationQC.position);
 									let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start);
+									coverageStartIndex = coverageStartIndex===0?coverageStartIndex:coverageStartIndex-1;
 									let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end);
 
 									let codonArray = mutationQC.HGVSp.split("_");
