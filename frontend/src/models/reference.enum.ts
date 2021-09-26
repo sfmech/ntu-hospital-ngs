@@ -14,7 +14,7 @@ export enum Reference {
     MPL='NM_005373',
     NPM1='NM_002520',
     NRAS='NM_002524',
-    p53='NM_000546',
+    TP53='NM_000546',
     PHF6='NM_032458',
     PIGA='NM_002461',
     PTPN11='NM_002834',

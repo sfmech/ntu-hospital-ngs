@@ -627,7 +627,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['note1'] = segmentResults[id][0].sample.note1===undefined?"":segmentResults[id][0].sample.note1;
 				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
 				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
-				pdfData['list1'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic);
+				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5);
 				pdfData['list2'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5);
 				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS);
 				pdfData['checker'] = segmentResults[id][0].sample.checker;
@@ -654,23 +654,62 @@ export const NgsResult: FunctionComponent = (prop) => {
 				Object.keys(testmutationqcs).map((key)=>{
 					let start = -1;
 					let end = -1;
+					let lowCodonStart;
+					let highCodonStart;
+					let lowCodonEnd ;
+					let highCodonEnd;
+					var r = /\d+/;
+
 					if(key==="CEBPA")
 						return;
 					testmutationqcs[key].forEach((mutationQC: MutationQC, index, array: MutationQC[]) => {
 						
 						if(mutationQC.QC<50 && start===-1){
-							if(parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconStart))
+							if(parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconStart)){
 								start = parseInt(mutationQC.position);
-						}else if(mutationQC.QC<50 && start !==-1){
+								let codonArray = mutationQC.HGVSp.split("_");
+								if(codonArray.length>1){
+									lowCodonStart = codonArray[0].match(r);
+									highCodonStart = codonArray[1].match(r);
+									
+								}else{
+									if(codonArray[0].match(r)!==null){
+										lowCodonStart = codonArray[0].match(r);
+										highCodonStart = codonArray[0].match(r);
+									}else{
+										lowCodonStart = 1000000
+										highCodonStart = -1
+									}
+								}
+
+							}
+						}
+						if(mutationQC.QC<50 && start !==-1){
 							if (index != array.length-1){
 								if(array[index+1].QC>50){
 									if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
 										end = parseInt(mutationQC.position);
 										let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
 										let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end)[0];
+
+										let codonArray = mutationQC.HGVSp.split("_");
+										if(codonArray.length>1){
+											lowCodonEnd = codonArray[0].match(r);
+											highCodonEnd = codonArray[1].match(r);
+										}else{
+											if(codonArray[0].match(r)!==null){
+												lowCodonEnd = codonArray[0].match(r);
+												highCodonEnd = codonArray[0].match(r);
+											}else{
+												lowCodonEnd = 1000000
+												highCodonEnd = -1
+											}
+										}
+										let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
+										let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
 										if(coverageStartIndex===coverageEndIndex){
 											let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
-											list4.push({"gene": key, 'exon': exon, 'from': start, 'to':end});
+											list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
 										}else{
 											let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
 											let finalExon = exon;
@@ -681,7 +720,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 													finalExon=elementExon;
 												}
 											}
-											list4.push({"gene": key, 'exon': exon, 'from': start, 'to':end});
+											list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
 										}
 										start = -1;
 					 					end = -1;
