@@ -670,7 +670,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								let codonArray = mutationQC.HGVSp.split("_");
 								if(codonArray.length>1){
 									lowCodonStart = codonArray[0].match(r);
-									highCodonStart = codonArray[1].match(r);
+									highCodonStart = codonArray[1].match(r);128200720
 									
 								}else{
 									if(codonArray[0].match(r)!==null){
@@ -688,6 +688,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 							if (index === array.length-1){
 								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
 									end = parseInt(mutationQC.position);
+									console.log(start);
+									console.log(coverageTemplate);
 									let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start);
 									coverageStartIndex = coverageStartIndex===0?coverageStartIndex:coverageStartIndex-1;
 									let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end);
@@ -711,7 +713,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
 										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
 									}else{
-										console.log(coverageStartIndex);
 										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
 										let finalExon = exon;
 										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
