@@ -685,49 +685,86 @@ export const NgsResult: FunctionComponent = (prop) => {
 							}
 						}
 						if(mutationQC.QC<50 && start !==-1){
-							
-								if(array[index+1].QC>50 || index === array.length-1){
-									if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
-										end = parseInt(mutationQC.position);
-										let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
-										let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end)[0];
+							if (index === array.length-1){
+								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
+									end = parseInt(mutationQC.position);
+									let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
+									let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end)[0];
 
-										let codonArray = mutationQC.HGVSp.split("_");
-										if(codonArray.length>1){
+									let codonArray = mutationQC.HGVSp.split("_");
+									if(codonArray.length>1){
+										lowCodonEnd = codonArray[0].match(r);
+										highCodonEnd = codonArray[1].match(r);
+									}else{
+										if(codonArray[0].match(r)!==null){
 											lowCodonEnd = codonArray[0].match(r);
-											highCodonEnd = codonArray[1].match(r);
+											highCodonEnd = codonArray[0].match(r);
 										}else{
-											if(codonArray[0].match(r)!==null){
-												lowCodonEnd = codonArray[0].match(r);
-												highCodonEnd = codonArray[0].match(r);
-											}else{
-												lowCodonEnd = 1000000
-												highCodonEnd = -1
-											}
+											lowCodonEnd = 1000000
+											highCodonEnd = -1
 										}
-										let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
-										let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
-										if(coverageStartIndex===coverageEndIndex){
-											let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
-											list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
-										}else{
-											let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
-											let finalExon = exon;
-											for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
-												const elementExon = coverageTemplate[i].amplionName.split('-')[1].split('.')[0];
-												if(finalExon!==elementExon){
-													exon += ", "+elementExon;
-													finalExon=elementExon;
-												}
-											}
-											list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
-										}
-										start = -1;
-					 					end = -1;
 									}
+									let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
+									let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
+									if(coverageStartIndex===coverageEndIndex){
+										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
+									}else{
+										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										let finalExon = exon;
+										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
+											const elementExon = coverageTemplate[i].amplionName.split('-')[1].split('.')[0];
+											if(finalExon!==elementExon){
+												exon += ", "+elementExon;
+												finalExon=elementExon;
+											}
+										}
+										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
+									}
+									start = -1;
+									 end = -1;
+								}
+							}else if(array[index+1].QC>50){
+								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
+									end = parseInt(mutationQC.position);
+									let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
+									let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end)[0];
+
+									let codonArray = mutationQC.HGVSp.split("_");
+									if(codonArray.length>1){
+										lowCodonEnd = codonArray[0].match(r);
+										highCodonEnd = codonArray[1].match(r);
+									}else{
+										if(codonArray[0].match(r)!==null){
+											lowCodonEnd = codonArray[0].match(r);
+											highCodonEnd = codonArray[0].match(r);
+										}else{
+											lowCodonEnd = 1000000
+											highCodonEnd = -1
+										}
+									}
+									let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
+									let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
+									if(coverageStartIndex===coverageEndIndex){
+										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
+									}else{
+										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										let finalExon = exon;
+										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
+											const elementExon = coverageTemplate[i].amplionName.split('-')[1].split('.')[0];
+											if(finalExon!==elementExon){
+												exon += ", "+elementExon;
+												finalExon=elementExon;
+											}
+										}
+										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
+									}
+									start = -1;
+									 end = -1;
 								}
 							}
-						
+						}
 						
 					}); 
 				});		
