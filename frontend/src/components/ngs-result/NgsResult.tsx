@@ -685,8 +685,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 							}
 						}
 						if(mutationQC.QC<50 && start !==-1){
-							if (index != array.length-1){
-								if(array[index+1].QC>50){
+							
+								if(array[index+1].QC>50 || index === array.length-1){
 									if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
 										end = parseInt(mutationQC.position);
 										let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
@@ -727,7 +727,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 									}
 								}
 							}
-						}
+						
 						
 					}); 
 				});		
