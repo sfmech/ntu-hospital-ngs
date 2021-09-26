@@ -711,6 +711,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
 										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
 									}else{
+										console.log(coverageStartIndex);
 										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
 										let finalExon = exon;
 										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
