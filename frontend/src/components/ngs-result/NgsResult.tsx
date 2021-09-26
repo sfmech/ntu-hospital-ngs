@@ -670,7 +670,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								let codonArray = mutationQC.HGVSp.split("_");
 								if(codonArray.length>1){
 									lowCodonStart = codonArray[0].match(r);
-									highCodonStart = codonArray[1].match(r);128200720
+									highCodonStart = codonArray[1].match(r);
 									
 								}else{
 									if(codonArray[0].match(r)!==null){
