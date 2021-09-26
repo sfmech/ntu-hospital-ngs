@@ -665,7 +665,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 					testmutationqcs[key].forEach((mutationQC: MutationQC, index, array: MutationQC[]) => {
 						
 						if(mutationQC.QC<50 && start===-1){
-							if(parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconStart)){
+							if(parseInt(mutationQC.position)>=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconStart)){
 								start = parseInt(mutationQC.position);
 								let codonArray = mutationQC.HGVSp.split("_");
 								if(codonArray.length>1){
@@ -686,12 +686,13 @@ export const NgsResult: FunctionComponent = (prop) => {
 						}
 						if(mutationQC.QC<50 && start !==-1){
 							if (index === array.length-1){
-								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd)){
+								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[0].ampliconEnd)){
 									end = parseInt(mutationQC.position);
 									console.log(start);
 									console.log(coverageTemplate);
-									let coverageStartIndex = coverageTemplate.reverse().findIndex((r)=>start>=parseInt(r.ampliconStart));
-									let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end);
+									let coverageStartIndex = coverageTemplate.findIndex((r)=>start>=parseInt(r.ampliconStart));
+									let coverageEndIndex = coverageTemplate.findIndex((r)=>end>=parseInt(r.ampliconEnd));
+									coverageEndIndex = coverageEndIndex===0?coverageEndIndex:coverageEndIndex-1;
 
 									let codonArray = mutationQC.HGVSp.split("_");
 									if(codonArray.length>1){
