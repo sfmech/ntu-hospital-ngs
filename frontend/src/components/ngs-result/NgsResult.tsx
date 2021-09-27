@@ -707,13 +707,13 @@ export const NgsResult: FunctionComponent = (prop) => {
 									let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
 									let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
 									if(coverageStartIndex===coverageEndIndex){
-										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
 										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
 									}else{
-										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
 										let finalExon = exon;
 										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
-											const elementExon = coverageTemplate[i].amplionName.split('-')[1].split('.')[0];
+											const elementExon = coverageTemplate[i].amplionName.replace("=","-").split('-')[1].split('.')[0];
 											if(finalExon!==elementExon){
 												exon += ", "+elementExon;
 												finalExon=elementExon;
@@ -746,13 +746,13 @@ export const NgsResult: FunctionComponent = (prop) => {
 									let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
 									let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
 									if(coverageStartIndex===coverageEndIndex){
-										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
 										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
 									}else{
-										let exon = coverageTemplate[coverageStartIndex].amplionName.split('-')[1].split('.')[0];
+										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
 										let finalExon = exon;
 										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
-											const elementExon = coverageTemplate[i].amplionName.split('-')[1].split('.')[0];
+											const elementExon = coverageTemplate[i].amplionName.replace("=","-").split('-')[1].split('.')[0];
 											if(finalExon!==elementExon){
 												exon += ", "+elementExon;
 												finalExon=elementExon;
