@@ -126,6 +126,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 						/>
 					) : null}
 				</TableCell>
+				{isEditable ? <TableCell>{'Deleted'}</TableCell> : null}
 				{headCells.map((headCell) => (
 					<TableCell
 						key={headCell.id}
@@ -328,8 +329,17 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 	const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
 	const onChange = async (e, row) => {
-		const value = e.target.value;
-		const name = e.target.name;
+		let value = e.target.value;
+		let name = e.target.name;
+		if (name === 'isDeleted') {
+			if (value === 'true') {
+				value = true;
+			}
+			if (value === 'false') {
+				value = false;
+			}
+		}
+	
 		const { segmentId } = row;
 		const newRows = rows.map((row) => {
 			if (row.segmentId === segmentId) {
@@ -388,10 +398,13 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 												selected={isItemSelected}
 												style={{
 													backgroundColor:
+														row.isDeleted? '#adadad':
 														row.clinicalSignificance === ClinicalSignificance.Benign
 															? '#66f988'
 															: row.clinicalSignificance ===
-																ClinicalSignificance.Pathogenic
+																	ClinicalSignificance.Pathogenic ||
+																row.clinicalSignificance ===
+																	ClinicalSignificance.LikelyPathogenic
 																? '#ffbdc4'
 																: row.clinicalSignificance ===
 																	ClinicalSignificance.unknown
@@ -407,6 +420,19 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 														/>
 													) : null}
 												</TableCell>
+												{props.isEditMode ? (
+													<TableCell>
+														<Select
+															labelId="demo-simple-select-outlined-label"
+															value={row.isDeleted}
+															name={'isDeleted'}
+															onChange={(e) => onChange(e, row)}
+														>
+															<MenuItem value={'true'}>True</MenuItem>
+															<MenuItem value={'false'}>False</MenuItem>
+														</Select>
+													</TableCell>
+												) : null}
 												<TableCell component="th" scope="row">
 													{row.chr}
 												</TableCell>
@@ -418,6 +444,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 															defaultValue={row.freq}
 															name={'freq'}
 															onChange={(e) => onChange(e, row)}
+															type={'number'}
 														/>
 													) : (
 														row.freq
@@ -429,6 +456,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 															defaultValue={row.depth}
 															name={'depth'}
 															onChange={(e) => onChange(e, row)}
+															type={'number'}
 														/>
 													) : (
 														row.depth

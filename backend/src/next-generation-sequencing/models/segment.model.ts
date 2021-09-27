@@ -20,5 +20,6 @@ export class Segment {
     ASNAF: number| null;
     category: string;
     note: string;
+    isDeleted: boolean;
 
 }

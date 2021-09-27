@@ -63,5 +63,7 @@ export class Segment {
     @Column({ name: "note"})
     note: string;
 
+    @Column({ name: "is_deleted"})
+    isDeleted: boolean;
 
 }

@@ -627,9 +627,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['note1'] = segmentResults[id][0].sample.note1===undefined?"":segmentResults[id][0].sample.note1;
 				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
 				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
-				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5);
-				pdfData['list2'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5);
-				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS);
+				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5 && !segment.isDeleted);
+				pdfData['list2'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5 && !segment.isDeleted);
+				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS && !segment.isDeleted);
 				pdfData['checker'] = segmentResults[id][0].sample.checker;
 				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;
 				pdfData['reportDoctor'] = segmentResults[id][0].sample.reportDoctor;
