@@ -464,8 +464,24 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 												</TableCell>
 												<TableCell align="right">{row.annotation}</TableCell>
 												<TableCell align="right">{row.geneName}</TableCell>
-												<TableCell align="right">{row.HGVSc}</TableCell>
-												<TableCell align="right">{row.HGVSp}</TableCell>
+												<TableCell align="right">{props.isEditMode ? (
+														<Input
+															defaultValue={row.HGVSc}
+															name={'HGVSc'}
+															onChange={(e) => onChange(e, row)}
+														/>
+													) : (
+														row.HGVSc
+													)}</TableCell>
+												<TableCell align="right">{props.isEditMode ? (
+														<Input
+															defaultValue={row.HGVSp}
+															name={'HGVSp'}
+															onChange={(e) => onChange(e, row)}
+														/>
+													) : (
+														row.HGVSp
+													)}</TableCell>
 												<TableCell align="right">
 													{props.isEditMode ? (
 														<FormControl variant="outlined">
