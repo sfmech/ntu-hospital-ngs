@@ -6,4 +6,5 @@ export const MEMBERMANAGE = '/membermanage';
 export const STATISTIC = '/statistic';
 export const LOGIN = '/login';
 export const ApiUrl = process.env.NODE_ENV === "production" ? "" : "http://localhost:3000";
+export const DataUrl = process.env.NODE_ENV === "production" ? "" : "D:\\NGS_Analysis\\";
 

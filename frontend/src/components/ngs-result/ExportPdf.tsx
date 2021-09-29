@@ -518,7 +518,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
                 {'  '}5.	A VAF of about 50% can be either somatic or heterozygous germline mutations, and clinical judgement is advised. 
                 </Text>
                 <Text>
-                {'  '}6.	Structural variants (SV), such as large indels ({">"} 100 bp), duplications, inversions, rearrangement events, and FLT3-ITD are not covered in this test. 
+                {'  '}6.	6. Structural variants, such as large indels ({">"} 100 bp), duplications, inversions, rearrangement events are not covered in this assay. This assay can detect FLT3-ITD with duplicated sequence {"<"} 100bp at a sensitivity about 80% as assessed during the assay development phase, however a negative result does not totally exclude the presence of FTL3-ITD, thus correlation with conventional fragment analysis is advised.
                 </Text>
                 <Text>
                 {'  '}7.	This report has been correlated with clinical information and other laboratory test results, such as pathology, flow cytometry, when available.

@@ -24,7 +24,7 @@ import { AddSegmentTagModal } from '../modals/AddSegmentTagModal';
 import { SegmentTagContext } from '../../contexts/segmentTag.context';
 import { SegmentCategory } from '../../models/segment.category.enum';
 import { useCookies } from 'react-cookie';
-
+import igv from 'igv';
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -260,6 +260,10 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 				props.data.map((d) => {
 					d.freq = parseFloat((d.freq as unknown) as string);
 					d.depth = parseInt((d.depth as unknown) as string);
+					d.remark = d.remark===undefined?"":d.remark;
+					d.note = d.note===undefined?"":d.note;
+					d.editor = d.editor===undefined?"":d.editor;
+					d.category = d.category===undefined?"":d.category;
 
 					return d;
 				})
@@ -332,12 +336,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 		let value = e.target.value;
 		let name = e.target.name;
 		if (name === 'isDeleted') {
-			if (value === 'true') {
-				value = true;
-			}
-			if (value === 'false') {
-				value = false;
-			}
+			value = e.target.checked;
 		}
 	
 		const { segmentId } = row;
@@ -390,7 +389,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 													props.isAddMode ? (
 														(event) => handleClick(event, row.segmentId)
 													) : (
-														() => {}
+														() => {igv.browser.search(row.chr+':'+row.position)}
 													)
 												}
 												tabIndex={-1}
@@ -422,15 +421,12 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 												</TableCell>
 												{props.isEditMode ? (
 													<TableCell>
-														<Select
-															labelId="demo-simple-select-outlined-label"
-															value={row.isDeleted}
+														<Checkbox
+															checked={row.isDeleted}
 															name={'isDeleted'}
 															onChange={(e) => onChange(e, row)}
-														>
-															<MenuItem value={'true'}>True</MenuItem>
-															<MenuItem value={'false'}>False</MenuItem>
-														</Select>
+														/>
+														
 													</TableCell>
 												) : null}
 												<TableCell component="th" scope="row">

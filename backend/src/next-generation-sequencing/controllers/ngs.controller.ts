@@ -148,7 +148,6 @@ export class NGSController {
 	@Post('/updateSample')
 	@UseGuards(AuthGuard('jwt'))
 	updateSample(@Body() body): Promise<Sample[]> {
-		console.log(body.data);
 		return this.ngsService.updateSample(body.data);
 	}
 
@@ -253,5 +252,32 @@ export class NGSController {
 	@UseGuards(AuthGuard('jwt'))
 	deleteHealthCareWorkers(@Body() body) {
 		return this.ngsService.deleteHealthCareWorkers(body.data);
+	}
+
+	@Get('/getbamfile/:samplename/:runname')
+	@UseGuards(AuthGuard('jwt'))
+	getBamFile(@Res() response, @Body() body, @Param('samplename') sampleName: string, @Param('runname') runName: string){
+		const data =  this.ngsService.getBamFile(sampleName, runName);
+		response.writeHead(200, {
+			"Content-Type": "application/octet-stream",
+			"Content-Disposition": `attachment; filename=${sampleName}.bam`,
+			'Content-Length': data[1]
+		  });
+		
+		
+		return data[0].pipe(response);
+	}
+
+	@Get('/getbaifile/:samplename/:runname')
+	@UseGuards(AuthGuard('jwt'))
+	getBaiFile(@Res() response, @Body() body, @Param('samplename') sampleName: string, @Param('runname') runName: string){
+		const data =  this.ngsService.getBaiFile(sampleName, runName);
+		response.writeHead(200, {
+			"Content-Type": "application/octet-stream",
+			"Content-Disposition": `attachment; filename=${sampleName}.bam.bai`,
+			'Content-Length': data[1]
+		  });
+		
+		return data[0].pipe(response);
 	}
 }

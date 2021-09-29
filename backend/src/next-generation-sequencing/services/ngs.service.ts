@@ -27,6 +27,7 @@ import { User } from '../models/user.model';
 import { Aligned } from '../models/aligned.model';
 import { HealthCareWorkers } from '../models/healthCareWorkers.model';
 import { File } from '../models/file.model';
+import { promisify } from 'util';
 
 var cp = require('child_process');
 const fs = require('fs');
@@ -239,6 +240,17 @@ export class NGSService {
 			throw err;
 		}
 		return;
+	}
+
+	getBamFile(sampleName: string, runName: string) {
+		var stat = fs.statSync(path.join(this.configService.get<string>('ngs.path'), runName, 'BAM', sampleName+'.bam'))
+		const readBamfile = fs.createReadStream(path.join(this.configService.get<string>('ngs.path'), runName, 'BAM', sampleName+'.bam'), { encoding: "base64" });
+		return [readBamfile, stat.size];
+	}
+	getBaiFile(sampleName: string, runName: string) {
+		var stat = fs.statSync(path.join(this.configService.get<string>('ngs.path'), runName, 'BAM', sampleName+'.bam.bai'))
+		const readBaifile = fs.createReadStream(path.join(this.configService.get<string>('ngs.path'), runName, 'BAM', sampleName+'.bam.bai'), { encoding: "base64" });
+		return [readBaifile, stat.size];
 	}
 
 	async getDiseases(): Promise<Array<Disease>> {

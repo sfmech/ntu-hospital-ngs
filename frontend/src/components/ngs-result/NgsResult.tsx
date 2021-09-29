@@ -14,11 +14,8 @@ import {
 	DialogContentText,
 	DialogTitle,
 	Fab,
-	FormControl,
 	Grid,
-	IconButton,
 	Input,
-	InputBase,
 	makeStyles,
 	Paper,
 	Select,
@@ -66,21 +63,19 @@ import { SegmentCategory } from '../../models/segment.category.enum';
 import { QueryBox } from './QueryBox';
 import { ResultOptionContext } from '../../contexts/result-option.context';
 import { QueryCondition } from '../../models/query.condition.enum';
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { MyDocument } from "./ExportPdf";
 import { ExportPdfModal } from '../modals/ExportPdfModal';
 import { PdfData } from '../../models/pdf.model';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
-import { endianness } from 'os';
 import { PdfDataContext } from '../../contexts/pdf-data.context';
-import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
+import igv from 'igv';
 
 import { Font } from '@react-pdf/renderer';
 import KAIU from '../../font/KAIU.TTF';
 import KAIUBold from '../../font/KAIUBold.TTF';
 import TimesNewRoman from '../../font/TimesNewRoman.TTF';
 import TimesNewRomanBold from '../../font/TimesNewRomanBold.TTF';
-
+const fs = require("fs");
+const atob = require("atob");
 declare module 'csstype' {
 	interface Properties {
 		'--tree-view-color'?: string;
@@ -100,7 +95,12 @@ type StyledTreeItemProps = TreeItemProps & {
 	numSelected: number;
 	labelInfoClickListener?;
 };
-
+var igvStyle = {
+    paddingTop: '10px',
+    paddingBottom: '10px',
+    margin: '8px',
+    border: '1px solid lightgray'
+}
 const useTreeItemStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		root: {
@@ -309,48 +309,62 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
 	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
 	const [ value, setValue ] = React.useState('1');
+	const [ track, setTrack ] = React.useState({
+		"name": "",
+		"sourceType": "file",
+		"url": "",
+		"indexURL": "",
+		"type": 'alignment',
+		"format": 'bam',
+	});
+
 	const [ cookies ] = useCookies();
-	const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
+	//const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
 	Font.register({ family: 'KAIU', src: KAIU });
 	Font.register({ family: 'KAIUBold', src: KAIUBold });
 	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	useEffect(()=>{
-        const getMemberlist = () => {
-			try {
-				axios(`${ApiUrl}/api/getHealthCareWorkers`).then((res) => {
-					setMemberlist(res.data);
-				});
-			} catch (error){
-				console.log(error);
-			}
-		}
-        getMemberlist();
+        var igvContainer = document.getElementById('igv-div');
+		var igvOptions = {genome: 'hg19', locus: 'chr11:32449420'};
 		
-
+		igv.createBrowser(igvContainer, igvOptions).
+			then(function (browser) {
+				igv.browser = browser;
+		});
     },[]);
-	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
-		setValue(newValue);
-	};
+
 	useEffect(
-		() => {
+		() => {			
 			setIsEditable(false);
 			setIsAdd(false);
+			if (track.name!=="")
+				igv.browser.loadTrack(track);
 		},
 		[ selectedSegments ]
 	);
+	/*useEffect(
+		() => {			
+			if (track.name!==""&&track.url!==""&&track.indexURL!=="")
+				igv.browser.loadTrack(track);
+			console.log('123');
+		},
+		[ track ]
+	);*/
+
 
 	useEffect(
 		() => {
-			/*if (selectedSegments.length>0){
-				setSelectedSegments(segmentResults[selectedSegments[0].sample.sampleId])
-			}*/
 			const [ tempOther, tempTarget ] = filterSegments(selectedSegments);
 			setOtherSegments(tempOther);
 			setTargetSegments(tempTarget);
 		},
 		[ selectedSegments, blacklist, whitelist, isEditable ]
 	);
+
+	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+		setValue(newValue);
+	};
 
 	const handleUploadClick = () => {
 		setShowUploadModal(true);
@@ -547,16 +561,53 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setSelectedRun(run);
 		setShowEditRunDateModal(true);
 	};
-
+	  
+	  
 	const handleClick = (segments: Segment[], sample: Sample) => {
+		let bam = "";
+		let bai = "";
 		setSelectedSegments(segments);
-		setSelectedSample(sample)
+		setSelectedSample(sample);
 		if (mutationQCResults[sample.sampleId]) setSelectedMutationQCs(mutationQCResults[sample.sampleId]);
 		else setSelectedMutationQCs([]);
 		if (coverageResults[sample.sampleId]) setSelectedCoverages(coverageResults[sample.sampleId]);
 		else setSelectedCoverages([]);
 		if (alignedResults[sample.sampleId]) setSelectedAligneds(alignedResults[sample.sampleId]);
 		else setSelectedAligneds([]);
+		if (track.name!=="")
+			igv.browser.removeTrackByName(track.name);
+		/*axios.get(`${ApiUrl}/api/getbamfile/${sample.sampleName}/${sample.run.runName.replace('/','-')}`).then((response)=>{
+			let newTrack = track;
+			newTrack.url = "data:application/octet-stream;base64,"+response.data;
+			console.log(track);
+			setTrack(newTrack);
+			igv.browser.loadTrack(track);
+			//console.log(response.data);
+		})
+		axios.get(`${ApiUrl}/api/getbaifile/${sample.sampleName}/${sample.run.runName.replace('/','-')}`).then((response)=>{
+			let newTrack = track;
+			newTrack.indexURL = "data:application/octet-stream;base64,"+response.data;
+			setTrack(newTrack);
+			//console.log(response.data);
+		})*/
+		
+		/*setTrack({
+			"name": sample.sampleName.split("_")[0],
+			"sourceType": "file",
+			"url": `http://192.168.1.26:55688/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
+			"indexURL": `http://192.168.1.26:55688/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
+			"type": 'alignment',
+			"format": 'bam',
+		});*/
+		setTrack({
+			"name": sample.sampleName.split("_")[0],
+			"sourceType": "file",
+			"url": `http://192.168.1.26:55688/2021-06-05-22/BAM/1496-R8_S1.bam`,
+			"indexURL": `http://192.168.1.26:55688/2021-06-05-22/BAM/1496-R8_S1.bam.bai`,
+			"type": 'alignment',
+			"format": 'bam',
+		});
+		
 	};
 
 	const handleBlacklistAddClick = () => {
@@ -804,7 +855,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		return newExportData;
 	};
 
-	const onToggleEditMode =  () => {
+	const onSaveEditMode =  () => {
 		if(isEditable){
 			axios.post(`${ApiUrl}/api/updateSegment`, {
 				data: segmentResults[selectedSample.sampleId] 
@@ -817,6 +868,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setIsEditable(!isEditable);
 	};
 	
+	const onToggleEditMode =  () => {
+		setIsEditable(!isEditable);
+	};
 
 	const onToggleAddMode =  () => {
 		setIsAdd(!isAdd);
@@ -890,14 +944,23 @@ export const NgsResult: FunctionComponent = (prop) => {
 			return (
 				<>
 					<Button
-						onClick={onToggleEditMode}
+						onClick={onSaveEditMode}
 						variant="contained"
 						color="default"
-						className="mb-1"
+						className="mb-1 mr-2"
 					>
 						儲存
 					</Button>
+					<Button
+						onClick={onToggleEditMode}
+						variant="contained"
+						color="secondary"
+						className="mb-1"
+					>
+						返回
+					</Button>
 				</>
+
 			)
 		}
     }
@@ -1132,6 +1195,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								</div>
 								
 							</Paper>
+							<div id="igv-div" style={igvStyle}></div>
 							<SegmentTable
 								data={targetSegments}
 								setSelectSegments={(segments: Segment[])=>setSelectedTarget(segments)}
