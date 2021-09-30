@@ -103,7 +103,7 @@ var igvStyle = {
     paddingTop: '10px',
     paddingBottom: '10px',
     margin: '8px',
-    border: '1px solid lightgray'
+
 }
 const useTreeItemStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -333,27 +333,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	useEffect(()=>{
         var igvContainer = document.getElementById('igv-div');
-		var igvOptions = {reference:{
-			"id": "hg19",
-			"name": "Human (GRCh37/hg19)",
-			"fastaURL": "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta",
-			"indexURL": "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta.fai",
-			"cytobandURL": "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt",
-			"aliasURL": "https://s3.amazonaws.com/igv.org.genomes/hg19/hg19_alias.tab",
-			"tracks": [
-			  {
-				"name": "Refseq Genes",
-				"format": "refgene",
-				"url": "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz",
-				"indexURL": "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz.tbi",
-				"visibilityWindow": -1,
-				"removable": false,
-				"order": 1000000,
-				"infoURL": "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
-			  }
-			],
-			"chromosomeOrder": "chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12, chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY"
-		  },"name": "",
+		var igvOptions = { genome: "hg19","name": "",
 		  "sourceType": "file",
 		  "url": "",
 		  "indexURL": "",
@@ -1298,7 +1278,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								<Typography>IGV</Typography>
 								</AccordionSummary>
 								<AccordionDetails>
-									<div id="igv-div" ></div>
+									<div id="igv-div" style={igvStyle}></div>
 								</AccordionDetails>
 							</Accordion>
 							
