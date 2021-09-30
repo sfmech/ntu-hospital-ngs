@@ -352,19 +352,17 @@ export const NgsResult: FunctionComponent = (prop) => {
 		() => {			
 			setIsEditable(false);
 			setIsAdd(false);
-			if (track.name!=="")
-				igv.browser.loadTrack(track);
+			
 		},
 		[ selectedSegments ]
 	);
-	/*useEffect(
+	useEffect(
 		() => {			
-			if (track.name!==""&&track.url!==""&&track.indexURL!=="")
+			if (track.name!=="")
 				igv.browser.loadTrack(track);
-			console.log('123');
 		},
 		[ track ]
-	);*/
+	);
 
 
 	useEffect(
