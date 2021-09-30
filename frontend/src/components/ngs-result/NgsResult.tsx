@@ -103,6 +103,7 @@ var igvStyle = {
     paddingTop: '10px',
     paddingBottom: '10px',
     margin: '8px',
+	width: '60vw'
 
 }
 const useTreeItemStyles = makeStyles((theme: Theme) =>
