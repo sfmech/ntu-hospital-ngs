@@ -1,6 +1,9 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { Title } from '../title/Title';
 import {
+	Accordion,
+	AccordionDetails,
+	AccordionSummary,
 	AppBar,
 	Backdrop,
 	Box,
@@ -29,6 +32,7 @@ import {
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Segment } from '../../models/segment.model';
 import { Sample } from '../../models/sample.model';
@@ -309,6 +313,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
 	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
 	const [ value, setValue ] = React.useState('1');
+	const [expanded, setExpanded] = React.useState(true);
+
+
 	const [ track, setTrack ] = React.useState({
 		"name": "",
 		"sourceType": "file",
@@ -326,7 +333,33 @@ export const NgsResult: FunctionComponent = (prop) => {
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	useEffect(()=>{
         var igvContainer = document.getElementById('igv-div');
-		var igvOptions = {genome: 'hg19', locus: 'chr11:32449420'};
+		var igvOptions = {reference:{
+			"id": "hg19",
+			"name": "Human (GRCh37/hg19)",
+			"fastaURL": "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta",
+			"indexURL": "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta.fai",
+			"cytobandURL": "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt",
+			"aliasURL": "https://s3.amazonaws.com/igv.org.genomes/hg19/hg19_alias.tab",
+			"tracks": [
+			  {
+				"name": "Refseq Genes",
+				"format": "refgene",
+				"url": "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz",
+				"indexURL": "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz.tbi",
+				"visibilityWindow": -1,
+				"removable": false,
+				"order": 1000000,
+				"infoURL": "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
+			  }
+			],
+			"chromosomeOrder": "chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12, chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY"
+		  },"name": "",
+		  "sourceType": "file",
+		  "url": "",
+		  "indexURL": "",
+		  "type": 'alignment',
+		  "format": 'bam',
+		   "locus": 'chr11:32449420'};
 		
 		igv.createBrowser(igvContainer, igvOptions).
 			then(function (browser) {
@@ -368,6 +401,10 @@ export const NgsResult: FunctionComponent = (prop) => {
 
 	const handleUploadClick = () => {
 		setShowUploadModal(true);
+	};
+
+	const handleChange = () => (event, isExpanded) => {
+		setExpanded(isExpanded);
 	};
 
 	const handleSelectClick = (event: React.ChangeEvent, id: number, isSample: boolean) => {
@@ -495,14 +532,14 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.clinicalSignificance = finding?.clinicalSignificance;
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
-					tempTarget.push(segment);
-					return;
-				}
-				if (segment.category===SegmentCategory.Target){
-					tempTarget.push(segment);
-				}
-				else if (segment.category===SegmentCategory.Other){
-					tempOther.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempTarget.push(segment);
+					}
 				}
 				else if (
 					blacklist.findIndex(
@@ -513,7 +550,14 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					tempOther.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempOther.push(segment);
+					}
 				}
 				else if (
 					whitelist.findIndex(
@@ -524,17 +568,45 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					tempTarget.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempTarget.push(segment);
+					}
 				}
 				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1||segment.clinicalSignificance?.indexOf("VUS")!==-1){
-					tempTarget.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempTarget.push(segment);
+					}
 				}
 				else if(segment.clinicalSignificance?.indexOf("Benign")!==-1){
-					tempOther.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempOther.push(segment);
+					}
 				}
 				else if(
 				(segment.globalAF>0.01||segment.AFRAF>0.01||segment.AMRAF>0.01||segment.EURAF>0.01||segment.ASNAF>0.01)){
-					tempOther.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempOther.push(segment);
+					}
 				}
 				else if((
 				segment.annotation.indexOf('stop') === -1 &&
@@ -542,9 +614,23 @@ export const NgsResult: FunctionComponent = (prop) => {
 				segment.annotation.indexOf('frameshift') === -1 &&
 				segment.annotation.indexOf('splice') === -1 &&
 				segment.annotation.indexOf('inframe') === -1)){
-					tempOther.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempOther.push(segment);
+					}
 				}else {
-					tempTarget.push(segment);
+					if (segment.category===SegmentCategory.Target){
+						tempTarget.push(segment);
+					}
+					else if (segment.category===SegmentCategory.Other){
+						tempOther.push(segment);
+					}else{
+						tempTarget.push(segment);
+					}
 
 				}
 			});
@@ -599,11 +685,19 @@ export const NgsResult: FunctionComponent = (prop) => {
 			"type": 'alignment',
 			"format": 'bam',
 		});*/
+		/*setTrack({
+			"name": sample.sampleName.split("_")[0],
+			"sourceType": "file",
+			"url": `/assets/744_S7.bam`,
+			"indexURL": `/assets/744_S7.bam.bai`,
+			"type": 'alignment',
+			"format": 'bam',
+		});*/
 		setTrack({
 			"name": sample.sampleName.split("_")[0],
 			"sourceType": "file",
-			"url": `http://192.168.1.26:55688/2021-06-05-22/BAM/1496-R8_S1.bam`,
-			"indexURL": `http://192.168.1.26:55688/2021-06-05-22/BAM/1496-R8_S1.bam.bai`,
+			"url": `/file/Data/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
+			"indexURL": `/file/Data/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
 			"type": 'alignment',
 			"format": 'bam',
 		});
@@ -1195,7 +1289,19 @@ export const NgsResult: FunctionComponent = (prop) => {
 								</div>
 								
 							</Paper>
-							<div id="igv-div" style={igvStyle}></div>
+							<Accordion expanded={expanded} onChange={handleChange()}>
+								<AccordionSummary
+									expandIcon={<ExpandMoreIcon />}
+									aria-controls="panel1a-content"
+									id="panel1a-header"
+								>
+								<Typography>IGV</Typography>
+								</AccordionSummary>
+								<AccordionDetails>
+									<div id="igv-div" ></div>
+								</AccordionDetails>
+							</Accordion>
+							
 							<SegmentTable
 								data={targetSegments}
 								setSelectSegments={(segments: Segment[])=>setSelectedTarget(segments)}
