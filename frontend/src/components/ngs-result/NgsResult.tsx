@@ -346,7 +346,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			then(function (browser) {
 				igv.browser = browser;
 		});
-    },[]);
+    },[value]);
 
 	useEffect(
 		() => {			
