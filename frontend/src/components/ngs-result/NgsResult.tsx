@@ -358,7 +358,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				console.log("create browser");
 				igv.browser = browser;
 		});
-    },[value]);
+    },[]);
 
 	useEffect(
 		() => {			
@@ -1217,7 +1217,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								<Tab value="4" label="Analysis Summary" />
 							</TabList>
 						</AppBar>
-						<Accordion expanded={expanded} onChange={handleChange()}>
+						<Accordion expanded={expanded} onChange={handleChange()} hidden={value==="2"||value==="4"}>
 								<AccordionSummary
 									expandIcon={<ExpandMoreIcon />}
 									aria-controls="panel1a-content"
