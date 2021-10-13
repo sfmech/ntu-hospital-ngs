@@ -526,10 +526,17 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					const finding = hotspotlist.find((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName)
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					segment.category = "Target";
 					segment.remark = finding?.remark;
-					segment.editor = finding?.editor;
-					tempTarget.push(segment);
+					segment.editor = segment.editor?segment.editor:finding?.editor;
+					if (segment.category==="Target"){
+						tempTarget.push(segment);
+					}else if (segment.category==="Other"){
+						tempOther.push(segment);
+					}else{
+						segment.category="Target";
+						tempTarget.push(segment);
+					}
+					
 					
 				}
 				else if (
@@ -539,10 +546,16 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					const finding = blacklist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark;
-					segment.editor = finding?.editor;
+					segment.editor = segment.editor?segment.editor:finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					segment.category = "Other";
-					tempOther.push(segment);
+					if (segment.category==="Target"){
+						tempTarget.push(segment);
+					}else if (segment.category==="Other"){
+						tempOther.push(segment);
+					}else{
+						segment.category="Other";
+						tempOther.push(segment);
+					}
 					
 				}
 				else if (
@@ -552,69 +565,22 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					const finding = whitelist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark;
-					segment.editor = finding?.editor;
+					segment.editor = segment.editor?segment.editor:finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					segment.category = "Target";
-					tempTarget.push(segment);
+					if (segment.category==="Target"){
+						tempTarget.push(segment);
+					}else if (segment.category==="Other"){
+						tempOther.push(segment);
+					}else{
+						segment.category="Target";
+						tempTarget.push(segment);
+					}
 					
+				}else if (segment.category==="Target"){
+					tempTarget.push(segment);
+				}else if (segment.category==="Other"){
+					tempOther.push(segment);
 				}
-				/*
-				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1||segment.clinicalSignificance?.indexOf("VUS")!==-1){
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempTarget.push(segment);
-					}
-				}
-				else if(segment.clinicalSignificance?.indexOf("Benign")!==-1){
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempOther.push(segment);
-					}
-				}
-				else if(
-				(segment.globalAF>0.01||segment.AFRAF>0.01||segment.AMRAF>0.01||segment.EURAF>0.01||segment.ASNAF>0.01)){
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempOther.push(segment);
-					}
-				}
-				else if((
-				segment.annotation.indexOf('stop') === -1 &&
-				segment.annotation.indexOf('missense') === -1 &&
-				segment.annotation.indexOf('frameshift') === -1 &&
-				segment.annotation.indexOf('splice') === -1 &&
-				segment.annotation.indexOf('inframe') === -1)){
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempOther.push(segment);
-					}
-				}else {
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempTarget.push(segment);
-					}
-
-				}*/
 			});
 		}
 

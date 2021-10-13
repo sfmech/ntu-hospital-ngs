@@ -80,7 +80,7 @@ export const NgsStatistic: FunctionComponent = (prop) => {
             return data;
         }))
     },[ targetSegments, otherSegments])
-    function filterSegments(segments) {
+	function filterSegments(segments) {
 		let tempOther = Array<Segment>();
 		let tempTarget = Array<Segment>();
 		if (segments) {
@@ -101,19 +101,35 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 					segment.clinicalSignificance = finding?.clinicalSignificance;
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
-					tempTarget.push(segment);
-					return;
+					if (segment.category==="Target"){
+						tempTarget.push(segment);
+					}else if (segment.category==="Other"){
+						tempOther.push(segment);
+					}else{
+						segment.category="Target";
+						tempTarget.push(segment);
+					}
+					
+					
 				}
-				if (
+				else if (
 					blacklist.findIndex(
 						(tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`
 					) !== -1
 				) {
 					const finding = blacklist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
-					segment.remark = finding?.remark
-					segment.editor = finding?.editor
-					segment.clinicalSignificance = finding?.clinicalSignificance
-					tempOther.push(segment);
+					segment.remark = finding?.remark;
+					segment.editor = finding?.editor;
+					segment.clinicalSignificance = finding?.clinicalSignificance;
+					if (segment.category==="Target"){
+						tempTarget.push(segment);
+					}else if (segment.category==="Other"){
+						tempOther.push(segment);
+					}else{
+						segment.category="Other";
+						tempOther.push(segment);
+					}
+					
 				}
 				else if (
 					whitelist.findIndex(
@@ -121,16 +137,28 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 					) !== -1
 				) {
 					const finding = whitelist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
-					segment.remark = finding?.remark
-					segment.editor = finding?.editor
-					segment.clinicalSignificance = finding?.clinicalSignificance
+					segment.remark = finding?.remark;
+					segment.editor = finding?.editor;
+					segment.clinicalSignificance = finding?.clinicalSignificance;
+					if (segment.category==="Target"){
+						tempTarget.push(segment);
+					}else if (segment.category==="Other"){
+						tempOther.push(segment);
+					}else{
+						segment.category="Target";
+						tempTarget.push(segment);
+					}
+					
+				}else if (segment.category==="Target"){
 					tempTarget.push(segment);
+				}else if (segment.category==="Other"){
+					tempOther.push(segment);
 				}
 			});
 		}
 
 		return [ tempOther, tempTarget ];
-    }
+	}
     
 	const handleDateStartChange = (event: React.ChangeEvent<{ value: unknown }>) => {	
 		setSelectedStartDate(event.target.value as string);
