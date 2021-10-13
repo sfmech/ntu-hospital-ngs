@@ -442,7 +442,7 @@ export class NGSService {
 
 					const reportHtml = fs.readFileSync(`${this.configService.get<string>(
 						'ngs.path'
-					)}/${runsResponse.runName}/FASTQ_RAW/${element.sampleName}_report.html`);
+					)}/${runsResponse.runName}/FASTQ_RAW/${element.sampleName}_report.html`, 'utf8');
 					console.log(reportHtml);
 					
 
