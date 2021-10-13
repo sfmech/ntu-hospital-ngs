@@ -375,6 +375,20 @@ export class NGSService {
 							temp.sample.sampleId = element.sampleId;
 							segmentResults.push(temp);
 						} 
+
+						if(temp.clinicalSignificance.indexOf("Pathogenic")!==-1
+						||temp.clinicalSignificance.indexOf("VUS")!==-1
+						||(temp.globalAF<0.01&&temp.AFRAF<0.01&&temp.AMRAF<0.01&&temp.EURAF<0.01&&temp.ASNAF<0.01)
+						||(
+							temp.annotation.indexOf('stop') >0 ||
+							temp.annotation.indexOf('missense') >0 ||
+							temp.annotation.indexOf('frameshift') >0 ||
+							temp.annotation.indexOf('splice') >0 ||
+							temp.annotation.indexOf('inframe') >0)){
+								temp.category="Target";
+						}else{
+							temp.category="Other";
+						}
 					})
 					.on('end', async () => {
 						const segmentsResponse = await this.segmentRepository.save(segmentResults);
@@ -425,6 +439,12 @@ export class NGSService {
 					.on('end', async () => {
 						const coverageResponse = await this.coverageRepository.save(coverageResults)
 					});
+
+					const reportHtml = fs.readFileSync(`${this.configService.get<string>(
+						'ngs.path'
+					)}/${runsResponse.runName}/FASTQ_RAW/${element.sampleName}_report.html`);
+					console.log(reportHtml);
+					
 
 					
 			} catch (error) {
