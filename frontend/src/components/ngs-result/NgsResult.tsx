@@ -1315,7 +1315,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											Duplication Rate:
 										</div>
 										<div  className='col-6'>
-											{selectedSample.duplicationRate.toFixed(2)}%
+											{selectedSample.duplicationRate?selectedSample.duplicationRate.toFixed(2):null}%
 										</div>
 									</div>
 									<div  className='row col-4'>
@@ -1331,7 +1331,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											Q20 bases:
 										</div>
 										<div  className='col-6'>
-											{selectedSample.Q20Bases.toFixed(2)}%
+											{selectedSample.Q20Bases?selectedSample.Q20Bases.toFixed(2):null}%
 										</div>
 									</div>
 								</div>
@@ -1341,7 +1341,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											Q30 bases:
 										</div>
 										<div  className='col-6'>
-											{selectedSample.Q30Bases.toFixed(2)}%
+											{selectedSample.Q30Bases?selectedSample.Q30Bases.toFixed(2):null}%
 										</div>
 									</div>
 									<div  className='row col-3'>
@@ -1349,7 +1349,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											GC Content:
 										</div>
 										<div  className='col-6'>
-											{selectedSample.GCContent.toFixed(2)}%
+											{selectedSample.GCContent?selectedSample.GCContent.toFixed(2):null}%
 										</div>
 									</div>
 									<div  className='row col-3'>
