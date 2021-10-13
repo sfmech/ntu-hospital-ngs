@@ -216,7 +216,7 @@ export const AnalysisSummaryTable: FunctionComponent<AnalysisSummaryTable> = (pr
 		<React.Fragment>
 			<Paper className={classes.paper}>
 				<EnhancedTableToolbar
-					title={props.title}
+					title={""}
 				/>
 				<TableContainer>
 					<Table

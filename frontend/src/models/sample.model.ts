@@ -23,4 +23,9 @@ export class Sample {
     qualityManager: number;
     reportDoctor: number;
     confirmer: number;
+    totalReads: number;
+    Q20Bases: number;
+    Q30Bases: number;
+    duplicationRate: number;
+    GCContent: number;
 }

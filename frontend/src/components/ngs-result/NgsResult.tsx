@@ -524,6 +524,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					const finding = hotspotlist.find((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName)
 					segment.clinicalSignificance = finding?.clinicalSignificance;
+					segment.category = "Target";
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
 					tempTarget.push(segment);
@@ -538,7 +539,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					
+					segment.category = "Other";
 					tempOther.push(segment);
 					
 				}
@@ -551,7 +552,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					
+					segment.category = "Target";
 					tempTarget.push(segment);
 					
 				}
@@ -1281,7 +1282,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 									</div>
 								
 								</div>
-								
 							</Paper>
 							
 							<SegmentTable
@@ -1307,7 +1307,62 @@ export const NgsResult: FunctionComponent = (prop) => {
 							<MutationQCCollapsibleTable mutationQCs={selectedMutationQCs} />
 						</TabPanel>
 						<TabPanel value="4">
-							<AnalysisSummaryTable data={selectedAligneds} title="Analysis Summary" />
+						<Paper className={classes.paper}>
+								<h4 className='row mx-2'>Analysis Summary</h4>
+								<div className='row mx-2 my-3'>
+									<div  className='row col-4'>
+										<div  className='col-6 text-right'>
+											Duplication Rate:
+										</div>
+										<div  className='col-6'>
+											{selectedSample.duplicationRate.toFixed(2)}%
+										</div>
+									</div>
+									<div  className='row col-4'>
+										<div  className='col-6 text-right'>
+											Total Reads:
+										</div>
+										<div  className='col-6'>
+											{selectedSample.totalReads}
+										</div>
+									</div>
+									<div  className='row col-4'>
+										<div  className='col-6 text-right'>
+											Q20 bases:
+										</div>
+										<div  className='col-6'>
+											{selectedSample.Q20Bases.toFixed(2)}%
+										</div>
+									</div>
+								</div>
+								<div className='row mx-2 my-3'>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											Q30 bases:
+										</div>
+										<div  className='col-6'>
+											{selectedSample.Q30Bases.toFixed(2)}%
+										</div>
+									</div>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											GC Content:
+										</div>
+										<div  className='col-6'>
+											{selectedSample.GCContent.toFixed(2)}%
+										</div>
+									</div>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											Percentage of Aplion Mean Coverage &ge; Mean Coverage * 0.2:
+										</div>
+										<div  className='col-6'>
+											{selectedAligneds.length>0?(selectedCoverages.filter((d)=>d.amplion_mean_coverge>=selectedAligneds[0].meanCoverage*0.2).length/selectedCoverages.length).toFixed(2):null}
+										</div>
+									</div>
+								</div>
+							</Paper>
+							<AnalysisSummaryTable data={selectedAligneds}  title="Analysis Summary" />
 						</TabPanel>
 					</TabContext>
 				</div>

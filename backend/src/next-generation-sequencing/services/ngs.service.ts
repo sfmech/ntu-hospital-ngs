@@ -314,7 +314,15 @@ export class NGSService {
 			const general_table_tr = $('#general tr');
 			const after_table_tr = $('#after_filtering_summary tr');
 			temp.duplicationRate = parseFloat(general_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
-			temp.totalReads = parseFloat(after_table_tr.eq(0).find('td').eq(1).text().slice(0, -2));
+			let totalReads = after_table_tr.eq(0).find('td').eq(1).text();
+			if (totalReads.slice(-1)==="G")
+				temp.totalReads = parseFloat(totalReads.slice(0, -2)) * 1000000000;
+			else if (totalReads.slice(-1)==="M")
+				temp.totalReads = parseFloat(totalReads.slice(0, -2)) * 1000000;
+			else if(totalReads.slice(-1)==="K")
+				temp.totalReads = parseFloat(totalReads.slice(0, -2)) * 1000;
+			else
+				temp.totalReads = parseFloat(totalReads);
 			temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 			temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 			temp.GCContent = parseFloat(after_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
@@ -397,7 +405,7 @@ export class NGSService {
 						}else{
 							temp.category="Other";
 						}
-						
+
 						if (temp.freq >= 3) {
 							temp.sample.sampleId = element.sampleId;
 							segmentResults.push(temp);
@@ -505,7 +513,15 @@ export class NGSService {
 				const general_table_tr = $('#general tr');
 				const after_table_tr = $('#after_filtering_summary tr');
 				temp.duplicationRate = parseFloat(general_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
-				temp.totalReads = parseFloat(after_table_tr.eq(0).find('td').eq(1).text().slice(0, -2));
+				let totalReads = after_table_tr.eq(0).find('td').eq(1).text();
+				if (totalReads.slice(-1)==="G")
+					temp.totalReads = parseFloat(totalReads.slice(0, -2)) * 1000000000;
+				else if (totalReads.slice(-1)==="M")
+					temp.totalReads = parseFloat(totalReads.slice(0, -2)) * 1000000;
+				else if(totalReads.slice(-1)==="K")
+					temp.totalReads = parseFloat(totalReads.slice(0, -2)) * 1000;
+				else
+					temp.totalReads = parseFloat(totalReads);
 				temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 				temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 				temp.GCContent = parseFloat(after_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
