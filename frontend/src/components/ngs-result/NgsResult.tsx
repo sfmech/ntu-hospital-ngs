@@ -357,8 +357,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 		() => {			
 			setIsEditable(false);
 			setIsAdd(false);
-
-			
 			
 		},
 		[ selectedSegments ]
@@ -366,9 +364,18 @@ export const NgsResult: FunctionComponent = (prop) => {
 	useEffect(
 		() => {			
 			if (track.name!==""){
-				igv.browser.removeTrack(igv.browser.trackViews.track);
+				igv.browser.removeTrackByName(track.name);
+				setTrack({
+					"name": selectedSample.sampleName.split("_")[0],
+					"sourceType": "file",
+					"url": `/file/Data/${selectedSample.run.runName.replace('/','-')}/BAM/${selectedSample.sampleName}.bam`,
+					"indexURL": `/file/Data/${selectedSample.run.runName.replace('/','-')}/BAM/${selectedSample.sampleName}.bam.bai`,
+					"type": 'alignment',
+					"format": 'bam',
+				});
 				igv.browser.loadTrack(track);
 			}
+			
 		},
 		[ track ]
 	);
@@ -648,14 +655,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		else setSelectedCoverages([]);
 		if (alignedResults[sample.sampleId]) setSelectedAligneds(alignedResults[sample.sampleId]);
 		else setSelectedAligneds([]);
-		setTrack({
-			"name": sample.sampleName.split("_")[0],
-			"sourceType": "file",
-			"url": `/file/Data/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
-			"indexURL": `/file/Data/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
-			"type": 'alignment',
-			"format": 'bam',
-		});
+		
 		/*axios.get(`${ApiUrl}/api/getbamfile/${sample.sampleName}/${sample.run.runName.replace('/','-')}`).then((response)=>{
 			let newTrack = track;
 			newTrack.url = "data:application/octet-stream;base64,"+response.data;
@@ -687,7 +687,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			"type": 'alignment',
 			"format": 'bam',
 		});*/
-
+		
 		
 	};
 
