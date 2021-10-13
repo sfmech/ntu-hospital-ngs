@@ -1,4 +1,4 @@
 export enum SpecimenType {
-    BM = 'BM',
-    PB = 'PB',
+    Blood = 'BLOOD',
+    BM = 'BONE MARROW',
 }
