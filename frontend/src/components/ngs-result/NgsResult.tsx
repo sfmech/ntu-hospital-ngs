@@ -528,17 +528,15 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.clinicalSignificance = finding?.clinicalSignificance;
 					segment.remark = finding?.remark;
 					
-					if (segment.editor!==null&&segment.category==="Target"){
+					if (segment.editor&&segment.category==="Target"){
 						tempTarget.push(segment);
-					}else if (segment.editor!==null&&segment.category==="Other"){
+					}else if (segment.editor&&segment.category==="Other"){
 						tempOther.push(segment);
 					}else{
 						segment.editor = finding?.editor;
 						segment.category="Target";
 						tempTarget.push(segment);
 					}
-					
-					
 				}
 				else if (
 					blacklist.findIndex(
@@ -548,9 +546,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 					const finding = blacklist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					if (segment.editor!==null&&segment.category==="Target"){
+					if (segment.editor&&segment.category==="Target"){
 						tempTarget.push(segment);
-					}else if (segment.editor!==null&&segment.category==="Other"){
+					}else if (segment.editor&&segment.category==="Other"){
 						tempOther.push(segment);
 					}else{
 						segment.editor = finding?.editor;
@@ -566,11 +564,10 @@ export const NgsResult: FunctionComponent = (prop) => {
 				) {
 					const finding = whitelist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark;
-					segment.editor = segment.editor?segment.editor:finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					if (segment.editor!==null&&segment.category==="Target"){
+					if (segment.editor&&segment.category==="Target"){
 						tempTarget.push(segment);
-					}else if (segment.editor!==null&&segment.category==="Other"){
+					}else if (segment.editor&&segment.category==="Other"){
 						tempOther.push(segment);
 					}else{
 						segment.editor = finding?.editor;

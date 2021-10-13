@@ -100,17 +100,16 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 					const finding = hotspotlist.find((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName)
 					segment.clinicalSignificance = finding?.clinicalSignificance;
 					segment.remark = finding?.remark;
-					segment.editor = finding?.editor;
-					if (segment.category==="Target"){
+					
+					if (segment.editor&&segment.category==="Target"){
 						tempTarget.push(segment);
-					}else if (segment.category==="Other"){
+					}else if (segment.editor&&segment.category==="Other"){
 						tempOther.push(segment);
 					}else{
+						segment.editor = finding?.editor;
 						segment.category="Target";
 						tempTarget.push(segment);
 					}
-					
-					
 				}
 				else if (
 					blacklist.findIndex(
@@ -119,13 +118,13 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 				) {
 					const finding = blacklist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark;
-					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					if (segment.category==="Target"){
+					if (segment.editor&&segment.category==="Target"){
 						tempTarget.push(segment);
-					}else if (segment.category==="Other"){
+					}else if (segment.editor&&segment.category==="Other"){
 						tempOther.push(segment);
 					}else{
+						segment.editor = finding?.editor;
 						segment.category="Other";
 						tempOther.push(segment);
 					}
@@ -138,13 +137,13 @@ export const NgsStatistic: FunctionComponent = (prop) => {
 				) {
 					const finding = whitelist.find((tag) => tag.id === `${segment.chr}_${segment.position}_${segment.HGVSc}_${segment.HGVSp}`)
 					segment.remark = finding?.remark;
-					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					if (segment.category==="Target"){
+					if (segment.editor&&segment.category==="Target"){
 						tempTarget.push(segment);
-					}else if (segment.category==="Other"){
+					}else if (segment.editor&&segment.category==="Other"){
 						tempOther.push(segment);
 					}else{
+						segment.editor = finding?.editor;
 						segment.category="Target";
 						tempTarget.push(segment);
 					}
