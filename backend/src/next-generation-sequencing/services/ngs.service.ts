@@ -32,6 +32,7 @@ import { promisify } from 'util';
 var cp = require('child_process');
 const fs = require('fs');
 const csv = require('csv-parser');
+const cheerio = require("cheerio");
 
 @Injectable()
 export class NGSService {
@@ -305,6 +306,19 @@ export class NGSService {
 				(d) => (d.abbr === (file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1]))
 			);
 			temp.run.runId = runsResponse.runId;
+			
+			const reportHtml = fs.readFileSync(`${this.configService.get<string>(
+				'ngs.path'
+			)}/${runsResponse.runName}/FASTQ_RAW/${temp.sampleName}_report.html`, 'utf8');
+			const $ = cheerio.load(reportHtml);
+			const general_table_tr = $('#general tr');
+			const after_table_tr = $('#after_filtering_summary tr');
+			temp.duplicationRate = parseFloat(general_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
+			temp.totalReads = parseFloat(after_table_tr.eq(0).find('td').eq(1).text().slice(0, -2));
+			temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split()[2].slice(1, -2));
+			temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split()[2].slice(1, -2));
+			temp.GCContent = parseFloat(after_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
+			console.log(temp.duplicationRate,temp.totalReads,temp.Q20Bases,temp.Q30Bases,temp.GCContent)
 			return temp;
 		});
 		const samplesResponse = await this.sampleRepository.save(sampleResults);
@@ -439,13 +453,6 @@ export class NGSService {
 					.on('end', async () => {
 						const coverageResponse = await this.coverageRepository.save(coverageResults)
 					});
-
-					const reportHtml = fs.readFileSync(`${this.configService.get<string>(
-						'ngs.path'
-					)}/${runsResponse.runName}/FASTQ_RAW/${element.sampleName}_report.html`, 'utf8');
-					console.log(reportHtml);
-					
-
 					
 			} catch (error) {
 				console.log('error', error);

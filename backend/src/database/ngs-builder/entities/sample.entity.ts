@@ -85,4 +85,19 @@ export class Sample {
     @Column({ name: "confirmer"})
     confirmer : number;
 
+    @Column({ name: "total_reads"})
+    totalReads: number;
+
+    @Column({ name: "Q20_bases"})
+    Q20Bases: number;
+
+    @Column({ name: "Q30_bases"})
+    Q30Bases: number;
+
+    @Column({ name: "duplication_rate"})
+    duplicationRate: number;
+
+    @Column({ name: "GC_content"})
+    GCContent: number;
+
 }
