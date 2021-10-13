@@ -1217,6 +1217,18 @@ export const NgsResult: FunctionComponent = (prop) => {
 								<Tab value="4" label="Analysis Summary" />
 							</TabList>
 						</AppBar>
+						<Accordion expanded={expanded} onChange={handleChange()}>
+								<AccordionSummary
+									expandIcon={<ExpandMoreIcon />}
+									aria-controls="panel1a-content"
+									id="panel1a-header"
+								>
+								<Typography>IGV</Typography>
+								</AccordionSummary>
+								<AccordionDetails>
+									<div id="igv-div" style={igvStyle}></div>
+								</AccordionDetails>
+							</Accordion>
 						<TabPanel value="1">
 							{renderSampleButtons()}
 							<Paper className={classes.paper}>
@@ -1286,18 +1298,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 								</div>
 								
 							</Paper>
-							<Accordion expanded={expanded} onChange={handleChange()}>
-								<AccordionSummary
-									expandIcon={<ExpandMoreIcon />}
-									aria-controls="panel1a-content"
-									id="panel1a-header"
-								>
-								<Typography>IGV</Typography>
-								</AccordionSummary>
-								<AccordionDetails>
-									<div id="igv-div" style={igvStyle}></div>
-								</AccordionDetails>
-							</Accordion>
 							
 							<SegmentTable
 								data={targetSegments}
@@ -1319,18 +1319,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 							<CoverageTable data={selectedCoverages} title="Coverage" />
 						</TabPanel>
 						<TabPanel value="3">
-							<Accordion expanded={expanded} onChange={handleChange()}>
-								<AccordionSummary
-									expandIcon={<ExpandMoreIcon />}
-									aria-controls="panel1a-content"
-									id="panel1a-header"
-								>
-								<Typography>IGV</Typography>
-								</AccordionSummary>
-								<AccordionDetails>
-									<div id="igv-div" style={igvStyle}></div>
-								</AccordionDetails>
-							</Accordion>
 							<MutationQCCollapsibleTable mutationQCs={selectedMutationQCs} />
 						</TabPanel>
 						<TabPanel value="4">
