@@ -1336,7 +1336,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 									</div>
 								</div>
 								<div className='row mx-2 my-3'>
-									<div  className='row col-3'>
+									<div  className='row col-4'>
 										<div  className='col-6 text-right'>
 											Q30 bases:
 										</div>
@@ -1344,7 +1344,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											{selectedSample.Q30Bases?selectedSample.Q30Bases.toFixed(2):null}%
 										</div>
 									</div>
-									<div  className='row col-3'>
+									<div  className='row col-4'>
 										<div  className='col-6 text-right'>
 											GC Content:
 										</div>
@@ -1352,7 +1352,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											{selectedSample.GCContent?selectedSample.GCContent.toFixed(2):null}%
 										</div>
 									</div>
-									<div  className='row col-3'>
+									<div  className='row col-4'>
 										<div  className='col-6 text-right'>
 											Percentage of Aplion Mean Coverage &ge; Mean Coverage * 0.2:
 										</div>
