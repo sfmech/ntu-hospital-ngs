@@ -336,13 +336,13 @@ export const NgsResult: FunctionComponent = (prop) => {
         var igvContainer = document.getElementById('igv-div');
 		var igvOptions;
 		if (track.name!==""){
-			console.log("load old track", track.name);
+			//console.log("load old track", track.name);
 			igvOptions = { genome: "hg19","tracks":track,
 			"locus": 'chr11:32449420'};
 		}
 			
 		else{
-			console.log("load no track");
+			//console.log("load no track");
 			igvOptions = { genome: "hg19","name": "",
 			"sourceType": "file",
 			"url": "",
@@ -355,7 +355,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		
 		igv.createBrowser(igvContainer, igvOptions).
 			then(function (browser) {
-				console.log("create browser");
+				//console.log("create browser");
 				igv.browser = browser;
 		});
     },[]);
@@ -371,12 +371,14 @@ export const NgsResult: FunctionComponent = (prop) => {
 	useEffect(
 		() => {			
 			if (track.name!==""){
-				console.log("load new track", track.name);
+				//console.log("load new track", track.name);
+				//console.log(igv.browser.findTracks("name",track.name).length);
+				igv.browser.removeTrackByName(track.name);
 				igv.browser.loadTrack(track);
 			}
 				
 		},
-		[ track ]
+		[ track, value ]
 	);
 
 
@@ -641,7 +643,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		if (alignedResults[sample.sampleId]) setSelectedAligneds(alignedResults[sample.sampleId]);
 		else setSelectedAligneds([]);
 		if (track.name!==""){
-			console.log("remove track");
+			//console.log("remove track");
 			igv.browser.removeTrackByName(track.name);
 		}
 			
