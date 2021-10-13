@@ -334,13 +334,18 @@ export const NgsResult: FunctionComponent = (prop) => {
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	useEffect(()=>{
         var igvContainer = document.getElementById('igv-div');
-		var igvOptions = { genome: "hg19","name": "",
-		  "sourceType": "file",
-		  "url": "",
-		  "indexURL": "",
-		  "type": 'alignment',
-		  "format": 'bam',
-		   "locus": 'chr11:32449420'};
+		var igvOptions;
+		if (track.name!=="")
+			igvOptions = { genome: "hg19","tracks":track,
+				"locus": 'chr11:32449420'};
+		else
+			igvOptions = { genome: "hg19","name": "",
+			"sourceType": "file",
+			"url": "",
+			"indexURL": "",
+			"type": 'alignment',
+			"format": 'bam',
+			"locus": 'chr11:32449420'};
 		
 		igv.createBrowser(igvContainer, igvOptions).
 			then(function (browser) {
@@ -1301,6 +1306,18 @@ export const NgsResult: FunctionComponent = (prop) => {
 							<CoverageTable data={selectedCoverages} title="Coverage" />
 						</TabPanel>
 						<TabPanel value="3">
+							<Accordion expanded={expanded} onChange={handleChange()}>
+								<AccordionSummary
+									expandIcon={<ExpandMoreIcon />}
+									aria-controls="panel1a-content"
+									id="panel1a-header"
+								>
+								<Typography>IGV</Typography>
+								</AccordionSummary>
+								<AccordionDetails>
+									<div id="igv-div" style={igvStyle}></div>
+								</AccordionDetails>
+							</Accordion>
 							<MutationQCCollapsibleTable mutationQCs={selectedMutationQCs} />
 						</TabPanel>
 						<TabPanel value="4">

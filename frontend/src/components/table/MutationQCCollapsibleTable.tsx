@@ -14,6 +14,7 @@ import Paper from '@material-ui/core/Paper';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { MutationQC } from '../../models/mutationQC.model';
+import igv from 'igv';
 import { createStyles, TableSortLabel, Theme } from '@material-ui/core';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -196,6 +197,7 @@ function Row(props: { row: MutationQC[], index: string}) {
 									{stableSort(row, getComparator(order, orderBy)).map((mutationQCRow) => (
 										<TableRow
 											key={mutationQCRow.mutationId}
+											onClick={() => {igv.browser.search(mutationQCRow.chr+':'+mutationQCRow.position)}}
 											style={{backgroundColor: mutationQCRow.QC<50?"#ffbdc4":(mutationQCRow.QC<250?"#ffd68c":"#66f988")}}
 										>
 											<TableCell component="th" scope="row">
