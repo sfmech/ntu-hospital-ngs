@@ -315,10 +315,9 @@ export class NGSService {
 			const after_table_tr = $('#after_filtering_summary tr');
 			temp.duplicationRate = parseFloat(general_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
 			temp.totalReads = parseFloat(after_table_tr.eq(0).find('td').eq(1).text().slice(0, -2));
-			temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split()[2].slice(1, -2));
-			temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split()[2].slice(1, -2));
+			temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split(" ")[2].slice(1, -2));
+			temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 			temp.GCContent = parseFloat(after_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
-			console.log(temp.duplicationRate,temp.totalReads,temp.Q20Bases,temp.Q30Bases,temp.GCContent)
 			return temp;
 		});
 		const samplesResponse = await this.sampleRepository.save(sampleResults);
@@ -385,11 +384,6 @@ export class NGSService {
 						if (parseFloat(data['20'])) temp.EURAF = parseFloat(data['20']);
 						if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
 						
-						if (temp.freq >= 3) {
-							temp.sample.sampleId = element.sampleId;
-							segmentResults.push(temp);
-						} 
-
 						if(temp.clinicalSignificance.indexOf("Pathogenic")!==-1
 						||temp.clinicalSignificance.indexOf("VUS")!==-1
 						||(temp.globalAF<0.01&&temp.AFRAF<0.01&&temp.AMRAF<0.01&&temp.EURAF<0.01&&temp.ASNAF<0.01)
@@ -403,6 +397,13 @@ export class NGSService {
 						}else{
 							temp.category="Other";
 						}
+						
+						if (temp.freq >= 3) {
+							temp.sample.sampleId = element.sampleId;
+							segmentResults.push(temp);
+						} 
+
+						
 					})
 					.on('end', async () => {
 						const segmentsResponse = await this.segmentRepository.save(segmentResults);
@@ -496,6 +497,18 @@ export class NGSService {
 					(d) => (d.abbr === (file.split('_')[1].match(/S(\d)*/) ? 'unknown' : file.split('_')[1]))
 				);
 				temp.run.runId = runsResponse.runId;
+
+				const reportHtml = fs.readFileSync(`${this.configService.get<string>(
+					'ngs.path'
+				)}/${runsResponse.runName}/FASTQ_RAW/${temp.sampleName}_report.html`, 'utf8');
+				const $ = cheerio.load(reportHtml);
+				const general_table_tr = $('#general tr');
+				const after_table_tr = $('#after_filtering_summary tr');
+				temp.duplicationRate = parseFloat(general_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
+				temp.totalReads = parseFloat(after_table_tr.eq(0).find('td').eq(1).text().slice(0, -2));
+				temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split(" ")[2].slice(1, -2));
+				temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split(" ")[2].slice(1, -2));
+				temp.GCContent = parseFloat(after_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
 				return temp;
 			});
 			const samplesResponse = await this.sampleRepository.save(sampleResults);

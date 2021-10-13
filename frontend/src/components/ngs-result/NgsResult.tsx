@@ -526,14 +526,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.clinicalSignificance = finding?.clinicalSignificance;
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempTarget.push(segment);
-					}
+					tempTarget.push(segment);
+					
 				}
 				else if (
 					blacklist.findIndex(
@@ -544,14 +538,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempOther.push(segment);
-					}
+					
+					tempOther.push(segment);
+					
 				}
 				else if (
 					whitelist.findIndex(
@@ -562,15 +551,11 @@ export const NgsResult: FunctionComponent = (prop) => {
 					segment.remark = finding?.remark;
 					segment.editor = finding?.editor;
 					segment.clinicalSignificance = finding?.clinicalSignificance;
-					if (segment.category===SegmentCategory.Target){
-						tempTarget.push(segment);
-					}
-					else if (segment.category===SegmentCategory.Other){
-						tempOther.push(segment);
-					}else{
-						tempTarget.push(segment);
-					}
+					
+					tempTarget.push(segment);
+					
 				}
+				/*
 				else if(segment.clinicalSignificance?.indexOf("Pathogenic")!==-1||segment.clinicalSignificance?.indexOf("VUS")!==-1){
 					if (segment.category===SegmentCategory.Target){
 						tempTarget.push(segment);
@@ -626,7 +611,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 						tempTarget.push(segment);
 					}
 
-				}
+				}*/
 			});
 		}
 
