@@ -340,14 +340,7 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false, skipLines: 1 }))
 					.on('data', (data) => {
-						//console.log(`data: ${element.sampleId} -> `, data['0']);
 						let temp = new Segment();
-						/*if (
-							(data['8'] || ('' as string)).indexOf('stop') !== -1 ||
-							(data['8'] || ('' as string)).indexOf('missense') !== -1 ||
-							(data['8'] || ('' as string)).indexOf('frameshift') !== -1 ||
-							(data['8'] || ('' as string)).indexOf('splice') !== -1
-						) {*/
 						temp.chr = data['0'] || '';
 						temp.position = data['1'] || '';
 						temp.dbSNP = data['2'] || '';
@@ -377,7 +370,6 @@ export class NGSService {
 						if (parseFloat(data['19'])) temp.AMRAF = parseFloat(data['19']);
 						if (parseFloat(data['20'])) temp.EURAF = parseFloat(data['20']);
 						if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
-						//}
 						
 						if (temp.freq >= 3) {
 							temp.sample.sampleId = element.sampleId;
@@ -399,7 +391,6 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
-						//console.log(`data: ${element.sampleId} -> `, data['0']);
 						let temp = new MutationQC();
 						temp.sample.sampleId = element.sampleId
 						temp.geneName = data[0];
@@ -422,7 +413,6 @@ export class NGSService {
 					)
 					.pipe(csv({  headers: false, skipLines: 1  }))
 					.on('data', (data) => {
-						//console.log(`data: ${element.sampleId} -> `, data['0']);
 						let temp = new Coverage();
 						temp.sample.sampleId = element.sampleId
 						temp.amplionName = data[4];
@@ -515,12 +505,6 @@ export class NGSService {
 						.pipe(csv({ headers: false, skipLines: 1 }))
 						.on('data', (data) => {
 							let temp = new Segment();
-							/*if (
-								(data['8'] || ('' as string)).indexOf('stop') !== -1 ||
-								(data['8'] || ('' as string)).indexOf('missense') !== -1 ||
-								(data['8'] || ('' as string)).indexOf('frameshift') !== -1 ||
-								(data['8'] || ('' as string)).indexOf('splice') !== -1
-							) {*/
 							temp.chr = data['0'] || '';
 							temp.position = data['1'] || '';
 							temp.dbSNP = data['2'] || '';
@@ -550,7 +534,6 @@ export class NGSService {
 							if (parseFloat(data['19'])) temp.AMRAF = parseFloat(data['19']);
 							if (parseFloat(data['20'])) temp.EURAF = parseFloat(data['20']);
 							if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
-							//}
 							temp.sample.sampleId = element.sampleId;
 							if (temp.freq >=3) {
 								temp.sample.sampleId = element.sampleId;
