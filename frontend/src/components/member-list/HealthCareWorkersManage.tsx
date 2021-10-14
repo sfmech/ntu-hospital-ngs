@@ -33,18 +33,12 @@ export const HealthCareWorkersManage: FunctionComponent = (prop) => {
         getMemberlist();
 
     },[]);
-    const handleImportClick = (data)=>{
-		/*const importData = data.filter((d)=>
-        !memberlist.find((curD)=>curD.userName === d.userName)
-		);
-        console.log()
-		if(importData.length>0){
-			axios.post(`${ApiUrl}/api/addUser`, {
-				data:  importData
-			}).then(()=>{
-				window.location.reload(false);
-			})
-		}*/
+    const handleImportClick = (data)=>{		
+		axios.post(`${ApiUrl}/api/addHealthCareWorkers`, {
+			data:  data
+		}).then(()=>{
+			window.location.reload();
+		})
 	};
     return (
         <React.Fragment>
