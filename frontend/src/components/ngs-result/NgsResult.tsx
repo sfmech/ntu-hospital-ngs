@@ -1321,7 +1321,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 									</div>
 									<div  className='row col-4'>
 										<div  className='col-6 text-right'>
-											Uniformity( &ge; Mean &times; 0.2 ):
+											Uniformity(&ge;Mean&times;0.2):
 										</div>
 										<div  className='col-6'>
 											{selectedAligneds.length>0?(selectedCoverages.filter((d)=>d.amplion_mean_coverge>=selectedAligneds[0].meanCoverage*0.2).length/selectedCoverages.length*100).toFixed(2):null}%
