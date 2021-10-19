@@ -79,6 +79,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 	};
 
 	const handleSearchClick = () => {
+		if (hotspotlist.length > 0) setShowBlacklist(hotspotlist.filter((data) => data[condition].indexOf(input) !== -1));
 		if (blacklist.length > 0) setShowBlacklist(blacklist.filter((data) => data[condition].indexOf(input) !== -1));
 		if (whitelist.length > 0) setShowWhitelist(whitelist.filter((data) => data[condition].indexOf(input) !== -1));
 	};
@@ -125,7 +126,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 	const onToggleEditMode =  () => {
 		if(isEditable){
 			axios.post(`${ApiUrl}/api/updateSegmentTag`, {
-				data:  blacklist.concat(whitelist)
+				data:  hotspotlist.concat(blacklist.concat(whitelist))
 			});
 		}
 		setIsEditable(!isEditable)
@@ -137,7 +138,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 		axios.post(`${ApiUrl}/api/updateSegmentTag`, {
 			data:  data
 		}).then(()=>{
-			window.location.reload(false);
+			window.location.reload();
 		})
 
 	};
@@ -151,7 +152,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 					startIcon={<ImportExportIcon />}
 					className={"mx-2"}
 				>
-					<ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}_filterlist.csv`} data={blacklist.concat(whitelist)} style={prettyLink}>
+					<ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}_filterlist.csv`} data={hotspotlist.concat(blacklist.concat(whitelist))} style={prettyLink}>
                     	匯出
                 	</ExportDataToCsv>
 				</Button>
@@ -194,8 +195,6 @@ export const FilterListManage: FunctionComponent = (prop) => {
 				<FormControl variant="outlined" className={classes.formControl}>
 					<Select native value={condition} onChange={handleChange}>
 						<option value="geneName">Gene Name</option>
-						<option value="chr">Chr</option>
-						<option value="position">Position</option>
 						<option value="HGVSc">HGVSc</option>
 						<option value="HGVSp">HGVSp</option>
 					</Select>
@@ -205,7 +204,7 @@ export const FilterListManage: FunctionComponent = (prop) => {
 						value={input}
 						onChange={handleInputChange}
 						className={classes.input}
-						placeholder="Search Blacklist and Whitelist"
+						placeholder="Search Hotspotlist, Blacklist, and Whitelist"
 					/>
 					<IconButton type="submit" aria-label="search" onClick={handleSearchClick}>
 						<SearchIcon />

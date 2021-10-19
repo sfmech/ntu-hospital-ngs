@@ -238,7 +238,7 @@ export const HotspotTable: FunctionComponent<HotspotTable> = (props) => {
 		() => {
 			setSelected([]);
 			setOrder('asc');
-			setOrderBy('chr');
+			setOrderBy('geneName');
 			setPage(0);
 			setRows(props.data);
 		},
