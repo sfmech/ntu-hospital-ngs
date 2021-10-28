@@ -332,6 +332,18 @@ export const NgsResult: FunctionComponent = (prop) => {
 	Font.register({ family: 'KAIUBold', src: KAIUBold });
 	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
+	Font.registerHyphenationCallback((word: string) => {
+		if (word.length === 1) {
+		  return [word];
+		}   
+	
+		return Array.from(word)
+		  .map((char) => [char, ''])
+		  .reduce((arr, current) => {
+			arr.push(...current);
+			return arr;
+		  }, []);
+	  });
 	useEffect(()=>{
         var igvContainer = document.getElementById('igv-div');
 		var igvOptions;
@@ -1290,7 +1302,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											Total Reads:
 										</div>
 										<div  className='col-6'>
-											{selectedSample.totalReads}
+											{selectedSample.totalReads?Math.ceil(selectedSample.totalReads):null}
 										</div>
 									</div>
 									<div  className='row col-4'>
@@ -1321,7 +1333,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 									</div>
 									<div  className='row col-4'>
 										<div  className='col-6 text-right'>
-											Uniformity(&ge;Mean&times;0.2):
+											Uniformity ({"≥"}Mean{"×"}0.2):
 										</div>
 										<div  className='col-6'>
 											{selectedAligneds.length>0?(selectedCoverages.filter((d)=>d.amplion_mean_coverge>=selectedAligneds[0].meanCoverage*0.2).length/selectedCoverages.length*100).toFixed(2):null}%
