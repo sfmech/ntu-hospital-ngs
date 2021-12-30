@@ -23,7 +23,7 @@ export enum Reference {
     SF3B1='NM_012433',
     SRSF2='NM_003016',
     TET2='NM_001127208',
-    UZAF1='NM_006758',
+    U2AF1='NM_006758',
     WT1='NM_000378',
     ZRSR2='NM_005089',
 
