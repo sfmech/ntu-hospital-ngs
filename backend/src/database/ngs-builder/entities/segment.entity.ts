@@ -66,4 +66,7 @@ export class Segment {
     @Column({ name: "is_deleted"})
     isDeleted: boolean;
 
+    @Column({ name: "editor"})
+    editor: string;
+
 }

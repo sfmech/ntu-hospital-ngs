@@ -22,6 +22,7 @@ import { Backdrop, CircularProgress, FormControl, Input, MenuItem, Select } from
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
 import useCookies from 'react-cookie/cjs/useCookies';
 import { HotspotModal } from '../modals/AddHotspotModal';
+import { Reference } from '../../models/reference.enum';
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -61,6 +62,7 @@ interface HeadCell {
 }
 
 const headCells: HeadCell[] = [
+	{ id: 'reference', numeric: false, disablePadding: false, label: 'Reference' },
 	{ id: 'geneName', numeric: false, disablePadding: true, label: 'Gene Name' },
 	{ id: 'HGVSc', numeric: true, disablePadding: false, label: 'HGVSc' },
 	{ id: 'HGVSp', numeric: true, disablePadding: false, label: 'HGVSp' },
@@ -371,7 +373,11 @@ export const HotspotTable: FunctionComponent<HotspotTable> = (props) => {
 													}
 												</TableCell>
 												<TableCell component="th" id={labelId} scope="row" padding="none">
-													{row.geneName}
+												{Reference[row.geneName]}
+													
+												</TableCell>
+												<TableCell align='right'>
+												{row.geneName}
 												</TableCell>
 												<TableCell align="right">{row.HGVSc}</TableCell>
 												<TableCell align="right">{row.HGVSp}</TableCell>

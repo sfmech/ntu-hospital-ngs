@@ -25,6 +25,7 @@ import { SegmentTagContext } from '../../contexts/segmentTag.context';
 import { SegmentCategory } from '../../models/segment.category.enum';
 import { useCookies } from 'react-cookie';
 import igv from 'igv';
+import { Reference } from '../../models/reference.enum';
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -64,6 +65,7 @@ interface HeadCell {
 }
 
 const headCells: HeadCell[] = [
+	{ id: 'reference', numeric: false, disablePadding: false, label: 'Reference' },
 	{ id: 'chr', numeric: false, disablePadding: false, label: 'Chr' },
 	{ id: 'position', numeric: false, disablePadding: false, label: 'Position' },
 	{ id: 'dbSNP', numeric: false, disablePadding: false, label: 'dbSNP' },
@@ -429,7 +431,10 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 														
 													</TableCell>
 												) : null}
-												<TableCell component="th" scope="row">
+												<TableCell align='right'>
+													{Reference[row.geneName]}
+												</TableCell>
+												<TableCell align='right'>
 													{row.chr}
 												</TableCell>
 												<TableCell align="right">{row.position}</TableCell>

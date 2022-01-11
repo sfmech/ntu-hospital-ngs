@@ -22,6 +22,11 @@ export const FileReducer = (state, action) => {
 				...state,
 				analysis: action.payload
 			}
+		case 'SETBEDS':
+			return{
+				...state,
+				beds: action.payload
+			}
 		case 'UPDATEFILE':
 			const updatedFile = action.payload as File;
 			

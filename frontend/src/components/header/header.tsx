@@ -212,14 +212,6 @@ export const Header:FunctionComponent = (prop) => {
                   </ListItem>
               </Link>:null
             }
-            {(role==='admin'&&token!==undefined&&token!=="")?
-              <Link to={STATISTIC} style={{ textDecoration: 'none' }}>
-                  <ListItem  button key="Statistic" selected={selectedIndex === 5} onClick={(event) => handleListItemClick(event, 5)}>
-                  <ListItemIcon><img width="24px" height="24px" alt="Statistic System" src="/assets/statistic.png"/></ListItemIcon>
-                  <ListItemText primary="Statistic System" />
-                  </ListItem>
-              </Link>:null
-            }
         </List>
       </Drawer>
       <main className="container-fluid mw-1200 py-4 px-3">

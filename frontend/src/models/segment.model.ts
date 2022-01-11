@@ -3,6 +3,8 @@ import { Sample } from "./sample.model";
 export class Segment {
     segmentId: number;
     sample: Sample = new Sample();
+    count: number;
+    reference: string;
     chr: string;
     position: string;
     dbSNP: string| null;

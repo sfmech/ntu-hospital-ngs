@@ -20,6 +20,7 @@ import { SegmentTag } from '../../models/segmentTag.model';
 import { Backdrop, CircularProgress, FormControl, Input, MenuItem, Select } from '@material-ui/core';
 import { ClinicalSignificance } from '../../models/clinicalSignificance.enum';
 import useCookies from 'react-cookie/cjs/useCookies';
+import { Reference } from '../../models/reference.enum';
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -59,6 +60,7 @@ interface HeadCell {
 }
 
 const headCells: HeadCell[] = [
+	{ id: 'reference', numeric: false, disablePadding: false, label: 'Reference' },
 	{ id: 'geneName', numeric: false, disablePadding: true, label: 'Gene Name' },
 	{ id: 'chr', numeric: false, disablePadding: false, label: 'Chr' },
 	{ id: 'position', numeric: true, disablePadding: false, label: 'Position' },
@@ -364,7 +366,11 @@ export const SegmentTagTable: FunctionComponent<SegmentTagTable> = (props) => {
 													}
 												</TableCell>
 												<TableCell component="th" id={labelId} scope="row" padding="none">
-													{row.geneName}
+												{Reference[row.geneName]}
+												</TableCell>
+												<TableCell align='right'>
+												{row.geneName}
+													
 												</TableCell>
 												<TableCell align="right">{row.chr}</TableCell>
 												<TableCell align="right">{row.position}</TableCell>

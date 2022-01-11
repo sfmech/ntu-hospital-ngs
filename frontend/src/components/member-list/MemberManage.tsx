@@ -25,17 +25,11 @@ export const MemberManage: FunctionComponent = (prop) => {
                     <ListItemText primary="Users Manage" />
                   </ListItem>
                 </Link>
-                <Link to={`${MEMBERMANAGE}/healthcareworkersmanage`} style={{ textDecoration: 'none', color: '#07aad6' }}>
-                  <ListItem button classes={{ root: 'MenuItem', selected: 'selected' }} selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
-                    <ListItemText primary="Healthcare Workers Manage" />
-                  </ListItem>
-                </Link>
             </List>
         </div>
         <div className="col-10">
           <Switch>
             <Route path={`${MEMBERMANAGE}/usersmanage`} component={UsersManage} />
-            <Route path={`${MEMBERMANAGE}/healthcareworkersmanage`} component={HealthCareWorkersManage} />
             <Route exact path={MEMBERMANAGE} component={RedirectToIndex} />
           </Switch>
         </div>

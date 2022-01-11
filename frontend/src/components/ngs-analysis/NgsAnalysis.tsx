@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { Title } from '../title/Title';
-import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Button, createStyles, FormControl, InputLabel, makeStyles, MenuItem, Select, Theme, Typography } from '@material-ui/core';
 import './NgsAnalysis.css';
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
@@ -14,6 +14,10 @@ const useStyles = makeStyles((theme: Theme) =>
 		backdrop: {
 			zIndex: theme.zIndex.drawer + 1,
 			color: '#fff'
+		},
+		formControl: {
+			margin: theme.spacing(1),
+			minWidth: 200
 		}
 	})
 );
@@ -24,9 +28,8 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
 	const [ diseases, setDiseases ] = useState<Array<Disease>>([]);
-	const { analysis, files, setFiles, setAnalysis } = useContext(FileContext);
-
-	
+	const { analysis, files, beds, setFiles, setAnalysis } = useContext(FileContext);
+	const [ bed, setBed ] = React.useState("");
 
 	useEffect(() => {
 		const getDiseases = () => {
@@ -39,6 +42,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 			}
 		}
 		getDiseases();
+		
 	}, []);
 
 
@@ -46,7 +50,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		const runScripts = async () => {
 			try {
 				setOpen(true);
-				await axios.post(`${ApiUrl}/api/runscript`, {data: files});
+				await axios.post(`${ApiUrl}/api/runscript`, {data: files, bed: bed});
 			} catch (error) {
 				console.log(error);
 			} finally {
@@ -54,6 +58,10 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 			}
 		};
 		runScripts();
+	};
+
+	const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+		setBed(event.target.value as string);
 	};
 
 	return (
@@ -65,6 +73,23 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 					</Typography>
 			</div>
 			<FileList diseases={diseases}/>
+
+			<div className="row justify-content-center mt-3">
+				<FormControl variant="outlined" className={classes.formControl}>
+					<InputLabel id="demo-simple-select-outlined-label">Choose Bed</InputLabel>
+					<Select
+						labelId="demo-simple-select-outlined-label"
+						id="demo-simple-select-outlined"
+						value={bed}
+						onChange={handleChange}
+						label="Choose Bed"
+					>
+						{beds.map((bed) => {
+							return <MenuItem value={bed}>{bed}</MenuItem>;
+						})}
+					</Select>
+				</FormControl>
+			</div>
 			<div className="row justify-content-center mt-3">
 				<Button variant="contained" color="primary" disabled={files.length === 0|| analysis>0 } onClick={handleClick}>
 					開始分析

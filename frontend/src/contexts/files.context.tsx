@@ -7,12 +7,15 @@ import { FileReducer } from './files.reducer';
 type FileResponse = {
 	analysis: number,
 	files: Array<File>
+	bed: Array<string>
 }
 const initialState = {
 	analysis: 0,
 	files: new Array<File>(),
+	beds: new Array<string>(),
 	setAnalysis: (analysis: number)=>{},
 	setFiles: (files: Array<File>)=>{},
+	setBeds: (beds: Array<string>)=>{},
 	updateFile: (file: File)=>{},
 	updateFileInfo: (file: File)=>{}
 };
@@ -26,10 +29,12 @@ export const FileProvider = ({ children }) => {
 		const getFilelist = () => {
 			try {
 				axios(`${ApiUrl}/api/filelist`).then((res) => {
+					console.log(res);
 					if (res.data.files.length > 0) {
 						setFiles(res.data.files);
 						setAnalysis(parseInt(res.data.analysis));
 					}
+					setBeds(res.data.bed);
 				});
 			} catch (error) {
 				console.log(error);
@@ -45,7 +50,12 @@ export const FileProvider = ({ children }) => {
             payload: files
         });
 	}
-	
+	function setBeds(beds: string[]) {
+        dispatch({
+            type: 'SETBEDS',
+            payload: beds
+        });
+	}
 	function setAnalysis(analysis: number) {
         dispatch({
             type: 'SETANALYSIS',
@@ -73,8 +83,10 @@ export const FileProvider = ({ children }) => {
 			value={{
 				analysis: state.analysis,
 				files: state.files,
+				beds: state.beds,
 				setAnalysis,
 				setFiles,
+				setBeds,
 				updateFile,
 				updateFileInfo
 

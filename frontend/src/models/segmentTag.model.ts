@@ -1,5 +1,6 @@
 export class SegmentTag {
     id: string;
+    reference: string;
     chr: string;
     position: string;
     HGVSc: string;

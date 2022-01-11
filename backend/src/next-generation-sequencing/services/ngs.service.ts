@@ -182,9 +182,9 @@ export class NGSService {
 			status = FileStatus.NotAnalyse;
 		}
 
-		const aligned = fs
-			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((align: string) => align.match(/Aligned.csv/));
+		const bed = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/bed`)
+			.filter((align: string) => align.match(/(\w).bed/));
 		const bams = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
 			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
@@ -221,7 +221,7 @@ export class NGSService {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
 			}
 		});
-		return { analysis: status, files: response };
+		return { analysis: status, files: response, bed: bed };
 	}
 
 
@@ -475,7 +475,7 @@ export class NGSService {
 		return ;
 	}
 	
-	async runScript(data:File[]): Promise<void> {
+	async runScript(data:File[], bed:string): Promise<void> {
 		fs.writeFile(`${this.configService.get<string>('ngs.path')}/status.txt`,"1", 'utf-8',(err)=>{});
 		const files = fs
 			.readdirSync(this.configService.get<string>('ngs.path'))
@@ -483,7 +483,7 @@ export class NGSService {
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
 
-		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ], {
+		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash`, bed ], {
 			maxBuffer: 1024 * 1024 * 1024 * 5
 		});
 
