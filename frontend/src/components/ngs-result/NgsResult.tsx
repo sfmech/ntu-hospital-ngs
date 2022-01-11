@@ -1032,28 +1032,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 							<Button
 								variant="contained"
 								color="primary"
-								startIcon={<ImportExportIcon />}
-								onClick={handleExportClick}
-							>
-								匯出csv
-							</Button>
-						</Grid>
-						<Grid container alignItems="center" justify="center" xs={6}>
-								<Button
-									variant="contained"
-									color="primary"
-									startIcon={<ImportExportIcon />}
-									onClick={handleExportPdfClick}
-								>
-									匯出pdf
-								</Button>
-						</Grid>
-					</Grid>
-					<Grid container alignItems="center" justify="center" className="mt-2">							
-						<Grid container alignItems="center" justify="center" xs={6}>
-							<Button
-								variant="contained"
-								color="primary"
 								startIcon={<DescriptIcon />}
 								onClick={handleUploadClick}
 							>
@@ -1196,72 +1174,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 							</Accordion>
 						<TabPanel value="1">
 							{renderSampleButtons()}
-							<Paper className={classes.paper}>
-								<h4 className='row mx-2'>報告基本資料</h4>
-								<div className='row mx-2 my-3'>
-									<div  className='row col-3'>
-										<div  className='col-6 text-right'>
-											SID:
-										</div>
-										<div  className='col-6'>
-											{isEditable? 
-												<Input
-													defaultValue={selectedSample.SID}
-													name={'SID'}
-													onChange={(e) => handleSampleChange(e)}
-												/>:selectedSample.SID
-											}
-										</div>
-									</div>
-									<div  className='row col-3'>
-										<div  className='col-6 text-right'>
-											病歷號:
-										</div>
-										<div  className='col-6'>
-											{isEditable? 
-												<Input
-													defaultValue={selectedSample.medicalRecordNo}
-													name={'medicalRecordNo'}
-													onChange={(e) => handleSampleChange(e)}
-												/>:selectedSample.medicalRecordNo
-											}
-										</div>
-									</div>
-									<div  className='row col-3'>
-										<div  className='col-6 text-right'>
-											科分號:
-										</div>
-										<div  className='col-6'>
-											{isEditable? 
-												<Input
-													defaultValue={selectedSample.departmentNo}
-													name={'departmentNo'}
-													onChange={(e) => handleSampleChange(e)}
-												/>:selectedSample.departmentNo
-											}
-										</div>
-									</div>
-									<div  className='row col-3'>
-										<div  className='col-6 text-right'>
-											診斷日期:
-										</div>
-										<div  className='col-6'>
-											{isEditable? 
-											<TextField
-											name="checkDate"
-											type="date"
-											defaultValue={`${new Date(selectedSample.checkDate).getFullYear()}-${(new Date(selectedSample.checkDate).getMonth() > 8) ? (new Date(selectedSample.checkDate).getMonth() + 1) : ('0' + (new Date(selectedSample.checkDate).getMonth() + 1))}-${(new Date(selectedSample.checkDate).getDate() > 9) ? new Date(selectedSample.checkDate).getDate() : ('0' + new Date(selectedSample.checkDate).getDate())}`}
-											onChange={(e) => handleSampleChange(e)}
-											className={classes.textField}
-											InputLabelProps={{
-												shrink: true,
-											}} />:new Date(selectedSample.checkDate).toLocaleDateString()
-											}
-										</div>
-									</div>
-								
-								</div>
-							</Paper>
 							
 							<SegmentTable
 								data={targetSegments}
