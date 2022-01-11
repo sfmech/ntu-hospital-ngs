@@ -26,5 +26,9 @@ export enum Reference {
     U2AF1='NM_006758',
     WT1='NM_000378',
     ZRSR2='NM_005089',
+    PDGFRA='',
+    EGFR='NM_005228',
+    HRAS=''
+
 
 }
