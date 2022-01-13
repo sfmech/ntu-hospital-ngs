@@ -213,9 +213,7 @@ export class NGSService {
 				}
 			}
 			//return {status: status, name: file, disease: disease };
-			if (mutationQC.includes(file)) {
-				return { status: FileStatus.Analysed, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString() };
-			} else if (bams.includes(file)) {
+			if (bams.includes(file)) {
 				return { status: FileStatus.Analysing, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
 			} else {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
