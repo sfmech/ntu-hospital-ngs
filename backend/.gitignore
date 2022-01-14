@@ -10,10 +10,6 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# test data
-/public/assets/*.bam
-/public/assets/*.bai
-
 # OS
 .DS_Store
 
