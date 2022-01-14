@@ -7,6 +7,9 @@ export class Coverage {
     @PrimaryGeneratedColumn({ name: "coverage_id" })
     coverageId: number;
 
+    @Column({ nullable: true, name: "sample_id" })
+    sampleId: number;
+
     @ManyToOne(type => Sample, type => type.coverage, { primary: true, eager: true })
     @JoinColumn({ name: "sample_id" })
     sample: Sample;

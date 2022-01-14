@@ -6,6 +6,9 @@ export class Segment {
     @PrimaryGeneratedColumn({ name: "segment_id" })
     segmentId: number;
 
+    @Column({ nullable: true, name: "sample_id" })
+    sampleId: number;
+
     @ManyToOne(type => Sample, type => type.segments, { primary: true, eager: true })
     @JoinColumn({ name: "sample_id" })
     sample: Sample;

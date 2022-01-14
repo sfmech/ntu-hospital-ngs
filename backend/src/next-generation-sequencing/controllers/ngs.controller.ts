@@ -35,6 +35,12 @@ export class NGSController {
 		return this.ngsService.getAllSegments();
 	}
 
+	@Get('/init/:id')
+	@UseGuards(AuthGuard('jwt'))
+	getAllBySample(@Param('id') id: number): Promise<{ segments: Segment[]; coverage: Coverage[]; mutationQC: MutationQC[]; aligned: Aligned[] }> {
+		return this.ngsService.getAllBySample(id);
+	}
+
 	@Get('/samples')
 	@UseGuards(AuthGuard('jwt'))
 	getAllSamples(): Promise<Sample[]> {

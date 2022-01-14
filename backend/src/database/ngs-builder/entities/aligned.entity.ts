@@ -7,6 +7,9 @@ export class Aligned {
     @PrimaryGeneratedColumn({ name: "aligned_id" })
     alignedId: number;
 
+    @Column({ nullable: true, name: "sample_id" })
+    sampleId: number;
+
     @ManyToOne(type => Sample, type => type.aligned, { primary: true, eager: true })
     @JoinColumn({ name: "sample_id" })
     sample: Sample;

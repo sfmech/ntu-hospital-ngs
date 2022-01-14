@@ -20,6 +20,7 @@ const initialState = {
 	setCoverages: (coverages: Coverage[]) => {},
 	setMutationQCs: (mutationQCs: MutationQC[]) => {},
 	setAligneds: (aligneds: Aligned[]) => {},
+	setRefresh: (refresh: Boolean)=>{},
 	updateSegment: (segment: Segment) => {},
 };
 
@@ -32,59 +33,22 @@ export const ResultProvider = ({ children }) => {
 		const getAll = async () => {
 			try {
 				setRefresh(true);
-				const response = await axios(`${ApiUrl}/api/init`);
+				const response = await axios(`${ApiUrl}/api/samples`);
+				setSamples(response.data);
+
+				/*const response = await axios(`${ApiUrl}/api/init`);
 				setSamples(response.data['samples']);
 				setSegments(response.data['segments']);
 				setCoverages(response.data['coverage']);
 				setMutationQCs(response.data['mutationQC']);
-				setAligneds(response.data['aligned']);
+				setAligneds(response.data['aligned']);*/
 			} catch (error) {
 				console.log(error);
 			}finally {
 				setRefresh(false);
 			}
 		};
-		const getAllSamples = async () => {
-			try {
-				const response = await axios(`${ApiUrl}/api/samples`);
-				setSamples(response.data);
-			} catch (error) {
-				console.log(error);
-			}
-		};
-		const getAllSegments = async () => {
-			try {
-				const response = await axios(`${ApiUrl}/api/segments`);
-				setSegments(response.data);
-			} catch (error) {
-				console.log(error);
-			}
-		};
-
-		const getAllCoverages = async () => {
-			try {
-				const response = await axios(`${ApiUrl}/api/coverages`);
-				setCoverages(response.data);
-			} catch (error) {
-				console.log(error);
-			}
-		};
-		const getAllMutationQCs = async () => {
-			try {
-				const response = await axios(`${ApiUrl}/api/mutationQCs`);
-				setMutationQCs(response.data);
-			} catch (error) {
-				console.log(error);
-			}
-		};
-		const getAllAligneds = async () => {
-			try {
-				const response = await axios(`${ApiUrl}/api/aligned`);
-				setAligneds(response.data);
-			} catch (error) {
-				console.log(error);
-			}
-		};
+		
 		getAll();
 
 	}, []);
@@ -148,6 +112,7 @@ export const ResultProvider = ({ children }) => {
 				setMutationQCs,
 				setCoverages,
 				setAligneds,
+				setRefresh,
 				updateSegment
 			}}
 		>

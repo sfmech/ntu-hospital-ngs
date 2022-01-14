@@ -286,10 +286,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
-	const { refresh,sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults,setSegments, setAligneds, setMutationQCs, setCoverages, setSamples } = useContext(ResultContext);
+	const { refresh,sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults,setSegments, setAligneds, setMutationQCs, setCoverages, setSamples, setRefresh } = useContext(ResultContext);
 	const { blacklist, whitelist, filterlist, hotspotlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
 	const { input, condition } = useContext(ResultOptionContext);
-	const { pdfData,  setData} = useContext(PdfDataContext);
 	const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
 	const [ otherSegments, setOtherSegments ] = useState(Array<Segment>());
 	const [ selectedSegments, setSelectedSegments ] = useState<Array<Segment>>(new Array<Segment>());
@@ -299,8 +298,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selectedMutationQCs, setSelectedMutationQCs ] = useState<Array<MutationQC>>(new Array<MutationQC>());
 	const [ selectedSample, setSelectedSample ] = useState<Sample>(new Sample());
 	const [ selectedRun, setSelectedRun ] = useState<Run>(new Run());
-	const [ showModal, setShowModal ] = useState<boolean>(false);
-	const [ showExportPdfModal, setShowExportPdfModal ] = useState<boolean>(false);
 	const [ showUploadModal, setShowUploadModal ] = useState<boolean>(false);
 	const [ showAddSegmentModal, setShowAddSegmentModal ] = useState<boolean>(false);
 	const [ title, setTitle ] = useState<string>("blacklist");
@@ -311,8 +308,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ isAdd, setIsAdd ] = useState<boolean>(false);
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
-	const [ exportData, setExportData ] = useState<Segment[]>([]);
-	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
+
 	const [ value, setValue ] = React.useState('1');
 	const [expanded, setExpanded] = React.useState(true);
 
@@ -327,7 +323,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	});
 
 	const [ cookies ] = useCookies();
-	//const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
 	Font.register({ family: 'KAIU', src: KAIU });
 	Font.register({ family: 'KAIUBold', src: KAIUBold });
 	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
@@ -348,13 +343,11 @@ export const NgsResult: FunctionComponent = (prop) => {
         var igvContainer = document.getElementById('igv-div');
 		var igvOptions;
 		if (track.name!==""){
-			//console.log("load old track", track.name);
 			igvOptions = { genome: "hg19","tracks":track,
 			"locus": 'chr11:32449420'};
 		}
 			
 		else{
-			//console.log("load no track");
 			igvOptions = { genome: "hg19","name": "",
 			"sourceType": "file",
 			"url": "",
@@ -367,7 +360,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 		
 		igv.createBrowser(igvContainer, igvOptions).
 			then(function (browser) {
-				//console.log("create browser");
 				igv.browser = browser;
 		});
     },[]);
@@ -383,8 +375,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	useEffect(
 		() => {			
 			if (track.name!==""){
-				//console.log("load new track", track.name);
-				//console.log(igv.browser.findTracks("name",track.name).length);
 				igv.browser.removeTrackByName(track.name);
 				igv.browser.loadTrack(track);
 			}
@@ -609,10 +599,23 @@ export const NgsResult: FunctionComponent = (prop) => {
 	  
 	  
 	const handleClick = (segments: Segment[], sample: Sample) => {
-		let bam = "";
-		let bai = "";
-		setSelectedSegments(segments);
 		setSelectedSample(sample);
+		console.log(sample)
+		try {
+			setRefresh(true);
+			const response = axios(`${ApiUrl}/api/init/${sample.sampleId}`);
+			response.then((response)=>{
+				setSelectedSegments(response.data['segments']?response.data['segments']:[]);
+				setSelectedMutationQCs(response.data['coverage']?response.data['coverage']:[]);
+				setSelectedCoverages(response.data['mutationQC']?response.data['mutationQC']:[]);
+				setSelectedAligneds(response.data['aligned']?response.data['aligned']:[]);
+				setRefresh(false);
+			});
+		} catch (error) {
+			console.log(error);
+		}
+		
+		
 		if (mutationQCResults[sample.sampleId]) setSelectedMutationQCs(mutationQCResults[sample.sampleId]);
 		else setSelectedMutationQCs([]);
 		if (coverageResults[sample.sampleId]) setSelectedCoverages(coverageResults[sample.sampleId]);
@@ -620,41 +623,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 		if (alignedResults[sample.sampleId]) setSelectedAligneds(alignedResults[sample.sampleId]);
 		else setSelectedAligneds([]);
 		if (track.name!==""){
-			//console.log("remove track");
 			igv.browser.removeTrackByName(track.name);
 		}
 			
-		/*axios.get(`${ApiUrl}/api/getbamfile/${sample.sampleName}/${sample.run.runName.replace('/','-')}`).then((response)=>{
-			let newTrack = track;
-			newTrack.url = "data:application/octet-stream;base64,"+response.data;
-			console.log(track);
-			setTrack(newTrack);
-			igv.browser.loadTrack(track);
-			//console.log(response.data);
-		})
-		axios.get(`${ApiUrl}/api/getbaifile/${sample.sampleName}/${sample.run.runName.replace('/','-')}`).then((response)=>{
-			let newTrack = track;
-			newTrack.indexURL = "data:application/octet-stream;base64,"+response.data;
-			setTrack(newTrack);
-			//console.log(response.data);
-		})*/
-		
-		/*setTrack({
-			"name": sample.sampleName.split("_")[0],
-			"sourceType": "file",
-			"url": `http://192.168.1.26:55688/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
-			"indexURL": `http://192.168.1.26:55688/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
-			"type": 'alignment',
-			"format": 'bam',
-		});*/
-		/*setTrack({
-			"name": sample.sampleName.split("_")[0],
-			"sourceType": "file",
-			"url": `/assets/744_S7.bam`,
-			"indexURL": `/assets/744_S7.bam.bai`,
-			"type": 'alignment',
-			"format": 'bam',
-		});*/
 		setTrack({
 			"name": sample.sampleName.split("_")[0],
 			"sourceType": "file",
@@ -678,15 +649,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setShowAddSegmentModal(true);
 	};
 
-	const handleExportPdfClick = () => {
-		setExportPdfData(getExportPdfData());
-		setShowExportPdfModal(true);
-	};
 
-	const handleExportClick = () => {
-		setExportData(getExportData());
-		setShowModal(true);
-	};
 	const handleDeleteClick = async () => {
 		try {
 			const response = await axios.post(`${ApiUrl}/api/deleteSamples`, {
@@ -700,216 +663,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		}
 	};
 
-	const handleSampleChange =  (e) => {
-		const value = e.target.value;
-		const name = e.target.name;
-		selectedSample[name] = value;
-		if(segmentResults[selectedSample.sampleId]!==undefined)
-			segmentResults[selectedSample.sampleId][0]['sample'][name] = value;
-		setSelectedSample(selectedSample);
-		
-	};
-	const getExportPdfData = () => {
-		let newExportData = new Array<PdfData>();
-		
-		selected.forEach((id: number) => {
-			let pdfData = new PdfData();
-			if(segmentResults[id]!==undefined){
-				let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
-				pdfData['sample'] =  segmentResults[id][0].sample;
-				pdfData['runName'] = segmentResults[id][0].sample.run.runName;
-				pdfData['sampleName'] = segmentResults[id][0].sample.sampleName;
-				pdfData['SID'] = segmentResults[id][0].sample.SID===undefined?"":segmentResults[id][0].sample.SID;
-				pdfData['checkDate'] = new Date( segmentResults[id][0].sample.checkDate).toLocaleDateString();
-				pdfData['departmentNo'] = segmentResults[id][0].sample.departmentNo===undefined?"":segmentResults[id][0].sample.departmentNo;
-				if(alignedResults[id].length>0)
-					pdfData['coverage'] = parseFloat((100.0 - alignedResults[id][0].coverRegionPercentage).toFixed(2));
-				pdfData['medicalRecordNo'] = segmentResults[id][0].sample.medicalRecordNo===undefined?"":segmentResults[id][0].sample.medicalRecordNo;
-				pdfData['patientBirth'] = new Date( segmentResults[id][0].sample.patientBirth).toLocaleDateString();
-				pdfData['patientName'] = segmentResults[id][0].sample.patientName===undefined?"":segmentResults[id][0].sample.patientName;
-				pdfData['patientSex'] = segmentResults[id][0].sample.patientSex;
-				pdfData['specimenNo'] = segmentResults[id][0].sample.specimenNo===undefined?"":segmentResults[id][0].sample.specimenNo;
-				pdfData['specimenStatus'] = segmentResults[id][0].sample.specimenStatus===undefined?"":segmentResults[id][0].sample.specimenStatus;
-				pdfData['specimenType'] = segmentResults[id][0].sample.specimenType===undefined?"":segmentResults[id][0].sample.specimenType;
-				pdfData['note1'] = segmentResults[id][0].sample.note1===undefined?"":segmentResults[id][0].sample.note1;
-				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
-				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
-				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5 && !segment.isDeleted);
-				pdfData['list2'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5 && !segment.isDeleted);
-				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS && !segment.isDeleted);
-				pdfData['checker'] = segmentResults[id][0].sample.checker;
-				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;
-				pdfData['reportDoctor'] = segmentResults[id][0].sample.reportDoctor;
-				pdfData['confirmer'] = segmentResults[id][0].sample.confirmer;
-				let coverageTemplate = coverageResults[id].sort((a, b)=>{
-					if(parseInt(a.ampliconStart)<parseInt(b.ampliconStart)){
-						return -1;
-					}else if(parseInt(a.ampliconStart)>parseInt(b.ampliconStart)){
-						return 1;
-					}else{
-						return 0;
-					}
-				});
 
-				const testmutationqcs = mutationQCResults[id].reduce((groups, item) => {
-					const val = item.geneName;
-					groups[val] = groups[val] || [];
-					groups[val].push(item);
-					return groups;
-				}, {})
-				let list4 = new Array();
-				Object.keys(testmutationqcs).map((key)=>{
-					let start = -1;
-					let end = -1;
-					let lowCodonStart;
-					let highCodonStart;
-					let lowCodonEnd ;
-					let highCodonEnd;
-					var r = /\d+/;
-
-					if(key==="CEBPA")
-						return;
-					testmutationqcs[key].forEach((mutationQC: MutationQC, index, array: MutationQC[]) => {
-						
-						if(mutationQC.QC<50 && start===-1){
-							if(parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconStart) && parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconStart)){
-								start = parseInt(mutationQC.position);
-								let codonArray = mutationQC.HGVSp.split("_");
-								if(codonArray.length>1){
-									lowCodonStart = codonArray[0].match(r);
-									highCodonStart = codonArray[1].match(r);
-									
-								}else{
-									if(codonArray[0].match(r)!==null){
-										lowCodonStart = codonArray[0].match(r);
-										highCodonStart = codonArray[0].match(r);
-									}else{
-										lowCodonStart = 1000000
-										highCodonStart = -1
-									}
-								}
-
-							}
-						}
-						if(mutationQC.QC<50 && start !==-1){
-							if (index === array.length-1){
-								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd) && parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconEnd)){
-									end = parseInt(mutationQC.position);
-									let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
-									let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end);
-
-									let codonArray = mutationQC.HGVSp.split("_");
-									if(codonArray.length>1){
-										lowCodonEnd = codonArray[0].match(r);
-										highCodonEnd = codonArray[1].match(r);
-									}else{
-										if(codonArray[0].match(r)!==null){
-											lowCodonEnd = codonArray[0].match(r);
-											highCodonEnd = codonArray[0].match(r);
-										}else{
-											lowCodonEnd = 1000000
-											highCodonEnd = -1
-										}
-									}
-									let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
-									let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
-									if(coverageStartIndex===coverageEndIndex){
-										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
-										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
-									}else{
-										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
-										let finalExon = exon;
-										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
-											const elementExon = coverageTemplate[i].amplionName.replace("=","-").split('-')[1].split('.')[0];
-											if(finalExon!==elementExon){
-												exon += ", "+elementExon;
-												finalExon=elementExon;
-											}
-										}
-										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
-									}
-									start = -1;
-									 end = -1;
-								}
-							}else if(array[index+1].QC>50){
-								if(parseInt(mutationQC.position)<=parseInt(coverageTemplate[coverageTemplate.length-1].ampliconEnd) && parseInt(mutationQC.position)>=parseInt(coverageTemplate[0].ampliconEnd)){
-									end = parseInt(mutationQC.position);
-									let coverageStartIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconStart)>=start)-1;
-									let coverageEndIndex = coverageTemplate.findIndex((r)=>parseInt(r.ampliconEnd)>=end);
-
-									let codonArray = mutationQC.HGVSp.split("_");
-									if(codonArray.length>1){
-										lowCodonEnd = codonArray[0].match(r);
-										highCodonEnd = codonArray[1].match(r);
-									}else{
-										if(codonArray[0].match(r)!==null){
-											lowCodonEnd = codonArray[0].match(r);
-											highCodonEnd = codonArray[0].match(r);
-										}else{
-											lowCodonEnd = 1000000
-											highCodonEnd = -1
-										}
-									}
-									let codonStart = Math.min(lowCodonStart, lowCodonEnd)===1000000?'?': Math.min(lowCodonStart, lowCodonEnd);
-									let condonEnd = Math.max(highCodonStart, highCodonEnd)===-1?'?':Math.max(highCodonStart, highCodonEnd);
-									if(coverageStartIndex===coverageEndIndex){
-										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
-										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
-									}else{
-										let exon = coverageTemplate[coverageStartIndex].amplionName.replace("=","-").split('-')[1].split('.')[0];
-										let finalExon = exon;
-										for (let i = coverageStartIndex+1; i < coverageEndIndex; i++) {
-											const elementExon = coverageTemplate[i].amplionName.replace("=","-").split('-')[1].split('.')[0];
-											if(finalExon!==elementExon){
-												exon += ", "+elementExon;
-												finalExon=elementExon;
-											}
-										}
-										list4.push({"gene": key, 'exon': exon, 'from': codonStart, 'to':condonEnd});
-									}
-									start = -1;
-									 end = -1;
-								}
-							}
-						}
-						
-					}); 
-				});		
-				pdfData['list4'] = list4;	
-				newExportData.push(pdfData);	
-			}
-			
-			
-			
-		});
-		setData(newExportData);
-		setSelected([]);
-		return newExportData;
-	};
-	const getExportData = () => {
-		let newExportData: Segment[] = [];
-		selected.forEach((id: number) => {
-			let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
-
-			if (mutationQCResults[id]) {
-				const fail = mutationQCResults[id]
-					.filter((m: MutationQC) => m.QC < 50)
-					.map((m: MutationQC) => m.geneName)
-					.filter((element, index, arr) => arr.indexOf(element) === index);
-
-				if (tempTarget[0]) {
-					tempTarget[0].alert = 'Fail Gene Name: ' + fail.join('; ');
-				} else {
-					let alert = new Segment();
-					alert.alert = 'Fail Gene Name: ' + fail.join('; ');
-					tempTarget = [ alert ].concat(tempTarget);
-				}
-			}
-			newExportData = newExportData.concat(tempTarget);
-		});
-		setSelected([]);
-		return newExportData;
-	};
 
 	const onSaveEditMode =  () => {
 		if(isEditable){
@@ -1263,8 +1017,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 					<KeyboardArrowUpIcon />
 				</Fab>
 			</ScrollTop>
-			<ExportPdfModal show={showExportPdfModal} exportData={exportPdfData} onClose={() => setShowExportPdfModal(false)} />
-			<ExportModal show={showModal} exportData={exportData} onClose={() => setShowModal(false)} />
 			<UploadFolderModal show={showUploadModal} onClose={() => setShowUploadModal(false)} />
 			<EditDiseaseModal
 				show={showEditDiseaseModal}

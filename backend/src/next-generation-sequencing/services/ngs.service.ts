@@ -59,6 +59,13 @@ export class NGSService {
 		const segments = await this.segmentRepository.find({ order: { segmentId: 'DESC' } });
 		return segments;
 	}
+	async getAllBySample(id: number): Promise<{ segments: Segment[]; coverage: Coverage[]; mutationQC: MutationQC[]; aligned: Aligned[]}> {
+		const segments = await this.segmentRepository.find({sampleId:id});
+		const coverage = await this.coverageRepository.find({sampleId:id});
+		const mutationQC = await this.mutationQCRepository.find({sampleId:id});
+		const aligned = await this.alignedRepository.find({sampleId:id});
+		return { segments: segments, coverage: coverage, mutationQC: mutationQC, aligned: aligned};
+	}
 	async getAllSamples(): Promise<Sample[]> {
 		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
 		return samples;
