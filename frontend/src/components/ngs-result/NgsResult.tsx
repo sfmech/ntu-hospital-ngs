@@ -600,14 +600,14 @@ export const NgsResult: FunctionComponent = (prop) => {
 	  
 	const handleClick = (segments: Segment[], sample: Sample) => {
 		setSelectedSample(sample);
-		console.log(sample)
+		
 		try {
 			setRefresh(true);
 			const response = axios(`${ApiUrl}/api/init/${sample.sampleId}`);
 			response.then((response)=>{
 				setSelectedSegments(response.data['segments']?response.data['segments']:[]);
-				setSelectedMutationQCs(response.data['coverage']?response.data['coverage']:[]);
-				setSelectedCoverages(response.data['mutationQC']?response.data['mutationQC']:[]);
+				setSelectedCoverages(response.data['coverage']?response.data['coverage']:[]);
+				setSelectedMutationQCs(response.data['mutationQC']?response.data['mutationQC']:[]);
 				setSelectedAligneds(response.data['aligned']?response.data['aligned']:[]);
 				setRefresh(false);
 			});
@@ -615,13 +615,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 			console.log(error);
 		}
 		
-		
-		if (mutationQCResults[sample.sampleId]) setSelectedMutationQCs(mutationQCResults[sample.sampleId]);
-		else setSelectedMutationQCs([]);
-		if (coverageResults[sample.sampleId]) setSelectedCoverages(coverageResults[sample.sampleId]);
-		else setSelectedCoverages([]);
-		if (alignedResults[sample.sampleId]) setSelectedAligneds(alignedResults[sample.sampleId]);
-		else setSelectedAligneds([]);
 		if (track.name!==""){
 			igv.browser.removeTrackByName(track.name);
 		}
