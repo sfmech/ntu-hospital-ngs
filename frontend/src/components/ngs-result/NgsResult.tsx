@@ -1106,7 +1106,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											{sampleResults[key].map((sampleRow: Sample) => ((sampleRow.sampleName.split('_')[0].indexOf(input)!==-1)?
 											<StyledTreeItem
 												nodeId={String(sampleRow.sampleId)}
-												labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
+												labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName!==null?sampleRow.disease.enName:"unknown"}
 												onClick={() =>
 													handleClick(segmentResults[sampleRow.sampleId], sampleRow)}
 												isSample={true}
@@ -1135,7 +1135,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 											{sampleResults[key].map((sampleRow: Sample) => ((sampleRow.disease.enName.indexOf(input)!==-1)?
 											<StyledTreeItem
 												nodeId={String(sampleRow.sampleId)}
-												labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName}
+												labelText={sampleRow.sampleName.split('_')[0] + '_' + sampleRow.disease.enName!==null?sampleRow.disease.enName:"unknown"}
 												onClick={() =>
 													handleClick(segmentResults[sampleRow.sampleId], sampleRow)}
 												isSample={true}
