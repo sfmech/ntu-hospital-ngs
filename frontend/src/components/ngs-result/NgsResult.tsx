@@ -99,13 +99,7 @@ type StyledTreeItemProps = TreeItemProps & {
 	numSelected: number;
 	labelInfoClickListener?;
 };
-var igvStyle = {
-    paddingTop: '10px',
-    paddingBottom: '10px',
-    margin: '8px',
-	width: '60vw'
 
-}
 const useTreeItemStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		root: {
@@ -210,6 +204,27 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 	  right: theme.spacing(2),
 	},
   }));
+
+  const useStyles3 = makeStyles((theme) => ({
+	root: {
+	  position: 'fixed',
+	  bottom: theme.spacing(8),
+	  right: theme.spacing(2),
+	},
+  }));
+
+  function ShowIGV(props){
+	const { children, window } = props;
+	const classes = useStyles3();
+	const handleClick = (event) =>{
+		
+	};
+	return (
+		  <div onClick={handleClick} role="presentation" className={classes.root}>
+			{children}
+		  </div>
+	  );
+  }
   
   function ScrollTop(props) {
 	const { children, window } = props;
@@ -240,7 +255,6 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 	);
   }
   
-
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -281,12 +295,19 @@ const useStyles = makeStyles((theme: Theme) =>
 		backdrop: {
 			zIndex: theme.zIndex.drawer + 1,
 			color: '#fff'
+		},
+		igvStyle:{
+			position:'fixed',
+			bottom: theme.spacing(2),
+			left: '50%',
+			width: '64vw',
+			marginLeft: '-30vw',
 		}
 	})
 );
 export const NgsResult: FunctionComponent = (prop) => {
 	const classes = useStyles();
-	const { refresh,sampleResults, segmentResults, coverageResults, mutationQCResults, alignedResults,setSegments, setAligneds, setMutationQCs, setCoverages, setSamples, setRefresh } = useContext(ResultContext);
+	const { refresh,sampleResults, segmentResults, setSamples, setRefresh } = useContext(ResultContext);
 	const { blacklist, whitelist, filterlist, hotspotlist, selectedTarget, selectedOther, setSelectedTarget, setSelectedOther, addBlacklist, addWhitelist } = useContext(SegmentTagContext);
 	const { input, condition } = useContext(ResultOptionContext);
 	const [ targetSegments, setTargetSegments ] = useState(Array<Segment>());
@@ -310,7 +331,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
 
 	const [ value, setValue ] = React.useState('1');
-	const [expanded, setExpanded] = React.useState(true);
+	const [ expanded, setExpanded] = React.useState(true);
+	const [ igvHidden, setIgvHidden] = React.useState(true);
 
 
 	const [ track, setTrack ] = React.useState({
@@ -368,7 +390,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 		() => {			
 			setIsEditable(false);
 			setIsAdd(false);
-			
 		},
 		[ selectedSegments ]
 	);
@@ -767,7 +788,20 @@ export const NgsResult: FunctionComponent = (prop) => {
 			)
 		}
     }
-
+/*
+<Accordion expanded={expanded} onChange={handleChange()} hidden={value==="2"||value==="4"}>
+								<AccordionSummary
+									expandIcon={<ExpandMoreIcon />}
+									aria-controls="panel1a-content"
+									id="panel1a-header"
+								>
+								<Typography>IGV</Typography>
+								</AccordionSummary>
+								<AccordionDetails>
+									<div id="igv-div" style={igvStyle}></div>
+								</AccordionDetails>
+							</Accordion>
+*/
 	return (
 		<React.Fragment>
 			<Title>Results Overview</Title>
@@ -907,18 +941,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								<Tab value="4" label="Analysis Summary" />
 							</TabList>
 						</AppBar>
-						<Accordion expanded={expanded} onChange={handleChange()} hidden={value==="2"||value==="4"}>
-								<AccordionSummary
-									expandIcon={<ExpandMoreIcon />}
-									aria-controls="panel1a-content"
-									id="panel1a-header"
-								>
-								<Typography>IGV</Typography>
-								</AccordionSummary>
-								<AccordionDetails>
-									<div id="igv-div" style={igvStyle}></div>
-								</AccordionDetails>
-							</Accordion>
+
 						<TabPanel value="1">
 							{renderSampleButtons()}
 							
@@ -1005,6 +1028,16 @@ export const NgsResult: FunctionComponent = (prop) => {
 					</TabContext>
 				</div>
 			</div>
+			<Paper className={classes.igvStyle} hidden={igvHidden}>
+				<div id="igv-div"></div>
+			</Paper>
+			
+			<ShowIGV>
+				<Fab color="secondary" size="small" aria-label="scroll back to top" onClick={()=>setIgvHidden(!igvHidden)}>
+					IGV
+				</Fab>
+			</ShowIGV>
+
 			<ScrollTop {...prop}>
 				<Fab color="secondary" size="small" aria-label="scroll back to top">
 					<KeyboardArrowUpIcon />
@@ -1041,7 +1074,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 				</DialogActions>
 			</Dialog>
 			
-		
 		
 		<Backdrop className={classes.backdrop} open={refresh}>
 			<Box position="relative" >

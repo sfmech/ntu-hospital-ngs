@@ -353,19 +353,19 @@ export class NGSService {
 				temp.control3 = data['6'];
 				alignedArray.push(temp);
 			});
-		samplesResponse.forEach((element: Sample, index: number) => {
+		await samplesResponse.forEach(async (element: Sample, index: number) => {
 			const segmentResults = new Array<Segment>();
 			const mutationQCResults = new Array<MutationQC>();
 			const coverageResults = new Array<Coverage>();
-			try {
-				const stream = fs
+			const saveSegments = await new Promise((resolve, reject) => {
+				 fs
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
 						)}/${runsResponse.runName}/${element.sampleName}_Annotation.csv`
 					)
 					.pipe(csv({ headers: false, skipLines: 1 }))
-					.on('data', (data) => {
+					.on('data', async (data) => {
 						let temp = new Segment();
 						temp.chr = data['0'] || '';
 						temp.position = data['1'] || '';
@@ -417,25 +417,31 @@ export class NGSService {
 						if (temp.freq >= 3) {
 							temp.sample.sampleId = element.sampleId;
 							segmentResults.push(temp);
+							const segmentsResponse = await this.segmentRepository.save(temp);
 						} 
-
-						
 					})
+					.on("error", err => {
+						reject(err);
+					  })
 					.on('end', async () => {
-						const segmentsResponse = await this.segmentRepository.save(segmentResults);
+						
 						let alignedEntitys = alignedArray
 						.filter(d => d.sample.sampleName === element.sampleName)
 						.map(d => {d.sample.sampleId = element.sampleId;return d;});
 						const alignedResponse = await this.alignedRepository.save(alignedEntitys);
+						console.log('success alignedResponse');
+						resolve('success');
 					});
-					const stream2 = fs
+				});
+				const saveMutationQC = await new Promise((resolve, reject) => {
+					 fs
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
 						)}/${runsResponse.runName}/${element.sampleName}_Target_SOMATIC_Mutation_QC.csv`
 					)
 					.pipe(csv({ headers: false }))
-					.on('data', (data) => {
+					.on('data', async (data) => {
 						let temp = new MutationQC();
 						temp.sample.sampleId = element.sampleId
 						temp.geneName = data[0];
@@ -446,18 +452,25 @@ export class NGSService {
 						temp.cosmic = data[3];
 						temp.position = data[4].split(':')[1];
 						mutationQCResults.push(temp);
+						const mutationQCResponse = await this.mutationQCRepository.save(temp);
 					})
-					.on('end', async () => {
-						const mutationQCResponse = await this.mutationQCRepository.save(mutationQCResults)
+					.on("error", err => {
+						reject(err);
+					  })
+					.on('end',  () => {
+						console.log('Success mutationQCResponse');
+						resolve('Success');
 					});
-					const stream3 = fs
+				});
+					const saveCoveage = await new Promise((resolve, reject) => {
+						 fs
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
 						)}/${runsResponse.runName}/${element.sampleName}_coverage.csv`
 					)
 					.pipe(csv({  headers: false, skipLines: 1  }))
-					.on('data', (data) => {
+					.on('data', async (data) => {
 						let temp = new Coverage();
 						temp.sample.sampleId = element.sampleId
 						temp.amplionName = data[4];
@@ -466,14 +479,16 @@ export class NGSService {
 						temp.amplion_mean_coverge = data[3];
 						temp.chr = data[0];
 						coverageResults.push(temp);
+						const coverageResponse = await this.coverageRepository.save(temp);
 					})
-					.on('end', async () => {
-						const coverageResponse = await this.coverageRepository.save(coverageResults)
+					.on("error", err => {
+						reject(err);
+					  })
+					.on('end',  () => {
+						console.log('Success coverageResponse');
+						resolve('Success');
 					});
-					
-			} catch (error) {
-				console.log('error', error);
-			}
+				});
 			
 		});
 
