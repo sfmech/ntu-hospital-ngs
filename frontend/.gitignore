@@ -7,6 +7,8 @@
 
 # testing
 /coverage
+/public/assets/*.bam
+/public/assets/*.bai
 
 # production
 /build
