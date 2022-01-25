@@ -61,7 +61,7 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 		const uploadResult = async () => {
 			try {
 				await axios.post(`${ApiUrl}/api/uploadresult`, {
-					data: selectResult
+					data: selectResult, bed: selectPanel
 				});
 			} catch (error) {
 				console.log(error);
