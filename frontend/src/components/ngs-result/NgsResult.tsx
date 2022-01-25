@@ -689,7 +689,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			"name": sample.sampleName.split("_")[0],
 			"sourceType": "file",
 			"url": `/file/Data/${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
-			"indexURL": `/file/Data${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
+			"indexURL": `/file/Data/${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
 			"type": 'alignment',
 			"format": 'bam',
 		});
