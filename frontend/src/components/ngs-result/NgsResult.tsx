@@ -688,8 +688,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setTrack({
 			"name": sample.sampleName.split("_")[0],
 			"sourceType": "file",
-			"url": `/file/Data/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
-			"indexURL": `/file/Data/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
+			"url": `/file/Data/${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
+			"indexURL": `/file/Data${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
 			"type": 'alignment',
 			"format": 'bam',
 		});
@@ -1278,7 +1278,16 @@ export const NgsResult: FunctionComponent = (prop) => {
 											}
 										</div>
 									</div>
-								
+								<div className='row mx-2 my-3'>
+									<div  className='row col-3'>
+										<div  className='col-6 text-right'>
+											Panel:
+										</div>
+										<div  className='col-6'>
+											{selectedSample.bed}
+										</div>
+									</div>
+									</div>
 								</div>
 							</Paper>
 							

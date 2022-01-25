@@ -357,18 +357,24 @@ export class NGSService {
 		return;
 	}
 
-	getResultList(): Promise<Array<string>> {
+	getResultList() {
 
-		const files = fs
-			.readdirSync(this.configService.get<string>('ngs.path'))
+		const Myeloidfiles = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/Myeloid`)
+			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));
+		const MPNfiles = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/MPN`)
+			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));
+		const TP53files = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/TP53`)
 			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));
 
-		return files;
+		return {Myeloid:Myeloidfiles, MPN:MPNfiles,TP53:TP53files };
 	}
 
-	async uploadResult(folder: string): Promise<void> {
+	async uploadResult(folder: string, bed: string): Promise<void> {
 		const files = fs
-			.readdirSync(`${this.configService.get<string>('ngs.path')}/${folder}/FASTQ`)
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/${bed}/${folder}/FASTQ`)
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
@@ -393,7 +399,7 @@ export class NGSService {
 			
 			const reportHtml = fs.readFileSync(`${this.configService.get<string>(
 				'ngs.path'
-			)}/${runsResponse.runName}/FASTQ_RAW/${temp.sampleName}_report.html`, 'utf8');
+			)}/${bed}/${runsResponse.runName}/FASTQ_RAW/${temp.sampleName}_report.html`, 'utf8');
 			const $ = cheerio.load(reportHtml);
 			const general_table_tr = $('#general tr');
 			const after_table_tr = $('#after_filtering_summary tr');
@@ -410,6 +416,7 @@ export class NGSService {
 			temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 			temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 			temp.GCContent = parseFloat(after_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
+			temp.bed = bed;
 			return temp;
 		});
 		const samplesResponse = await this.sampleRepository.save(sampleResults);
@@ -418,7 +425,7 @@ export class NGSService {
 			.createReadStream(
 				`${this.configService.get<string>(
 					'ngs.path'
-				)}/${runsResponse.runName}/Aligned.csv`
+				)}/${bed}/${runsResponse.runName}/Aligned.csv`
 			)
 			.pipe(csv({ headers: false, skipLines: 1 }))
 			.on('data', (data) => {
@@ -441,7 +448,7 @@ export class NGSService {
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
-						)}/${runsResponse.runName}/${element.sampleName}_Annotation.csv`
+						)}/${bed}/${runsResponse.runName}/${element.sampleName}_Annotation.csv`
 					)
 					.pipe(csv({ headers: false, skipLines: 1 }))
 					.on('data', (data) => {
@@ -511,7 +518,7 @@ export class NGSService {
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
-						)}/${runsResponse.runName}/${element.sampleName}_Target_SOMATIC_Mutation_QC.csv`
+						)}/${bed}/${runsResponse.runName}/${element.sampleName}_Target_SOMATIC_Mutation_QC.csv`
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
@@ -533,7 +540,7 @@ export class NGSService {
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
-						)}/${runsResponse.runName}/${element.sampleName}_coverage.csv`
+						)}/${bed}/${runsResponse.runName}/${element.sampleName}_coverage.csv`
 					)
 					.pipe(csv({  headers: false, skipLines: 1  }))
 					.on('data', (data) => {
@@ -612,6 +619,7 @@ export class NGSService {
 				temp.Q20Bases = parseFloat(after_table_tr.eq(2).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 				temp.Q30Bases = parseFloat(after_table_tr.eq(3).find('td').eq(1).text().split(" ")[2].slice(1, -2));
 				temp.GCContent = parseFloat(after_table_tr.eq(4).find('td').eq(1).text().slice(0, -1));
+				temp.bed = bed;
 				return temp;
 			});
 			const samplesResponse = await this.sampleRepository.save(sampleResults);

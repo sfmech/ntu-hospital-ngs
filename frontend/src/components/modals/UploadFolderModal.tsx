@@ -34,8 +34,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (props) => {
     const classes = useStyles();
-    const [ resultlist, setResultlist ] = useState(Array<string>());
+    const [ resultlist, setResultlist ] = useState({Myeloid:[],MPN:[],TP53:[]});
     const [ selectResult, setSelectResult ] = useState<string>('');
+	const [ selectPanel, setSelectPanel ] = useState<string>('Myeloid');
     useEffect(() => {
 		const getResultlist = async () => {
 			try {
@@ -52,6 +53,9 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 		setSelectResult(event.target.value as string);
 	};
+	const handlePanelChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+		setSelectPanel(event.target.value as string);
+	};
 
 	const handleUploadResult = () => {
 		const uploadResult = async () => {
@@ -62,7 +66,7 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 			} catch (error) {
 				console.log(error);
 			} finally {
-				window.location.reload(false);
+				window.location.reload();
 				
 			}
 		};
@@ -75,6 +79,23 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 			
 				<div className="row justify-content-center">
 					<FormControl variant="outlined" className={classes.formControl}>
+						<InputLabel id="bed-label">Panel</InputLabel>
+						<Select
+							labelId="bed-label"
+							id="bed"
+							value={selectPanel}
+							onChange={handlePanelChange}
+							label="Panel"
+						>
+							{["Myeloid", "MPN", "TP53"].map((result) => {
+								return <MenuItem value={result}>{result}</MenuItem>;
+							})}
+						</Select>
+					</FormControl>
+					
+				</div>
+				<div className="row justify-content-center">
+					<FormControl variant="outlined" className={classes.formControl}>
 						<InputLabel id="demo-simple-select-outlined-label">Result Folder</InputLabel>
 						<Select
 							labelId="demo-simple-select-outlined-label"
@@ -83,7 +104,7 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 							onChange={handleChange}
 							label="Result Folder"
 						>
-							{resultlist.map((result) => {
+							{resultlist[selectPanel].map((result) => {
 								return <MenuItem value={result}>{result}</MenuItem>;
 							})}
 						</Select>
@@ -96,7 +117,7 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 						color="default"
 						startIcon={<FolderOpenIcon />}
 						onClick={handleUploadResult}
-						disabled={resultlist.length <= 0 || selectResult === ''}
+						disabled={resultlist[selectPanel].length <= 0 || selectResult === ''}
 					>
 						上傳
 					</Button>

@@ -166,14 +166,14 @@ export class NGSController {
 
 	@Get('/resultlist')
 	@UseGuards(AuthGuard('jwt'))
-	getResultlist(): Promise<Array<string>> {
+	getResultlist() {
 		return this.ngsService.getResultList();
 	}
 
 	@Post('/uploadresult')
 	@UseGuards(AuthGuard('jwt'))
 	uploadResult(@Body() body) {
-		return this.ngsService.uploadResult(body.data);
+		return this.ngsService.uploadResult(body.data, body.bed);
 	}
 
 	@Get('/getDiseases')

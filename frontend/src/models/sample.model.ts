@@ -28,4 +28,5 @@ export class Sample {
     Q30Bases: number;
     duplicationRate: number;
     GCContent: number;
+    bed:string;
 }

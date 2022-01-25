@@ -100,4 +100,7 @@ export class Sample {
     @Column({ name: "GC_content"})
     GCContent: number;
 
+    @Column({ name: "bed"})
+    bed: string;
+
 }
