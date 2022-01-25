@@ -20,8 +20,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FileStatus } from '../../models/file.state.enum';
 
 type FileListProp = {
-	files:Array<File>;
-	analysis:number;
+
 	diseases: Array<Disease>;
 	bed: string;
 };
@@ -37,14 +36,11 @@ const useStyles = makeStyles((theme: Theme) =>
 export const FileList: FunctionComponent<FileListProp> = (props) => {
 	const classes = useStyles();
 	const now = new Date(Date.now());
-	const { updateFile, updateFileInfo } = useContext(FileContext);
+	const { Myeloidanalysis, MPNanalysis, TP53analysis, Myeloidfiles, MPNfiles, TP53files, updateFile, updateFileInfo } = useContext(FileContext);
 	const [selectedCheckDate, setSelectedCheckDate] = React.useState(`${now.getFullYear()}-${(now.getMonth() > 8) ? (now.getMonth() + 1) : ('0' + (now.getMonth() + 1))}-${(now.getDate() > 9) ? now.getDate() : ('0' + now.getDate())}`);
-	const [files, setFiles] = React.useState(props.files);
-	const [analysis, setAnalysis] = React.useState(props.analysis);
 
-	useEffect(()=>{
-		console.log(files);
-	},[])
+
+
 	const handleChange = (event, newValue, file: File) => {
 		if (newValue !== null) {
 			let newFile = Object.assign(new File(), file);
@@ -64,13 +60,13 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 		<div className="mt-4 px-4">
 			<Paper className="mt-3" elevation={3}>
 				<List>
-					{files.map((file) => (
+					{props.bed==="Myeloid"?Myeloidfiles.map((file) => (
 						<ListItem selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
 							<ListItemIcon>
 								<DescriptIcon />
 							</ListItemIcon>
 							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />
-							{analysis === 0 ? (<>
+							{Myeloidanalysis === 0 ? (<>
 								<TextField name="SID" className="col-2" label="SID" variant="outlined" value={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
 								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" value={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
 								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" value={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
@@ -100,7 +96,77 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 							) : null}
 							{file.status === FileStatus.Analysing ? <CircularProgress /> : null}
 						</ListItem>
-					))}
+					)):props.bed==="MPN"?MPNfiles.map((file) => (
+						<ListItem selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
+							<ListItemIcon>
+								<DescriptIcon />
+							</ListItemIcon>
+							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />
+							{MPNanalysis === 0 ? (<>
+								<TextField name="SID" className="col-2" label="SID" variant="outlined" value={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" value={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" value={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
+								<TextField
+											name="checkDate"
+											label="檢查日期"
+											type="date"
+											defaultValue={selectedCheckDate}
+											className="col-2 mx-2"
+											onChange={(event) => handleInfoChange(event, file)}
+											variant="outlined"
+											InputLabelProps={{
+											shrink: true,
+											}}
+								/>
+								<Autocomplete
+									options={props.diseases}
+									getOptionLabel={(disease) => disease.enName}
+									className="col-2"
+									disableClearable
+									defaultValue={file.disease}
+									onChange={(event: any, newValue: Disease | null) => handleChange(event, newValue, file)}
+									renderInput={(params) => (
+										<TextField {...params} label="disease" variant="outlined" />
+									)}
+								/></>
+							) : null}
+							{file.status === FileStatus.Analysing ? <CircularProgress /> : null}
+						</ListItem>)):TP53files.map((file) => (
+						<ListItem selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
+							<ListItemIcon>
+								<DescriptIcon />
+							</ListItemIcon>
+							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />
+							{TP53analysis === 0 ? (<>
+								<TextField name="SID" className="col-2" label="SID" variant="outlined" value={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" value={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" value={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
+								<TextField
+											name="checkDate"
+											label="檢查日期"
+											type="date"
+											defaultValue={selectedCheckDate}
+											className="col-2 mx-2"
+											onChange={(event) => handleInfoChange(event, file)}
+											variant="outlined"
+											InputLabelProps={{
+											shrink: true,
+											}}
+								/>
+								<Autocomplete
+									options={props.diseases}
+									getOptionLabel={(disease) => disease.enName}
+									className="col-2"
+									disableClearable
+									defaultValue={file.disease}
+									onChange={(event: any, newValue: Disease | null) => handleChange(event, newValue, file)}
+									renderInput={(params) => (
+										<TextField {...params} label="disease" variant="outlined" />
+									)}
+								/></>
+							) : null}
+							{file.status === FileStatus.Analysing ? <CircularProgress /> : null}
+						</ListItem>))}
 				</List>
 			</Paper>
 		</div>

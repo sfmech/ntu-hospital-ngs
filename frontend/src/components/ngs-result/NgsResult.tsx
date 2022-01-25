@@ -210,6 +210,28 @@ const useTreeItemStyles = makeStyles((theme: Theme) =>
 	  right: theme.spacing(2),
 	},
   }));
+
+
+  const useStyles3 = makeStyles((theme) => ({
+	root: {
+	  position: 'fixed',
+	  bottom: theme.spacing(8),
+	  right: theme.spacing(2),
+	},
+  }));
+
+  function ShowIGV(props){
+	const { children, window } = props;
+	const classes = useStyles3();
+	const handleClick = (event) =>{
+		
+	};
+	return (
+		  <div onClick={handleClick} role="presentation" className={classes.root}>
+			{children}
+		  </div>
+	  );
+  }
   
   function ScrollTop(props) {
 	const { children, window } = props;
@@ -281,6 +303,13 @@ const useStyles = makeStyles((theme: Theme) =>
 		backdrop: {
 			zIndex: theme.zIndex.drawer + 1,
 			color: '#fff'
+		},
+		igvStyle:{
+			position:'fixed',
+			bottom: theme.spacing(2),
+			left: '50%',
+			width: '64vw',
+			marginLeft: '-30vw',
 		}
 	})
 );
@@ -315,6 +344,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
 	const [ value, setValue ] = React.useState('1');
 	const [expanded, setExpanded] = React.useState(true);
+	const [ igvHidden, setIgvHidden] = React.useState(true);
 
 
 	const [ track, setTrack ] = React.useState({
@@ -1182,18 +1212,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 								<Tab value="4" label="Analysis Summary" />
 							</TabList>
 						</AppBar>
-						<Accordion expanded={expanded} onChange={handleChange()} hidden={value==="2"||value==="4"}>
-								<AccordionSummary
-									expandIcon={<ExpandMoreIcon />}
-									aria-controls="panel1a-content"
-									id="panel1a-header"
-								>
-								<Typography>IGV</Typography>
-								</AccordionSummary>
-								<AccordionDetails>
-									<div id="igv-div" style={igvStyle}></div>
-								</AccordionDetails>
-							</Accordion>
+					
 						<TabPanel value="1">
 							{renderSampleButtons()}
 							<Paper className={classes.paper}>
@@ -1346,6 +1365,15 @@ export const NgsResult: FunctionComponent = (prop) => {
 					</TabContext>
 				</div>
 			</div>
+			<Paper className={classes.igvStyle} hidden={igvHidden}>
+				<div id="igv-div"></div>
+			</Paper>
+			
+			<ShowIGV>
+				<Fab color="secondary" size="small" aria-label="scroll back to top" onClick={()=>setIgvHidden(!igvHidden)}>
+					IGV
+				</Fab>
+			</ShowIGV>
 			<ScrollTop {...prop}>
 				<Fab color="secondary" size="small" aria-label="scroll back to top">
 					<KeyboardArrowUpIcon />

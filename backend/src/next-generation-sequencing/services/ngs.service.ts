@@ -559,20 +559,20 @@ export class NGSService {
 		return ;
 	}
 	
-	async runScript(data:File[]): Promise<void> {
-		fs.writeFile(`${this.configService.get<string>('ngs.path')}/status.txt`,"1", 'utf-8',(err)=>{});
+	async runScript(data:File[], bed: string): Promise<void> {
+		fs.writeFile(`${this.configService.get<string>('ngs.path')}/${bed}/status.txt`,"1", 'utf-8',(err)=>{});
 		const files = fs
-			.readdirSync(this.configService.get<string>('ngs.path'))
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/${bed}`)
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
 
-		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash` ], {
+		var child = cp.execFile('bash', [ `/home/pindel/Leukemia_analysis_with_large_indels.bash`, bed ], {
 			maxBuffer: 1024 * 1024 * 1024 * 5
 		});
 
 		child.on('close', async (code) => {
-			fs.writeFile(`${this.configService.get<string>('ngs.path')}/status.txt`,FileStatus.NotAnalyse, 'utf-8',(err)=>{});
+			fs.writeFile(`${this.configService.get<string>('ngs.path')}/${bed}/status.txt`,FileStatus.NotAnalyse, 'utf-8',(err)=>{});
 			const now = new Date(Date.now());
 			const runResults = {
 				runName: `${now.getFullYear()}-${('0' + (now.getMonth() + 1)).slice(-2)}-${('0' + now.getDate()).slice(
@@ -595,7 +595,7 @@ export class NGSService {
 
 				const reportHtml = fs.readFileSync(`${this.configService.get<string>(
 					'ngs.path'
-				)}/${runsResponse.runName}/FASTQ_RAW/${temp.sampleName}_report.html`, 'utf8');
+				)}/${bed}/${runsResponse.runName}/FASTQ_RAW/${temp.sampleName}_report.html`, 'utf8');
 				const $ = cheerio.load(reportHtml);
 				const general_table_tr = $('#general tr');
 				const after_table_tr = $('#after_filtering_summary tr');
@@ -620,7 +620,7 @@ export class NGSService {
 			.createReadStream(
 				`${this.configService.get<string>(
 					'ngs.path'
-				)}/${runsResponse.runName}/Aligned.csv`
+				)}/${bed}/${runsResponse.runName}/Aligned.csv`
 			)
 			.pipe(csv({ headers: false, skipLines: 1 }))
 			.on('data', (data) => {
@@ -643,7 +643,7 @@ export class NGSService {
 						.createReadStream(
 							`${this.configService.get<string>(
 								'ngs.path'
-							)}/${runsResponse.runName}/${element.sampleName}_Annotation.csv`
+							)}/${bed}/${runsResponse.runName}/${element.sampleName}_Annotation.csv`
 						)
 						.pipe(csv({ headers: false, skipLines: 1 }))
 						.on('data', (data) => {
@@ -711,7 +711,7 @@ export class NGSService {
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
-						)}/${runsResponse.runName}/${element.sampleName}_Target_SOMATIC_Mutation_QC.csv`
+						)}/${bed}/${runsResponse.runName}/${element.sampleName}_Target_SOMATIC_Mutation_QC.csv`
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
@@ -733,7 +733,7 @@ export class NGSService {
 					.createReadStream(
 						`${this.configService.get<string>(
 							'ngs.path'
-						)}/${runsResponse.runName}/${element.sampleName}_coverage.csv`
+						)}/${bed}/${runsResponse.runName}/${element.sampleName}_coverage.csv`
 					)
 					.pipe(csv({  headers: false, skipLines: 1  }))
 					.on('data', (data) => {

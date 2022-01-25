@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import { Title } from '../title/Title';
-import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { AppBar, Box, Button, createStyles, makeStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
 import './NgsAnalysis.css';
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
@@ -8,6 +8,7 @@ import { Backdrop, CircularProgress } from '@material-ui/core';
 import { FileList } from './fileList';
 import { Disease } from '../../models/disease.model';
 import { FileContext } from '../../contexts/files.context';
+import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -24,8 +25,8 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
 	const [ diseases, setDiseases ] = useState<Array<Disease>>([]);
-	const { analysis, files, setFiles, setAnalysis } = useContext(FileContext);
-
+	const { Myeloidanalysis, MPNanalysis, TP53analysis, Myeloidfiles, MPNfiles, TP53files } = useContext(FileContext);
+	const [value, setValue] = React.useState("Myeloid");
 	
 
 	useEffect(() => {
@@ -42,11 +43,11 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 	}, []);
 
 
-	const handleClick = () => {
+	const handleClick = (files, bed) => {
 		const runScripts = async () => {
 			try {
 				setOpen(true);
-				await axios.post(`${ApiUrl}/api/runscript`, {data: files});
+				await axios.post(`${ApiUrl}/api/runscript`, {data: files, bed: bed});
 			} catch (error) {
 				console.log(error);
 			} finally {
@@ -56,6 +57,10 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		runScripts();
 	};
 
+	const handleChange = (event, newValue) => {
+		setValue(newValue);
+	  };
+
 	return (
 		<React.Fragment>
 			<Title>Data Analysis</Title>
@@ -64,12 +69,43 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 						Waiting List
 					</Typography>
 			</div>
-			<FileList diseases={diseases}/>
-			<div className="row justify-content-center mt-3">
-				<Button variant="contained" color="primary" disabled={files.length === 0|| analysis>0 } onClick={handleClick}>
-					開始分析
-				</Button>
-			</div>
+			<TabContext value={value}>
+						<AppBar position="static" id="back-to-top-anchor">
+							<TabList value={value} onChange={handleChange}>
+								<Tab value="Myeloid" label="Myeloid Panel" />
+								<Tab value="MPN" label="MPN Panel" />
+								<Tab value="TP53" label="TP53 Panel" />
+							</TabList>
+						</AppBar>
+
+						<TabPanel value="Myeloid">
+							<FileList diseases={diseases} bed="Myeloid"/>
+							<div className="row justify-content-center mt-3">
+								<Button variant="contained" color="primary" disabled={Myeloidfiles.length === 0|| Myeloidanalysis>0 } onClick={()=>handleClick(Myeloidfiles, "Myeloid")}>
+									開始分析
+								</Button>
+							</div>
+						</TabPanel>
+						<TabPanel value="MPN">
+							<FileList diseases={diseases} bed="MPN"/>
+							<div className="row justify-content-center mt-3">
+								<Button variant="contained" color="primary" disabled={MPNfiles.length === 0|| MPNanalysis>0 } onClick={()=>handleClick(MPNfiles, "MPN")}>
+									開始分析
+								</Button>
+							</div>
+						</TabPanel>
+						<TabPanel value="TP53">
+							<FileList diseases={diseases} bed="TP53"/>
+							<div className="row justify-content-center mt-3">
+								<Button variant="contained" color="primary" disabled={TP53files.length === 0|| TP53analysis>0 } onClick={()=>handleClick(TP53files, "TP53")}>
+									開始分析
+								</Button>
+							</div>
+						</TabPanel>
+			</TabContext>
+			
+			
+			
 			<Backdrop className={classes.backdrop} open={open}>
 				<CircularProgress color="inherit" />
 			</Backdrop>

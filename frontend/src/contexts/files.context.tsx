@@ -9,12 +9,20 @@ type FileResponse = {
 	files: Array<File>
 }
 const initialState = {
-	analysis: 0,
-	files: new Array<File>(),
-	setAnalysis: (analysis: number)=>{},
-	setFiles: (files: Array<File>)=>{},
-	updateFile: (file: File)=>{},
-	updateFileInfo: (file: File)=>{}
+	Myeloidanalysis: 0,
+	MPNanalysis: 0,
+	TP53analysis: 0,
+	Myeloidfiles: new Array<File>(),
+	MPNfiles: new Array<File>(),
+	TP53files: new Array<File>(),
+	setMyeloidAnalysis: (analysis: number)=>{},
+	setMPNAnalysis: (analysis: number)=>{},
+	setTP53Analysis: (analysis: number)=>{},
+	setMyeloidFiles: (files: Array<File>)=>{},
+	setMPNFiles: (files: Array<File>)=>{},
+	setTP53Files: (files: Array<File>)=>{},
+	updateFile: (file: {file:File, bed: string})=>{},
+	updateFileInfo: (file: {file:File, bed: string})=>{}
 };
 
 export const FileContext = createContext(initialState);
@@ -26,9 +34,26 @@ export const FileProvider = ({ children }) => {
 		const getFilelist = () => {
 			try {
 				axios(`${ApiUrl}/api/filelist`).then((res) => {
-					if (res.data.files.length > 0) {
-						setFiles(res.data.files);
-						setAnalysis(parseInt(res.data.analysis));
+					if (res.data.Myeloid.files.length > 0) {
+						setMyeloidFiles(res.data.Myeloid.files);
+						setMyeloidAnalysis(parseInt(res.data.Myeloid.analysis));
+					}else{
+						setMyeloidFiles([]);
+						setMyeloidAnalysis(0);
+					}
+					if (res.data.MPN.files.length > 0) {
+						setMPNFiles(res.data.MPN.files);
+						setMPNAnalysis(parseInt(res.data.MPN.analysis));
+					}else{
+						setMPNFiles(res.data.Myeloid.files);
+						setMPNAnalysis(0);
+					}
+					if (res.data.TP53.files.length > 0) {
+						setTP53Files([]);
+						setTP53Analysis(parseInt(res.data.TP53.analysis));
+					}else{
+						setTP53Files([]);
+						setTP53Analysis(0);
 					}
 				});
 			} catch (error) {
@@ -39,28 +64,52 @@ export const FileProvider = ({ children }) => {
 		setInterval(() => getFilelist(), 3000);
 	}, []);
 
-	function setFiles(files: File[]) {
+	function setMyeloidFiles(files: File[]) {
         dispatch({
-            type: 'SETFILES',
+            type: 'SETMYELOIDFILES',
+            payload: files
+        });
+	}
+	function setMPNFiles(files: File[]) {
+        dispatch({
+            type: 'SETMPNFILES',
+            payload: files
+        });
+	}
+	function setTP53Files(files: File[]) {
+        dispatch({
+            type: 'SETTP53FILES',
             payload: files
         });
 	}
 	
-	function setAnalysis(analysis: number) {
+	function setMyeloidAnalysis(analysis: number) {
         dispatch({
-            type: 'SETANALYSIS',
+            type: 'SETMYELOIDANALYSIS',
+            payload: analysis
+        });
+	}
+	function setMPNAnalysis(analysis: number) {
+        dispatch({
+            type: 'SETMPNANALYSIS',
+            payload: analysis
+        });
+	}
+	function setTP53Analysis(analysis: number) {
+        dispatch({
+            type: 'SETTP53ANALYSIS',
             payload: analysis
         });
 	}
 	
-	function updateFile(file: File) {
+	function updateFile(file: {file:File, bed: string}) {
         dispatch({
             type: 'UPDATEFILE',
             payload: file
         });
     }
 
-	function updateFileInfo(file: File) {
+	function updateFileInfo(file: {file:File, bed: string}) {
         dispatch({
             type: 'UPDATEFILEINFO',
             payload: file
@@ -71,10 +120,18 @@ export const FileProvider = ({ children }) => {
 	return (
 		<FileContext.Provider
 			value={{
-				analysis: state.analysis,
-				files: state.files,
-				setAnalysis,
-				setFiles,
+				Myeloidanalysis: state.Myeloidanalysis,
+				MPNanalysis: state.MPNanalysis,
+				TP53analysis: state.TP53analysis,
+				Myeloidfiles: state.Myeloidfiles,
+				MPNfiles: state.MPNfiles,
+				TP53files: state.TP53files,
+				setMyeloidAnalysis,
+				setMPNAnalysis,
+				setTP53Analysis,
+				setMyeloidFiles,
+				setMPNFiles,
+				setTP53Files,
 				updateFile,
 				updateFileInfo
 
