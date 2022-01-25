@@ -12,7 +12,7 @@ import { User as UserEntity } from 'src/database/ngs-builder/entities/user.entit
 import { Aligned as AlignedEntity } from 'src/database/ngs-builder/entities/aligned.entity';
 import { HealthCareWorkers as HealthCareWorkersEntity } from 'src/database/ngs-builder/entities/healthCareWorkers.entity';
 
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Sample } from '../models/sample.model';
 import { Segment } from '../models/segment.model';
@@ -62,6 +62,14 @@ export class NGSService {
 	async getAllSamples(): Promise<Sample[]> {
 		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
 		return samples;
+	}
+
+	async getAllBySample(id: Array<number>): Promise<{ segments: Segment[]; coverage: Coverage[]; mutationQC: MutationQC[]; aligned: Aligned[]}> {
+		const segments = await this.segmentRepository.find({where:{sampleId:In(id)}});
+		const coverage = await this.coverageRepository.find({where:{sampleId:In(id)}});
+		const mutationQC = await this.mutationQCRepository.find({where:{sampleId:In(id)}});
+		const aligned = await this.alignedRepository.find({where:{sampleId:In(id)}});
+		return { segments:  segments, coverage:  coverage, mutationQC:  mutationQC, aligned:  aligned};
 	}
 
 	async deleteSamples(sampleIds: number[], runIds: number[]): Promise<Sample[]> {
@@ -175,34 +183,41 @@ export class NGSService {
 		return segmentTags;
 	}
 	async getFilelist(): Promise<{}> {
-		var status;
+		var MPNstatus,TP53status,Myeloidstatus;
 		try {
-			status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/status.txt`, 'utf-8');
+			MPNstatus = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/MPN/status.txt`, 'utf-8');
 		} catch (error) {
-			status = FileStatus.NotAnalyse;
+			MPNstatus = FileStatus.NotAnalyse;
+		}
+		try {
+			TP53status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/TP53/status.txt`, 'utf-8');
+		} catch (error) {
+			TP53status = FileStatus.NotAnalyse;
+		}
+		try {
+			Myeloidstatus = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/Myeloid/status.txt`, 'utf-8');
+		} catch (error) {
+			Myeloidstatus = FileStatus.NotAnalyse;
 		}
 
-		const aligned = fs
-			.readdirSync(this.configService.get<string>('ngs.path'))
-			.filter((align: string) => align.match(/Aligned.csv/));
-		const bams = fs
-			.readdirSync(this.configService.get<string>('ngs.path'))
+		const Myeloidbams = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/Myeloid`)
 			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
-		const mutationQC = fs
-			.readdirSync(this.configService.get<string>('ngs.path'))
+		const MyeloidmutationQC = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/Myeloid`)
 			.filter((mutationQC: string) => mutationQC.match(/(\d)*_(\w)*_Target_SOMATIC_Mutation_QC.csv/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
-		const files = fs
-			.readdirSync(this.configService.get<string>('ngs.path'))
+		const Myeloidfiles = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/Myeloid`)
 			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
 			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
 			.filter((element, index, arr) => arr.indexOf(element) === index);
 		const diseases = await this.diseaseRepository.find();
 		const unknown = diseases.find((disease) => disease.diseaseId === 1);
 
-		const response = files.map((file) => {
+		const Myeloidresponse = Myeloidfiles.map((file) => {
 			let disease = file.split('_')[1];
 			if (disease.match(/S(\d)*/)) {
 				disease = unknown;
@@ -213,27 +228,96 @@ export class NGSService {
 				}
 			}
 			//return {status: status, name: file, disease: disease };
-			if (mutationQC.includes(file)) {
+			if (MyeloidmutationQC.includes(file)) {
 				return { status: FileStatus.Analysed, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString() };
-			} else if (bams.includes(file)) {
+			} else if (Myeloidbams.includes(file)) {
 				return { status: FileStatus.Analysing, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
 			} else {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
 			}
 		});
-		return { analysis: status, files: response };
+		const MPNbams = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/MPN`)
+			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
+		const MPNmutationQC = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/MPN`)
+			.filter((mutationQC: string) => mutationQC.match(/(\d)*_(\w)*_Target_SOMATIC_Mutation_QC.csv/))
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
+			.filter((element, index, arr) => arr.indexOf(element) === index);
+		const MPNfiles = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/MPN`)
+			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
+			.filter((element, index, arr) => arr.indexOf(element) === index);
+
+
+		const MPNresponse = MPNfiles.map((file) => {
+			let disease = file.split('_')[1];
+			if (disease.match(/S(\d)*/)) {
+				disease = unknown;
+			} else {
+				disease = diseases.find((d) => d.abbr === disease);
+				if (disease === undefined) {
+					disease = unknown;
+				}
+			}
+			//return {status: status, name: file, disease: disease };
+			if (MPNmutationQC.includes(file)) {
+				return { status: FileStatus.Analysed, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString() };
+			} else if (MPNbams.includes(file)) {
+				return { status: FileStatus.Analysing, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
+			} else {
+				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
+			}
+		});
+		const TP53bams = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/TP53`)
+			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
+		const TP53mutationQC = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/TP53`)
+			.filter((mutationQC: string) => mutationQC.match(/(\d)*_(\w)*_Target_SOMATIC_Mutation_QC.csv/))
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
+			.filter((element, index, arr) => arr.indexOf(element) === index);
+		const TP53files = fs
+			.readdirSync(`${this.configService.get<string>('ngs.path')}/TP53`)
+			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
+			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
+			.filter((element, index, arr) => arr.indexOf(element) === index);
+
+		const TP53response = TP53files.map((file) => {
+			let disease = file.split('_')[1];
+			if (disease.match(/S(\d)*/)) {
+				disease = unknown;
+			} else {
+				disease = diseases.find((d) => d.abbr === disease);
+				if (disease === undefined) {
+					disease = unknown;
+				}
+			}
+			//return {status: status, name: file, disease: disease };
+			if (TP53mutationQC.includes(file)) {
+				return { status: FileStatus.Analysed, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString() };
+			} else if (TP53bams.includes(file)) {
+				return { status: FileStatus.Analysing, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
+			} else {
+				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID:"", medicalRecordNo:"", departmentNo:"", checkDate: new Date(Date.now()).toLocaleDateString()  };
+			}
+		});
+		return { Myeloid:{analysis: Myeloidstatus, files: Myeloidresponse },MPN:{analysis: MPNstatus, files: MPNresponse },TP53:{analysis: TP53status, files: TP53response }};
 	}
 
 
-	updateFile(oldSampleName, newSampleName): Promise<void> {
+	updateFile(oldSampleName, newSampleName, bed ): Promise<void> {
 		const oldFileR1 = `${oldSampleName}_L001_R1_001.fastq.gz`;
 		const oldFileR2 = `${oldSampleName}_L001_R2_001.fastq.gz`;
 		const newFileR1 = `${newSampleName}_L001_R1_001.fastq.gz`;
 		const newFileR2 = `${newSampleName}_L001_R2_001.fastq.gz`;
-		const pathToFileR1 = path.join(this.configService.get<string>('ngs.path'), oldFileR1);
-		const pathToFileR2 = path.join(this.configService.get<string>('ngs.path'), oldFileR2);
-		const newPathToFileR1 = path.join(this.configService.get<string>('ngs.path'), newFileR1);
-		const newPathToFileR2 = path.join(this.configService.get<string>('ngs.path'), newFileR2);
+		const pathToFileR1 = path.join(this.configService.get<string>('ngs.path'), bed, oldFileR1);
+		const pathToFileR2 = path.join(this.configService.get<string>('ngs.path'), bed, oldFileR2);
+		const newPathToFileR1 = path.join(this.configService.get<string>('ngs.path'), bed, newFileR1);
+		const newPathToFileR2 = path.join(this.configService.get<string>('ngs.path'), bed, newFileR2);
 		try {
 			fs.renameSync(pathToFileR1, newPathToFileR1);
 			fs.renameSync(pathToFileR2, newPathToFileR2);

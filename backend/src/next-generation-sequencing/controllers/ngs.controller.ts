@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { Coverage } from '../models/coverage.model';
 import { Disease } from '../models/disease.model';
 import { MutationQC } from '../models/mutationQC.model';
@@ -202,7 +202,7 @@ export class NGSController {
 	@Post('/updateFile')
 	@UseGuards(AuthGuard('jwt'))
 	updateFile(@Body() body): Promise<void> {
-		return this.ngsService.updateFile(body.oldSampleName, body.newSampleName);
+		return this.ngsService.updateFile(body.oldSampleName, body.newSampleName, body.bed);
 	}
 
 	@Get('/getMemberlist')

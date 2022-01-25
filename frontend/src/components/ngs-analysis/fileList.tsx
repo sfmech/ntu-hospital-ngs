@@ -1,7 +1,7 @@
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import React, { FunctionComponent, useContext } from 'react';
+import React, { FunctionComponent, useContext, useEffect } from 'react';
 import DescriptIcon from '@material-ui/icons/Description';
 import ListItemText from '@material-ui/core/ListItemText';
 import {
@@ -20,7 +20,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FileStatus } from '../../models/file.state.enum';
 
 type FileListProp = {
+	files:Array<File>;
+	analysis:number;
 	diseases: Array<Disease>;
+	bed: string;
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -33,15 +36,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const FileList: FunctionComponent<FileListProp> = (props) => {
 	const classes = useStyles();
-	const { files, analysis, updateFile, updateFileInfo } = useContext(FileContext);
 	const now = new Date(Date.now());
+	const { updateFile, updateFileInfo } = useContext(FileContext);
 	const [selectedCheckDate, setSelectedCheckDate] = React.useState(`${now.getFullYear()}-${(now.getMonth() > 8) ? (now.getMonth() + 1) : ('0' + (now.getMonth() + 1))}-${(now.getDate() > 9) ? now.getDate() : ('0' + now.getDate())}`);
+	const [files, setFiles] = React.useState(props.files);
+	const [analysis, setAnalysis] = React.useState(props.analysis);
 
+	useEffect(()=>{
+		console.log(files);
+	},[])
 	const handleChange = (event, newValue, file: File) => {
 		if (newValue !== null) {
 			let newFile = Object.assign(new File(), file);
 			newFile.disease = newValue;
-			updateFile(newFile);
+			updateFile({file:newFile, bed: props.bed});
 		}
 	};
 
@@ -49,7 +57,7 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 		let newFile = Object.assign(new File(), file);
 		const name = event.target.name;
 		newFile[name] = event.target.value as string;
-		updateFileInfo(newFile);
+		updateFileInfo({file:newFile, bed: props.bed});
 	};
 
 	return (
