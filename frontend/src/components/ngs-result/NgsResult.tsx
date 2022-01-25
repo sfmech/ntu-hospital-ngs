@@ -1278,6 +1278,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 											}
 										</div>
 									</div>
+								
+								</div>
 								<div className='row mx-2 my-3'>
 									<div  className='row col-3'>
 										<div  className='col-6 text-right'>
@@ -1286,7 +1288,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 										<div  className='col-6'>
 											{selectedSample.bed}
 										</div>
-									</div>
 									</div>
 								</div>
 							</Paper>
