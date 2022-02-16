@@ -45,11 +45,11 @@ export const FileProvider = ({ children }) => {
 						setMPNFiles(res.data.MPN.files);
 						setMPNAnalysis(parseInt(res.data.MPN.analysis));
 					}else{
-						setMPNFiles(res.data.Myeloid.files);
+						setMPNFiles([]);
 						setMPNAnalysis(0);
 					}
 					if (res.data.TP53.files.length > 0) {
-						setTP53Files([]);
+						setTP53Files(res.data.TP53.files);
 						setTP53Analysis(parseInt(res.data.TP53.analysis));
 					}else{
 						setTP53Files([]);
