@@ -60,7 +60,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
-		setMerge(!merge);
+		setMerge(false);
 		setMergeFiles([]);
 
 	  };
