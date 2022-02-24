@@ -44,6 +44,7 @@ export const MergeFilesModal: FunctionComponent<MergeFilesModalProps> = (props) 
 	const { Mergefiles, setMergeFiles } = useContext(FileContext);
 
     const handleClickMergeConfirm = async (files, bed)=>{
+		console.log(user)
         try {
 			setOpen(true);
 			await axios.post(`${ApiUrl}/api/merge`, {data: files, bed: bed, fileName: user});
