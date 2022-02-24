@@ -72,7 +72,7 @@ export const MergeFilesModal: FunctionComponent<MergeFilesModalProps> = (props) 
 				</div>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={()=>handleClickMergeConfirm(props.files, props.bed)} color="primary">
+				<Button onClick={()=>handleClickMergeConfirm(props.files, props.bed)} disabled={open} color="primary">
 					儲存
 				</Button>
 				<Button onClick={props.onClose} color="primary">
