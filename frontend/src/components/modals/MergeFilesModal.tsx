@@ -67,7 +67,7 @@ export const MergeFilesModal: FunctionComponent<MergeFilesModalProps> = (props) 
 					<Typography variant="h6" component="h2" className="col-8">
 						Sample Name:
 					</Typography>
-					<TextField onChange={(e) => handleInputChange(e)} id="userName" className="col-4" />
+					<TextField onChange={(e) => handleInputChange(e)} id="userName" disabled={open} className="col-4" />
 				</div>
 			</DialogContent>
 			<DialogActions>
