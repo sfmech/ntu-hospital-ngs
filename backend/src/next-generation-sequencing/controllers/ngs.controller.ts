@@ -257,7 +257,7 @@ export class NGSController {
 	@Post('/merge')
 	@UseGuards(AuthGuard('jwt'))
 	mergeFiles(@Body() body) {
-		return this.ngsService.mergeFiles(body.data);
+		return this.ngsService.mergeFiles(body.data, body.bed);
 	}
 
 	@Get('/getbamfile/:samplename/:runname')
