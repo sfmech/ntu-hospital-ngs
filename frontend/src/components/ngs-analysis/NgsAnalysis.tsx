@@ -161,7 +161,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 			</TabContext>
 			
 			
-			<MergeFilesModal  show={showModal} onClose={() => setShowModal(false)} bed={value} files={Mergefiles} ></MergeFilesModal>
+			<MergeFilesModal  show={showModal} onClose={() => setShowModal(false)} bed={value} ></MergeFilesModal>
 			<Backdrop className={classes.backdrop} open={open}>
 				<CircularProgress color="inherit" />
 			</Backdrop>

@@ -25,7 +25,6 @@ import { FileContext } from '../../contexts/files.context';
 type MergeFilesModalProps = {
 	show: boolean;
 	bed: string;
-	files: Array<string>;
 	onClose: () => void;
 };
 
@@ -72,7 +71,7 @@ export const MergeFilesModal: FunctionComponent<MergeFilesModalProps> = (props) 
 				</div>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={()=>handleClickMergeConfirm(props.files, props.bed)} disabled={open} color="primary">
+				<Button onClick={()=>handleClickMergeConfirm(Mergefiles, props.bed)} disabled={open} color="primary">
 					儲存
 				</Button>
 				<Button onClick={props.onClose} color="primary">
