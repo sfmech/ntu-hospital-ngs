@@ -72,7 +72,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		setMergeFiles([]);
 	};
 	const handleClickMergeConfirm = async (files, bed)=>{
-
+		setShowModal(true);
 		setMergeFiles([]);
 		setMerge(!merge);
 	};
