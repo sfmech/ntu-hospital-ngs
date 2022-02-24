@@ -56,6 +56,11 @@ export const FileReducer = (state, action) => {
 				...state,
 				TP53analysis: action.payload
 			}
+		case 'SETMERGEFILES':
+			return{
+				...state,
+				Mergefiles: action.payload
+			}
 		case 'UPDATEFILE':
 			const updatedFile = action.payload as  {file:File, bed: string};
 			if(updatedFile.bed==="Myeloid"){

@@ -24,8 +24,9 @@ const useStyles = makeStyles((theme: Theme) =>
 export const NgsAnalysis: FunctionComponent = (prop) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = React.useState(false);
+	const [ merge, setMerge ] = React.useState(false);
 	const [ diseases, setDiseases ] = useState<Array<Disease>>([]);
-	const { Myeloidanalysis, MPNanalysis, TP53analysis, Myeloidfiles, MPNfiles, TP53files } = useContext(FileContext);
+	const { Mergefiles, Myeloidanalysis, MPNanalysis, TP53analysis, Myeloidfiles, MPNfiles, TP53files, setMergeFiles } = useContext(FileContext);
 	const [value, setValue] = React.useState("Myeloid");
 	
 
@@ -59,7 +60,27 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
+		setMerge(!merge);
+		setMergeFiles([]);
+
 	  };
+
+	const handleClickMerge = ()=>{
+		setMerge(!merge);
+		setMergeFiles([]);
+	};
+	const handleClickMergeConfirm = async (files, bed)=>{
+		try {
+			setOpen(true);
+			await axios.post(`${ApiUrl}/api/merge`, {data: files, bed: bed});
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setOpen(false);
+		}
+		setMergeFiles([]);
+		setMerge(!merge);
+	};
 
 	return (
 		<React.Fragment>
@@ -79,28 +100,68 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 						</AppBar>
 
 						<TabPanel value="Myeloid">
-							<FileList diseases={diseases} bed="Myeloid"/>
-							<div className="row justify-content-center mt-3">
-								<Button variant="contained" color="primary" disabled={Myeloidfiles.length === 0|| Myeloidanalysis>0 } onClick={()=>handleClick(Myeloidfiles, "Myeloid")}>
-									開始分析
+							<FileList diseases={diseases} bed="Myeloid" merge={merge}/>
+							{merge?
+								<div className="row justify-content-center mt-3">
+								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm(Mergefiles, 'Myeloid')}>
+									合併
 								</Button>
+								<Button variant="contained" color="primary" className='ml-3' onClick={()=>handleClickMerge()}>
+									取消
+								</Button>
+								</div>
+								:
+								<div className="row justify-content-center mt-3"><Button variant="contained" color="primary" disabled={Myeloidfiles.length === 0|| Myeloidanalysis>0 } onClick={()=>handleClick(Myeloidfiles, "Myeloid")}>
+								開始分析
+							</Button>
+							<Button variant="contained" color="primary" className='ml-3' disabled={Myeloidfiles.length === 0|| Myeloidanalysis>0 } onClick={()=>handleClickMerge()}>
+								合併檔案
+							</Button>
 							</div>
+								}
 						</TabPanel>
 						<TabPanel value="MPN">
-							<FileList diseases={diseases} bed="MPN"/>
-							<div className="row justify-content-center mt-3">
-								<Button variant="contained" color="primary" disabled={MPNfiles.length === 0|| MPNanalysis>0 } onClick={()=>handleClick(MPNfiles, "MPN")}>
-									開始分析
+							<FileList diseases={diseases} bed="MPN" merge={merge}/>
+								{merge?
+								<div className="row justify-content-center mt-3">
+								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm(Mergefiles, 'MPN')}>
+									合併
 								</Button>
+								<Button variant="contained" color="primary" className='ml-3' onClick={()=>handleClickMerge()}>
+									取消
+								</Button>
+								</div>
+								:
+								<div className="row justify-content-center mt-3"><Button variant="contained" color="primary" disabled={MPNfiles.length === 0|| MPNanalysis>0 } onClick={()=>handleClick(MPNfiles, "MPN")}>
+								開始分析
+							</Button>
+							<Button variant="contained" color="primary" className='ml-3' disabled={MPNfiles.length === 0|| MPNanalysis>0 } onClick={()=>handleClickMerge()}>
+								合併檔案
+							</Button>
 							</div>
+								}
+							
 						</TabPanel>
 						<TabPanel value="TP53">
-							<FileList diseases={diseases} bed="TP53"/>
-							<div className="row justify-content-center mt-3">
-								<Button variant="contained" color="primary" disabled={TP53files.length === 0|| TP53analysis>0 } onClick={()=>handleClick(TP53files, "TP53")}>
-									開始分析
+							<FileList diseases={diseases} bed="TP53" merge={merge}/>
+							{merge?
+								<div className="row justify-content-center mt-3">
+								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm(Mergefiles, 'TP53')}>
+									合併
 								</Button>
+								<Button variant="contained" color="primary" className='ml-3' onClick={()=>handleClickMerge()}>
+									取消
+								</Button>
+								</div>
+								:
+								<div className="row justify-content-center mt-3"><Button variant="contained" color="primary" disabled={TP53files.length === 0|| TP53analysis>0 } onClick={()=>handleClick(TP53files, "TP53")}>
+								開始分析
+							</Button>
+							<Button variant="contained" color="primary" className='ml-3' disabled={TP53files.length === 0|| TP53analysis>0 } onClick={()=>handleClickMerge()}>
+								合併檔案
+							</Button>
 							</div>
+								}
 						</TabPanel>
 			</TabContext>
 			

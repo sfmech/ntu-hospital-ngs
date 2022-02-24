@@ -343,7 +343,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
 	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
 	const [ value, setValue ] = React.useState('1');
-	const [expanded, setExpanded] = React.useState(true);
 	const [ igvHidden, setIgvHidden] = React.useState(true);
 
 
@@ -357,7 +356,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	});
 
 	const [ cookies ] = useCookies();
-	//const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
 	Font.register({ family: 'KAIU', src: KAIU });
 	Font.register({ family: 'KAIUBold', src: KAIUBold });
 	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
@@ -378,13 +376,11 @@ export const NgsResult: FunctionComponent = (prop) => {
         var igvContainer = document.getElementById('igv-div');
 		var igvOptions;
 		if (track.name!==""){
-			//console.log("load old track", track.name);
 			igvOptions = { genome: "hg19","tracks":track,
 			"locus": 'chr11:32449420'};
 		}
 			
 		else{
-			//console.log("load no track");
 			igvOptions = { genome: "hg19","name": "",
 			"sourceType": "file",
 			"url": "",
@@ -397,7 +393,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 		
 		igv.createBrowser(igvContainer, igvOptions).
 			then(function (browser) {
-				//console.log("create browser");
 				igv.browser = browser;
 		});
     },[]);
@@ -413,8 +408,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 	useEffect(
 		() => {			
 			if (track.name!==""){
-				//console.log("load new track", track.name);
-				//console.log(igv.browser.findTracks("name",track.name).length);
 				igv.browser.removeTrackByName(track.name);
 				igv.browser.loadTrack(track);
 			}
@@ -439,10 +432,6 @@ export const NgsResult: FunctionComponent = (prop) => {
 
 	const handleUploadClick = () => {
 		setShowUploadModal(true);
-	};
-
-	const handleChange = () => (event, isExpanded) => {
-		setExpanded(isExpanded);
 	};
 
 	const handleSelectClick = (event: React.ChangeEvent, id: number, isSample: boolean) => {
@@ -650,41 +639,9 @@ export const NgsResult: FunctionComponent = (prop) => {
 		if (alignedResults[sample.sampleId]) setSelectedAligneds(alignedResults[sample.sampleId]);
 		else setSelectedAligneds([]);
 		if (track.name!==""){
-			//console.log("remove track");
 			igv.browser.removeTrackByName(track.name);
 		}
 			
-		/*axios.get(`${ApiUrl}/api/getbamfile/${sample.sampleName}/${sample.run.runName.replace('/','-')}`).then((response)=>{
-			let newTrack = track;
-			newTrack.url = "data:application/octet-stream;base64,"+response.data;
-			console.log(track);
-			setTrack(newTrack);
-			igv.browser.loadTrack(track);
-			//console.log(response.data);
-		})
-		axios.get(`${ApiUrl}/api/getbaifile/${sample.sampleName}/${sample.run.runName.replace('/','-')}`).then((response)=>{
-			let newTrack = track;
-			newTrack.indexURL = "data:application/octet-stream;base64,"+response.data;
-			setTrack(newTrack);
-			//console.log(response.data);
-		})*/
-		
-		/*setTrack({
-			"name": sample.sampleName.split("_")[0],
-			"sourceType": "file",
-			"url": `http://192.168.1.26:55688/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
-			"indexURL": `http://192.168.1.26:55688/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
-			"type": 'alignment',
-			"format": 'bam',
-		});*/
-		/*setTrack({
-			"name": sample.sampleName.split("_")[0],
-			"sourceType": "file",
-			"url": `/assets/744_S7.bam`,
-			"indexURL": `/assets/744_S7.bam.bai`,
-			"type": 'alignment',
-			"format": 'bam',
-		});*/
 		setTrack({
 			"name": sample.sampleName.split("_")[0],
 			"sourceType": "file",
@@ -765,7 +722,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
 				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
 				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5 && !segment.isDeleted);
-				pdfData['list2'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5 && !segment.isDeleted);
+				pdfData['list2'] = tempTarget.filter((segment)=>hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) !== -1&&(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5 && !segment.isDeleted);
 				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS && !segment.isDeleted);
 				pdfData['checker'] = segmentResults[id][0].sample.checker;
 				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;

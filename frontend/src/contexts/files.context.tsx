@@ -15,12 +15,14 @@ const initialState = {
 	Myeloidfiles: new Array<File>(),
 	MPNfiles: new Array<File>(),
 	TP53files: new Array<File>(),
+	Mergefiles: new Array<string>(),
 	setMyeloidAnalysis: (analysis: number)=>{},
 	setMPNAnalysis: (analysis: number)=>{},
 	setTP53Analysis: (analysis: number)=>{},
 	setMyeloidFiles: (files: Array<File>)=>{},
 	setMPNFiles: (files: Array<File>)=>{},
 	setTP53Files: (files: Array<File>)=>{},
+	setMergeFiles: (files: Array<string>)=>{},
 	updateFile: (file: {file:File, bed: string})=>{},
 	updateFileInfo: (file: {file:File, bed: string})=>{}
 };
@@ -63,6 +65,13 @@ export const FileProvider = ({ children }) => {
 		getFilelist();
 		setInterval(() => getFilelist(), 3000);
 	}, []);
+
+	function setMergeFiles(files: string[]) {
+        dispatch({
+            type: 'SETMERGEFILES',
+            payload: files
+        });
+	}
 
 	function setMyeloidFiles(files: File[]) {
         dispatch({
@@ -126,12 +135,14 @@ export const FileProvider = ({ children }) => {
 				Myeloidfiles: state.Myeloidfiles,
 				MPNfiles: state.MPNfiles,
 				TP53files: state.TP53files,
+				Mergefiles: state.Mergefiles,
 				setMyeloidAnalysis,
 				setMPNAnalysis,
 				setTP53Analysis,
 				setMyeloidFiles,
 				setMPNFiles,
 				setTP53Files,
+				setMergeFiles,
 				updateFile,
 				updateFileInfo
 

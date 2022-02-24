@@ -182,6 +182,9 @@ export class NGSService {
 		const segmentTags = await this.segmentTagRepository.save(updateSegmentTags);
 		return segmentTags;
 	}
+	mergeFiles(files): void{
+		console.log(files);
+	}
 	async getFilelist(): Promise<{}> {
 		var MPNstatus,TP53status,Myeloidstatus;
 		try {

@@ -5,6 +5,7 @@ import React, { FunctionComponent, useContext, useEffect } from 'react';
 import DescriptIcon from '@material-ui/icons/Description';
 import ListItemText from '@material-ui/core/ListItemText';
 import {
+	Checkbox,
 	CircularProgress,
 	createStyles,
 	makeStyles,
@@ -20,7 +21,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FileStatus } from '../../models/file.state.enum';
 
 type FileListProp = {
-
+	merge: boolean;
 	diseases: Array<Disease>;
 	bed: string;
 };
@@ -36,10 +37,22 @@ const useStyles = makeStyles((theme: Theme) =>
 export const FileList: FunctionComponent<FileListProp> = (props) => {
 	const classes = useStyles();
 	const now = new Date(Date.now());
-	const { Myeloidanalysis, MPNanalysis, TP53analysis, Myeloidfiles, MPNfiles, TP53files, updateFile, updateFileInfo } = useContext(FileContext);
+	const { Mergefiles, Myeloidanalysis, MPNanalysis, TP53analysis, Myeloidfiles, MPNfiles, TP53files, updateFile, updateFileInfo,setMergeFiles } = useContext(FileContext);
 	const [selectedCheckDate, setSelectedCheckDate] = React.useState(`${now.getFullYear()}-${(now.getMonth() > 8) ? (now.getMonth() + 1) : ('0' + (now.getMonth() + 1))}-${(now.getDate() > 9) ? now.getDate() : ('0' + now.getDate())}`);
-
-
+	const handleToggle = (value: File) => () => {
+		if (props.merge){
+			const currentIndex = Mergefiles.indexOf(value.name);
+			const newChecked = [...Mergefiles];
+		
+			if (currentIndex === -1) {
+			newChecked.push(value.name);
+			} else {
+			newChecked.splice(currentIndex, 1);
+			}
+		
+			setMergeFiles(newChecked);
+		}
+	  };
 
 	const handleChange = (event, newValue, file: File) => {
 		if (newValue !== null) {
@@ -61,12 +74,21 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 			<Paper className="mt-3" elevation={3}>
 				<List>
 					{props.bed==="Myeloid"?Myeloidfiles.map((file) => (
-						<ListItem selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
+						<ListItem key={file.name} onClick={handleToggle(file)} selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
+							
 							<ListItemIcon>
+								{props.merge?<Checkbox
+								edge="start"
+								checked={Mergefiles.indexOf(file.name) !== -1}
+								tabIndex={-1}
+								disableRipple
+								/>:null}
 								<DescriptIcon />
 							</ListItemIcon>
 							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />
-							{Myeloidanalysis === 0 ? (<>
+							{Myeloidanalysis === 0 ? (
+							<>
+								
 								<TextField name="SID" className="col-2" label="SID" variant="outlined" value={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
 								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" value={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
 								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" value={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
@@ -97,8 +119,14 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 							{file.status === FileStatus.Analysing ? <CircularProgress /> : null}
 						</ListItem>
 					)):props.bed==="MPN"?MPNfiles.map((file) => (
-						<ListItem selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
+						<ListItem key={file.name} onClick={handleToggle(file)} selected={file.status === FileStatus.Analysed}  classes={{ selected: classes.listItemSelected }}>
 							<ListItemIcon>
+							{props.merge?<Checkbox
+								edge="start"
+								checked={Mergefiles.indexOf(file.name) !== -1}
+								tabIndex={-1}
+								disableRipple
+								/>:null}
 								<DescriptIcon />
 							</ListItemIcon>
 							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />
@@ -132,8 +160,14 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 							) : null}
 							{file.status === FileStatus.Analysing ? <CircularProgress /> : null}
 						</ListItem>)):TP53files.map((file) => (
-						<ListItem selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
+						<ListItem key={file.name} onClick={handleToggle(file)} selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
 							<ListItemIcon>
+							{props.merge?<Checkbox
+								edge="start"
+								checked={Mergefiles.indexOf(file.name) !== -1}
+								tabIndex={-1}
+								disableRipple
+								/>:null}
 								<DescriptIcon />
 							</ListItemIcon>
 							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />

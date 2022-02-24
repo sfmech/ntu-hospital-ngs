@@ -254,6 +254,12 @@ export class NGSController {
 		return this.ngsService.deleteHealthCareWorkers(body.data);
 	}
 
+	@Post('/merge')
+	@UseGuards(AuthGuard('jwt'))
+	mergeFiles(@Body() body) {
+		return this.ngsService.mergeFiles(body.data);
+	}
+
 	@Get('/getbamfile/:samplename/:runname')
 	@UseGuards(AuthGuard('jwt'))
 	getBamFile(@Res() response, @Body() body, @Param('samplename') sampleName: string, @Param('runname') runName: string){

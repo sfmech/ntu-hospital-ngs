@@ -79,7 +79,7 @@ export const SegmentTagReducer = (state, action) => {
 
 			return {
 				...state,
-				blacklist: state.blacklist.concat(addBlackSegmentTags),
+				blacklist: state.blacklist.filter((segmentTag) => !blackIds.includes(segmentTag.id)).concat(addBlackSegmentTags),
 				whitelist: newWhitelist
 			};
 		case 'ADDWHITELIST':
@@ -105,7 +105,7 @@ export const SegmentTagReducer = (state, action) => {
 			return {
 				...state,
 				blacklist: newBlacklist,
-				whitelist: state.whitelist.concat(addWhiteSegmentTags)
+				whitelist: state.whitelist.filter((segmentTag) => !blackIds.includes(segmentTag.id)).concat(addWhiteSegmentTags)
 			};
 		
 		default:
