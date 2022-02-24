@@ -183,8 +183,9 @@ export class NGSService {
 		return segmentTags;
 	}
 	mergeFiles(files: Array<string>, bed:string): void{
-		const para1 = +"\""+files.map((file)=>file+"_L001_R1_001.fastq.gz").join(' ')+"\"";
-		const para2 = +"\""+files.map((file)=>file+"_L001_R2_001.fastq.gz").join(' ')+"\"";
+		const para1 = "\""+files.map((file)=>file+"_L001_R1_001.fastq.gz").join(' ')+"\"";
+		const para2 = "\""+files.map((file)=>file+"_L001_R2_001.fastq.gz").join(' ')+"\"";
+		console.log(para1);
 		var child = cp.execFile('bash',  [ `/home/pindel/code/merge.sh`,bed, para1,para2, "test"  ], 
 			(error, stdout, stderr) => {
 				if (error) {
