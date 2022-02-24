@@ -61,7 +61,7 @@ export const MergeFilesModal: FunctionComponent<MergeFilesModalProps> = (props) 
 	};
 
 	return (
-		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
+		<Dialog maxWidth="xl" open={props.show} >
 			<DialogTitle>Merge Files</DialogTitle>
 			<DialogContent className={classes.root} dividers>
 				<div className="row px-3">
