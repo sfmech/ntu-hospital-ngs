@@ -185,9 +185,13 @@ export class NGSService {
 	mergeFiles(files: Array<string>, bed:string): void{
 		const para1 = +"\""+files.map((file)=>file+"_L001_R1_001.fastq.gz").join(' ')+"\"";
 		const para2 = +"\""+files.map((file)=>file+"_L001_R2_001.fastq.gz").join(' ')+"\"";
-		var child = cp.execFile('bash', [ `/home/pindel/code/merge.sh`, para1, para2, "test" , bed ], {
-			maxBuffer: 1024 * 1024 * 1024 * 5
-		});
+		var child = cp.execFile('bash', [ `/home/pindel/code/merge.sh`, files.map((file)=>file+"_L001_R1_001.fastq.gz"), files.map((file)=>file+"_L001_R1_001.fastq.gz"), "test" , bed ], 
+			(error, stdout, stderr) => {
+				if (error) {
+				  throw error;
+				}
+				console.log(stdout);
+			});
 	}
 	async getFilelist(): Promise<{}> {
 		var MPNstatus,TP53status,Myeloidstatus;
