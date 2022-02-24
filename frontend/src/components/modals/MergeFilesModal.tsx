@@ -54,6 +54,7 @@ export const MergeFilesModal: FunctionComponent<MergeFilesModalProps> = (props) 
 			setOpen(false);
 		}
 		setMergeFiles([]);
+		props.onClose();
     };
 	const handleInputChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 		setUser(event.target.value as string);
