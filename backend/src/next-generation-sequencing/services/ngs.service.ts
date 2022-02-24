@@ -185,7 +185,7 @@ export class NGSService {
 	mergeFiles(files: Array<string>, bed:string, fileName:string): void{
 		const para1 = files.map((file)=>file+"_L001_R1_001.fastq.gz").join(' ');
 		const para2 = files.map((file)=>file+"_L001_R2_001.fastq.gz").join(' ');
-		var child = cp.execFileSync('bash',  [ `/home/pindel/code/merge.sh`,bed, para1,para2, fileName+"_S1"  ]);
+		var child = cp.execFileSync('bash',  [ `/home/pindel/code/merge.sh`,bed, para1,para2, fileName+"_UNKNOWN"  ]);
 		/*
 			(error, stdout, stderr) => {
 				if (error) {
