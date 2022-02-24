@@ -71,10 +71,8 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		setMerge(!merge);
 		setMergeFiles([]);
 	};
-	const handleClickMergeConfirm = async (files, bed)=>{
+	const handleClickMergeConfirm = ()=>{
 		setShowModal(true);
-		setMergeFiles([]);
-		setMerge(!merge);
 	};
 
 	return (
@@ -98,7 +96,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 							<FileList diseases={diseases} bed="Myeloid" merge={merge}/>
 							{merge?
 								<div className="row justify-content-center mt-3">
-								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm(Mergefiles, 'Myeloid')}>
+								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm()}>
 									合併
 								</Button>
 								<Button variant="contained" color="primary" className='ml-3' onClick={()=>handleClickMerge()}>
@@ -119,7 +117,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 							<FileList diseases={diseases} bed="MPN" merge={merge}/>
 								{merge?
 								<div className="row justify-content-center mt-3">
-								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm(Mergefiles, 'MPN')}>
+								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm()}>
 									合併
 								</Button>
 								<Button variant="contained" color="primary" className='ml-3' onClick={()=>handleClickMerge()}>
@@ -141,7 +139,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 							<FileList diseases={diseases} bed="TP53" merge={merge}/>
 							{merge?
 								<div className="row justify-content-center mt-3">
-								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm(Mergefiles, 'TP53')}>
+								<Button variant="contained" color="primary"  onClick={()=>handleClickMergeConfirm()}>
 									合併
 								</Button>
 								<Button variant="contained" color="primary" className='ml-3' onClick={()=>handleClickMerge()}>
@@ -161,7 +159,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 			</TabContext>
 			
 			
-			<MergeFilesModal  show={showModal} onClose={() => setShowModal(false)} bed={value} ></MergeFilesModal>
+			<MergeFilesModal  show={showModal} onClose={() => {setShowModal(false);setMerge(false);}} bed={value} ></MergeFilesModal>
 			<Backdrop className={classes.backdrop} open={open}>
 				<CircularProgress color="inherit" />
 			</Backdrop>
