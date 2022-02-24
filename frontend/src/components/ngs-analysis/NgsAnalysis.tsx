@@ -9,6 +9,7 @@ import { FileList } from './fileList';
 import { Disease } from '../../models/disease.model';
 import { FileContext } from '../../contexts/files.context';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { MergeFilesModal } from '../modals/MergeFilesModal';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -28,6 +29,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 	const [ diseases, setDiseases ] = useState<Array<Disease>>([]);
 	const { Mergefiles, Myeloidanalysis, MPNanalysis, TP53analysis, Myeloidfiles, MPNfiles, TP53files, setMergeFiles } = useContext(FileContext);
 	const [value, setValue] = React.useState("Myeloid");
+	const [ showModal, setShowModal ] = React.useState(false);
 	
 
 	useEffect(() => {
@@ -70,14 +72,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 		setMergeFiles([]);
 	};
 	const handleClickMergeConfirm = async (files, bed)=>{
-		try {
-			setOpen(true);
-			await axios.post(`${ApiUrl}/api/merge`, {data: files, bed: bed});
-		} catch (error) {
-			console.log(error);
-		} finally {
-			setOpen(false);
-		}
+
 		setMergeFiles([]);
 		setMerge(!merge);
 	};
@@ -166,7 +161,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 			</TabContext>
 			
 			
-			
+			<MergeFilesModal  show={showModal} onClose={() => setShowModal(false)} bed={value} files={Mergefiles} ></MergeFilesModal>
 			<Backdrop className={classes.backdrop} open={open}>
 				<CircularProgress color="inherit" />
 			</Backdrop>

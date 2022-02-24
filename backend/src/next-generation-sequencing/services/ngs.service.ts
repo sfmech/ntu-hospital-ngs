@@ -182,11 +182,10 @@ export class NGSService {
 		const segmentTags = await this.segmentTagRepository.save(updateSegmentTags);
 		return segmentTags;
 	}
-	mergeFiles(files: Array<string>, bed:string): void{
-		const para1 = "\""+files.map((file)=>file+"_L001_R1_001.fastq.gz").join(' ')+"\"";
-		const para2 = "\""+files.map((file)=>file+"_L001_R2_001.fastq.gz").join(' ')+"\"";
-		console.log(para1);
-		var child = cp.execFile('bash',  [ `/home/pindel/code/merge.sh`,bed, para1,para2, "test"  ], 
+	mergeFiles(files: Array<string>, bed:string, fileName:string): void{
+		const para1 = files.map((file)=>file+"_L001_R1_001.fastq.gz").join(' ');
+		const para2 = files.map((file)=>file+"_L001_R2_001.fastq.gz").join(' ');
+		var child = cp.execFile('bash',  [ `/home/pindel/code/merge.sh`,bed, para1,para2, fileName+"_S1"  ], 
 			(error, stdout, stderr) => {
 				if (error) {
 				  throw error;
@@ -534,16 +533,18 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
-						let temp = new MutationQC();
-						temp.sample.sampleId = element.sampleId
-						temp.geneName = data[0];
-						temp.HGVSc = data[1];
-						temp.HGVSp = data[2];
-						temp.QC = data[5];
-						temp.chr = data[4].split(':')[0];
-						temp.cosmic = data[3];
-						temp.position = data[4].split(':')[1];
-						mutationQCResults.push(temp);
+						if(data[0]===""){
+							let temp = new MutationQC();
+							temp.sample.sampleId = element.sampleId
+							temp.geneName = data[0];
+							temp.HGVSc = data[1];
+							temp.HGVSp = data[2];
+							temp.QC = data[5];
+							temp.chr = data[4].split(':')[0];
+							temp.cosmic = data[3];
+							temp.position = data[4].split(':')[1];
+							mutationQCResults.push(temp);
+						}
 					})
 					.on('end', async () => {
 						const mutationQCResponse = await this.mutationQCRepository.save(mutationQCResults)
@@ -735,16 +736,18 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
-						let temp = new MutationQC();
-						temp.sample.sampleId = element.sampleId
-						temp.geneName = data[0];
-						temp.HGVSc = data[1];
-						temp.HGVSp = data[2];
-						temp.QC = data[5];
-						temp.chr = data[4].split(':')[0];
-						temp.cosmic = data[3];
-						temp.position = data[4].split(':')[1];
-						mutationQCResults.push(temp);
+						if(data[0]===""){
+							let temp = new MutationQC();
+							temp.sample.sampleId = element.sampleId
+							temp.geneName = data[0];
+							temp.HGVSc = data[1];
+							temp.HGVSp = data[2];
+							temp.QC = data[5];
+							temp.chr = data[4].split(':')[0];
+							temp.cosmic = data[3];
+							temp.position = data[4].split(':')[1];
+							mutationQCResults.push(temp);
+						}
 					})
 					.on('end', async () => {
 						const mutationQCResponse = await this.mutationQCRepository.save(mutationQCResults)
