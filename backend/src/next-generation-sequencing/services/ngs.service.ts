@@ -61,6 +61,7 @@ export class NGSService {
 	}
 	async getAllSamples(): Promise<Sample[]> {
 		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
+		console.log(samples)		
 		return samples;
 	}
 
@@ -185,7 +186,7 @@ export class NGSService {
 	mergeFiles(files: Array<string>, bed:string, fileName:string): void{
 		const para1 = files.map((file)=>file+"_L001_R1_001.fastq.gz").join(' ');
 		const para2 = files.map((file)=>file+"_L001_R2_001.fastq.gz").join(' ');
-		var child = cp.execFileSync('bash',  [ `/home/pindel/code/merge.sh`,bed, para1,para2, fileName+"_UNKNOWN"  ]);
+		var child = cp.execFileSync('bash',  [ `/home/pindel/code/merge.sh`,bed, para1,para2, fileName+"_S"+Date.now()  ]);
 		/*
 			(error, stdout, stderr) => {
 				if (error) {
@@ -535,7 +536,7 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
-						if(data[0]===""){
+
 							let temp = new MutationQC();
 							temp.sample.sampleId = element.sampleId
 							temp.geneName = data[0];
@@ -546,7 +547,7 @@ export class NGSService {
 							temp.cosmic = data[3];
 							temp.position = data[4].split(':')[1];
 							mutationQCResults.push(temp);
-						}
+						
 					})
 					.on('end', async () => {
 						const mutationQCResponse = await this.mutationQCRepository.save(mutationQCResults)
@@ -738,7 +739,7 @@ export class NGSService {
 					)
 					.pipe(csv({ headers: false }))
 					.on('data', (data) => {
-						if(data[0]===""){
+						
 							let temp = new MutationQC();
 							temp.sample.sampleId = element.sampleId
 							temp.geneName = data[0];
@@ -749,7 +750,7 @@ export class NGSService {
 							temp.cosmic = data[3];
 							temp.position = data[4].split(':')[1];
 							mutationQCResults.push(temp);
-						}
+						
 					})
 					.on('end', async () => {
 						const mutationQCResponse = await this.mutationQCRepository.save(mutationQCResults)
