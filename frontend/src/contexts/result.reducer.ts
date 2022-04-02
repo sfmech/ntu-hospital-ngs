@@ -13,6 +13,7 @@ export const ResultReducer = (state, action) => {
 			};  
 		case "SETSAMPLES":
 			const ungroupSamples = action.payload as Sample[];
+			console.log(ungroupSamples)
 			const groupSamples=ungroupSamples.reduce((groups, item) => {
 				const val = item.run.runId;
 				groups[val] = groups[val] || [];
