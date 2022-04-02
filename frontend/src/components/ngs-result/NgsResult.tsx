@@ -360,7 +360,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 	Font.register({ family: 'KAIUBold', src: KAIUBold });
 	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
-	Font.registerHyphenationCallback((word: string) => {
+	// disable hyphenation
+	/*Font.registerHyphenationCallback((word: string) => {
 		if (word.length === 1) {
 		  return [word];
 		}   
@@ -371,7 +372,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			arr.push(...current);
 			return arr;
 		  }, []);
-	  });
+	  });*/
 	useEffect(()=>{
         var igvContainer = document.getElementById('igv-div');
 		var igvOptions;
@@ -721,7 +722,12 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['note1'] = segmentResults[id][0].sample.note1===undefined?"":segmentResults[id][0].sample.note1;
 				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
 				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
-				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5 && !segment.isDeleted);
+				//pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5 && !segment.isDeleted);
+				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && !segment.isDeleted).map((segment)=>{
+					if(segment.freq<5)
+						segment.clinicalSignificance=segment.clinicalSignificance+"(low allel frequency)";
+					return segment;
+				});
 				pdfData['list2'] = tempTarget.filter((segment)=>hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) !== -1&&(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5 && !segment.isDeleted);
 				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS && !segment.isDeleted);
 				pdfData['checker'] = segmentResults[id][0].sample.checker;
