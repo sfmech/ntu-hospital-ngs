@@ -427,7 +427,7 @@ export const HotspotTable: FunctionComponent<HotspotTable> = (props) => {
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>

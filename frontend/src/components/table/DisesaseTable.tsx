@@ -238,7 +238,7 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 		} finally {
 			setOpen(false);
             setSelected([]);
-            window.location.reload(false);
+            window.location.reload();
 		}
     };
 
@@ -368,7 +368,7 @@ export const DiseaseTable: FunctionComponent<DiseaseTable> = (props) => {
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>

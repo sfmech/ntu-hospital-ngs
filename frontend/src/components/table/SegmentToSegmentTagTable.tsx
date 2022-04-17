@@ -423,7 +423,7 @@ export const SegmentToSegmentTagTable: FunctionComponent<SegmentToSegmentTagTabl
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>

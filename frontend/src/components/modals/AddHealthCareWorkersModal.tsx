@@ -52,7 +52,7 @@ export const AddHealthCareWorkersModal: FunctionComponent<AddHealthCareWorkersMo
 			console.log(error);
 		} finally{
 			props.onClose();
-			window.location.reload(false);
+			window.location.reload();
         }
     };
 	const handleInputChange = (event: React.ChangeEvent<{ value: unknown }>, type: string) => {

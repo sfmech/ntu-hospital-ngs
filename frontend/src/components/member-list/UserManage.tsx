@@ -40,7 +40,7 @@ export const UsersManage: FunctionComponent = (prop) => {
 			axios.post(`${ApiUrl}/api/addUser`, {
 				data:  importData
 			}).then(()=>{
-				window.location.reload(false);
+				window.location.reload();
 			})
 		}
 	};

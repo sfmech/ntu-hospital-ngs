@@ -558,7 +558,7 @@ export const SegmentTable: FunctionComponent<SegmentTable> = (props) => {
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>

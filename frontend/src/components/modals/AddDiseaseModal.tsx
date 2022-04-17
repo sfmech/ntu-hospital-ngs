@@ -28,7 +28,7 @@ export const DiseaseModal: FunctionComponent<DiseaseModalProps> = (props) => {
 			console.log(error);
 		} finally{
 			props.onClose();
-			window.location.reload(false);
+			window.location.reload();
         }
     };
 

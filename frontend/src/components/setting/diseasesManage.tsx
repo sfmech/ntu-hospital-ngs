@@ -39,7 +39,7 @@ export const DiseasesManage: FunctionComponent = (prop) => {
 			axios.post(`${ApiUrl}/api/addDisease`, {
 				data:  importData
 			}).then(()=>{
-				window.location.reload(false);
+				window.location.reload();
 			})
 		}
 	};

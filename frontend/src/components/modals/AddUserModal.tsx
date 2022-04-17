@@ -50,7 +50,7 @@ export const AddUserModal: FunctionComponent<AddUserModalProps> = (props) => {
 			console.log(error);
 		} finally{
 			props.onClose();
-			window.location.reload(false);
+			window.location.reload();
         }
     };
 	const handleInputChange = (event: React.ChangeEvent<{ value: unknown }>, type: string) => {

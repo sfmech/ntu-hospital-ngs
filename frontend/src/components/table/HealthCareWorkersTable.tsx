@@ -238,7 +238,7 @@ export const HealthCareWorkersTable: FunctionComponent<HealthCareWorkersTable> =
 		} finally {
 			setOpen(false);
             setSelected([]);
-            window.location.reload(false);
+            window.location.reload();
 		}
     };
 
@@ -368,7 +368,7 @@ export const HealthCareWorkersTable: FunctionComponent<HealthCareWorkersTable> =
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>

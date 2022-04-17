@@ -265,7 +265,7 @@ export const AnalysisSummaryTable: FunctionComponent<AnalysisSummaryTable> = (pr
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>

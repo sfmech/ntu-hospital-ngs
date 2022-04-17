@@ -277,7 +277,7 @@ export const StatistcGeneNameTable: FunctionComponent<StatistcGeneNameTable> = (
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>

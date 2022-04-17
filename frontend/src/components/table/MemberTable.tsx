@@ -238,7 +238,7 @@ export const UserTable: FunctionComponent<UserTable> = (props) => {
 		} finally {
 			setOpen(false);
             setSelected([]);
-            window.location.reload(false);
+            window.location.reload();
 		}
     };
 
@@ -368,7 +368,7 @@ export const UserTable: FunctionComponent<UserTable> = (props) => {
 					count={rows.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onChangePage={handleChangePage}
+					onPageChange={handleChangePage}
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>
