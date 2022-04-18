@@ -177,7 +177,8 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 				})()}
 			</DialogContent>
 			<DialogActions>
-				<Button variant="contained" color="primary" onClick={handleDownloadPdf} disabled={pdfData!==undefined?pdfData.length===0:false}>
+			    {/* disabled={pdfData!==undefined?pdfData.length===0:false} */}
+				<Button variant="contained" color="primary" onClick={handleDownloadPdf}>
 						匯出
 				</Button>
 

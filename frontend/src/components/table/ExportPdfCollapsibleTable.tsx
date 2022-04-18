@@ -23,7 +23,8 @@ import {
 	TableSortLabel,
 	TextField,
 	Theme,
-	Toolbar
+	Toolbar,
+	Button
 } from '@material-ui/core';
 import { Sample } from '../../models/sample.model';
 import { Segment } from '../../models/segment.model';
@@ -178,16 +179,50 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 	const classes = useRowStyles();
 	const { pdfData, setData } = useContext(PdfDataContext);
 
-	
-
 	const handleSampleChange = (e) => {
 		const value = e.target.value;
 		const name = e.target.name;
 		row[name] = value;
+		if(pdfData[index] === undefined) { pdfData[index] = {sample: new Sample()} as PdfData; };
 		pdfData[index][name] = value;
 		pdfData[index].sample[name] = value;
 		setData(pdfData);
 	};
+
+	const handleSampleListChange = (e, list, listIndex) => {
+		const value = e.target.value;
+		const name = e.target.name;
+		row[list][listIndex][name] = value;
+		if(pdfData[index] === undefined) { pdfData[index] = {sample: new Sample()} as PdfData; };
+		pdfData[index][list][listIndex][name] = value;
+		pdfData[index].sample[list][listIndex][name] = value;
+		setData(pdfData);
+
+		console.log('pdf', pdfData)
+		console.log('row', row)
+	};
+
+	const handleAddSampleListItem = (list) => {
+		console.log(row)
+		const newListItem = {} as Segment
+		if(row[list] === undefined) { 
+			row[list] = [newListItem] 
+		} else {
+			console.log(row[list])
+			console.log(newListItem)
+			row[list].push(newListItem)
+		}
+		console.log(row[list])
+		if(pdfData[index] === undefined) { pdfData[index] = {sample: new Sample()} as PdfData; };
+		if(pdfData[index][list] === undefined) {
+			pdfData[index][list] = [newListItem];
+			pdfData[index].sample[list] = [newListItem];
+		} else {
+			pdfData[index][list].push(newListItem);
+			pdfData[index].sample[list].push(newListItem)
+		}
+		setData(pdfData);
+	}
 
 	return (
 		<React.Fragment>
@@ -197,12 +232,49 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell>{row.SID}</TableCell>
-				<TableCell>{row.runName}</TableCell>
-				<TableCell>{row.sampleName}</TableCell>
-				<TableCell>{row.medicalRecordNo}</TableCell>
-				<TableCell>{row.departmentNo}</TableCell>
-				<TableCell>{row.checkDate}</TableCell>
+				<TableCell>
+					<Input
+						defaultValue={row.SID}
+						name={'SID'}
+						// onChange={(e) => handleSampleChange(e)}
+					/>
+				</TableCell>
+				<TableCell>
+					<Input
+						defaultValue={row.runName}
+						name={'runName'}
+						// onChange={(e) => handleSampleChange(e)}
+					/>
+				</TableCell>
+				<TableCell>
+					<Input
+						defaultValue={row.sampleName}
+						name={'sampleName'}
+						// onChange={(e) => handleSampleChange(e)}
+					/>
+				</TableCell>
+				<TableCell>
+					<Input
+						defaultValue={row.medicalRecordNo}
+						name={'medicalRecordNo'}
+						onChange={(e) => handleSampleChange(e)}
+					/>
+				</TableCell>
+				<TableCell>
+					<Input
+						defaultValue={row.departmentNo}
+						name={'departmentNo'}
+						onChange={(e) => handleSampleChange(e)}
+					/>
+				</TableCell>
+				<TableCell>
+					<Input
+						defaultValue={row.checkDate}
+						name={'checkDate'}
+						type="date"
+						onChange={(e) => handleSampleChange(e)}
+					/>
+				</TableCell>
 			</TableRow>
 			<TableRow>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -424,17 +496,52 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 											<TableCell>Classification</TableCell>
 										</TableRow>
 									</TableHead>
-									{row.list1.map((element) => (
+									{row.list1?.map((element, index) => (
 										<TableRow>
-											<TableCell>{element.geneName}</TableCell>
-											<TableCell>{Reference[element.geneName]}</TableCell>
-											<TableCell>{element.HGVSc}</TableCell>
-											<TableCell>{element.HGVSp}</TableCell>
+											<TableCell>
+												<Input
+													defaultValue={element.geneName}
+													name={'geneName'}
+													onChange={(e) => handleSampleListChange(e, 'list1', index)}
+												/>
+											</TableCell>
+											<TableCell>
+												{Reference[element.geneName]}
+											</TableCell>
+											<TableCell>
+												<Input
+													defaultValue={element.HGVSc}
+													name={'HGVSc'}
+													onChange={(e) => handleSampleListChange(e, 'list1', index)}
+												/>
+											</TableCell>
+											<TableCell>
+												<Input
+													defaultValue={element.HGVSp}
+													name={'HGVSp'}
+													onChange={(e) => handleSampleListChange(e, 'list1', index)}
+												/>
+											</TableCell>
 											<TableCell>{parseFloat((element.freq / 100.0).toFixed(2))}</TableCell>
-											<TableCell>{element.depth}</TableCell>
-											<TableCell>{element.clinicalSignificance}</TableCell>
+											<TableCell>
+												<Input
+													defaultValue={element.depth}
+													name={'depth'}
+													onChange={(e) => handleSampleListChange(e, 'list1', index)}
+												/>
+											</TableCell>
+											<TableCell>
+												<Input
+													defaultValue={element.clinicalSignificance}
+													name={'clinicalSignificance'}
+													onChange={(e) => handleSampleListChange(e, 'list1', index)}
+												/>
+											</TableCell>
 										</TableRow>
 									))}
+									<Button onClick={() => handleAddSampleListItem('list1')} color="primary">
+										新增
+									</Button>
 								</Table>
 								<Typography
 									className={classes.title + ' mt-4'}
@@ -469,7 +576,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 											<TableCell>Classification</TableCell>
 										</TableRow>
 									</TableHead>
-									{row.list2.map((element) => (
+									{row.list2?.map((element) => (
 										<TableRow>
 											<TableCell>{element.geneName}</TableCell>
 											<TableCell>{Reference[element.geneName]}</TableCell>
@@ -514,7 +621,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 											<TableCell>Classification</TableCell>
 										</TableRow>
 									</TableHead>
-									{row.list3.map((element) => (
+									{row.list3?.map((element) => (
 										<TableRow>
 											<TableCell>{element.geneName}</TableCell>
 											<TableCell>{Reference[element.geneName]}</TableCell>
@@ -543,7 +650,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 											<TableCell>To (codon)</TableCell>
 										</TableRow>
 									</TableHead>
-									{row.list4.map((element) => (
+									{row.list4?.map((element) => (
 										<TableRow>
 											<TableCell>{element.gene}</TableCell>
 											<TableCell>{element.exon}</TableCell>
@@ -566,6 +673,14 @@ type ExportPdfCollapsibleTable = {
 	memberlist;
 };
 
+function GetTableBody(props: any) {
+	if(props.pdfData.length === 0){
+		return [<Row key={0} row={{} as PdfData} index={0} memberlist={props.memberlist} />]
+	} else {
+		return props.pdfData.map((row, index) => <Row key={index} row={row} index={index} memberlist={props.memberlist} />)
+	}
+}
+
 export const ExportPdfCollapsibleTable: FunctionComponent<ExportPdfCollapsibleTable> = (props) => {
 	const classes = useStyles();
 
@@ -587,7 +702,7 @@ export const ExportPdfCollapsibleTable: FunctionComponent<ExportPdfCollapsibleTa
 							<TableCell>檢查日期</TableCell>
 						</TableRow>
 					</TableHead>
-					<TableBody>{props.pdfData.map((row, index) => <Row key={index} row={row} index={index} memberlist={props.memberlist} />)}</TableBody>
+					<TableBody>{GetTableBody(props)}</TableBody>
 				</Table>
 			</TableContainer>
 		</React.Fragment>
