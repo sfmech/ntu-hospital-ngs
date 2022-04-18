@@ -11,6 +11,7 @@ import { Coverage as CoverageEntity } from 'src/database/ngs-builder/entities/co
 import { User as UserEntity } from 'src/database/ngs-builder/entities/user.entity';
 import { Aligned as AlignedEntity } from 'src/database/ngs-builder/entities/aligned.entity';
 import { HealthCareWorkers as HealthCareWorkersEntity } from 'src/database/ngs-builder/entities/healthCareWorkers.entity';
+import { Panel as PanelEntity } from 'src/database/ngs-builder/entities/panel.entity';
 
 import { In, Repository } from 'typeorm';
 
@@ -28,6 +29,7 @@ import { Aligned } from '../models/aligned.model';
 import { HealthCareWorkers } from '../models/healthCareWorkers.model';
 import { File } from '../models/file.model';
 import { promisify } from 'util';
+import { Panel } from '../models/panel.model';
 
 var cp = require('child_process');
 const fs = require('fs');
@@ -47,6 +49,8 @@ export class NGSService {
 		@InjectRepository(AlignedEntity) private alignedRepository: Repository<AlignedEntity>,
 		@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
 		@InjectRepository(HealthCareWorkersEntity) private healthCareWorkersRepository: Repository<HealthCareWorkersEntity>,
+		@InjectRepository(PanelEntity) private panelRepository: Repository<PanelEntity>,
+
 		private configService: ConfigService
 	) {}
 	
@@ -61,7 +65,7 @@ export class NGSService {
 	}
 	async getAllSamples(): Promise<Sample[]> {
 		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
-		console.log(samples)		
+		//console.log(samples)		
 		return samples;
 	}
 
@@ -156,11 +160,28 @@ export class NGSService {
 		
 		return response;
 	}
-
 	async deleteHealthCareWorkers(healthCareWorkers: HealthCareWorkers[]): Promise<void> {
 		const response = await this.healthCareWorkersRepository.remove(healthCareWorkers);
 		return;
 	}
+
+	async getPanels(): Promise<Panel[]> {
+		const panels = await this.panelRepository.find();
+		return panels;
+	}
+
+	async addPanel(panel: Panel){
+		const response = await this.panelRepository.save(panel);
+		
+		return response;
+	}
+
+	async deletePanels(panel: Panel[]): Promise<void> {
+		const response = await this.panelRepository.remove(panel);
+		return;
+	}
+
+	
 
 	async deleteFilterlist(deleteSegmentTags: SegmentTag[]): Promise<SegmentTag[]> {
 		const filterlist = await this.segmentTagRepository.remove(deleteSegmentTags);

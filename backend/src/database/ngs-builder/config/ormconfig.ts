@@ -10,6 +10,7 @@ import { Coverage } from "../entities/coverage.entity";
 import { User } from "../entities/user.entity";
 import { Aligned } from "../entities/aligned.entity";
 import { HealthCareWorkers } from "../entities/healthCareWorkers.entity";
+import { Panel } from "../entities/panel.entity";
 require('dotenv').config();
 
 const isTsNode = process[Symbol.for('ts-node.register.instance')]
@@ -22,7 +23,7 @@ const BuilderDbConfig = {
     database: process.env.BUILDER_DB_DATABASE,
     synchronize: false,
     logging: false,
-    entities: [Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User, Aligned, HealthCareWorkers],
+    entities: [Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User, Aligned, HealthCareWorkers, Panel],
     migrations: [
         `dist/database/ngs-builder/migrations/*.js`,
     ],

@@ -286,4 +286,24 @@ export class NGSController {
 		
 		return data[0].pipe(response);
 	}
+
+	@Get('/getPanels')
+	@UseGuards(AuthGuard('jwt'))
+	async getPanels(@Req() request) {
+		return this.ngsService.getPanels();
+	}
+
+	@Post('/addPanel')
+	@UseGuards(AuthGuard('jwt'))
+	addPanel(@Req() request, @Res() response, @Body() body) {
+		response.status(HttpStatus.OK)
+		this.ngsService.addPanel(body.data);
+		return response.send();
+	}
+
+	@Post('/deletePanels')
+	@UseGuards(AuthGuard('jwt'))
+	deletePanels(@Body() body) {
+		return this.ngsService.deletePanels(body.data);
+	}
 }

@@ -7,7 +7,7 @@ import { Login } from './components/login/login';
 import { NgsAnalysis } from './components/ngs-analysis/NgsAnalysis';
 import { NgsResult } from './components/ngs-result/NgsResult';
 import { Setting } from './components/setting/Setting';
-import { ANALYSIS, HOME, LOGIN, MEMBERMANAGE, RESULT, SETTING, STATISTIC } from './constants/constants';
+import { ANALYSIS, HOME, LOGIN, MEMBERMANAGE, PANELTEMPLATE, RESULT, SETTING, STATISTIC } from './constants/constants';
 import { FileProvider } from './contexts/files.context';
 import { ResultProvider } from './contexts/result.context';
 import { SegmentTagProvider } from './contexts/segmentTag.context';
@@ -17,6 +17,7 @@ import { CookiesProvider } from 'react-cookie';
 import { NgsStatistic } from './components/ngs-statistic/NgsStatistic';
 import { ResultOptionProvider } from './contexts/result-option.context';
 import { PdfDataProvider } from './contexts/pdf-data.context';
+import { NgsPanelTemplateManagement } from './components/ngs-panel-template-managemant/NgsPanelTemplateManagement';
 
 function PrivateRoute ({ children,role, ...rest }) {
 	return (
@@ -50,6 +51,7 @@ export const App: FunctionComponent = () => {
 								/>
 								<Route exact path={`${ANALYSIS}`} component={NgsAnalysis} />
 								<Route exact path={`${RESULT}`} component={NgsResult} />
+								<Route exact path={`${PANELTEMPLATE}`} component={NgsPanelTemplateManagement}></Route>
 								<Route path={`${SETTING}`} component={Setting} />
 								<Route exact path={`${LOGIN}`}  component={Login} />
 								<PrivateRoute path={`${MEMBERMANAGE}`} role={role}>

@@ -10,6 +10,7 @@ import { Coverage } from './entities/coverage.entity';
 import { Disease } from './entities/disease.entity';
 import { HealthCareWorkers } from './entities/healthCareWorkers.entity';
 import { MutationQC } from './entities/mutationQC.entity';
+import { Panel } from './entities/panel.entity';
 import { Run } from './entities/run.entity';
 import { Sample } from './entities/sample.entity';
 import { Segment } from './entities/segment.entity';
@@ -34,7 +35,7 @@ import { User } from './entities/user.entity';
                 },
             inject: [ConfigService, LoggerService],
         }),
-        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User, Aligned, HealthCareWorkers]),
+        TypeOrmModule.forFeature([Run, Sample, Segment, SegmentTag, Setting, Disease, MutationQC, Coverage, User, Aligned, HealthCareWorkers, Panel]),
     ],
     providers: [],
     exports: [TypeOrmModule]
