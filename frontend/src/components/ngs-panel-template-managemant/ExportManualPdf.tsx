@@ -310,19 +310,12 @@ export const ExportManualPdf: FunctionComponent<ExportPdfProps> = (prop) => (
                 {'\n\n'}
 				</Text>
                 <View style={styles.containInfoView}>
-					<Text style={{ width: 263, fontFamily: 'KAIU' }}>品質主管：{prop.memberlist.find((element)=>element.workerId===prop.data.qualityManager)?.name} 醫檢師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中檢專字{prop.memberlist.find((element)=>element.workerId===prop.data.qualityManager)?.number}號</Text>
-					<Text style={{ width: 263, fontFamily: 'KAIU' }}>報告醫師：{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.name} 主治醫師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中血專字{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.number}號</Text>
+					<Text style={{ width: 263, fontFamily: 'KAIU' }}>報告醫師：{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.name} 主治醫師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}{prop.memberlist.find((element)=>element.workerId===prop.data.reportDoctor)?.number}</Text>
 				</View>
                 <Text>
                 {'\n'}
 				</Text>
-                <View style={styles.containInfoView}>
-					<Text style={{ width: 263, fontFamily: 'KAIU' }}>檢 查 者：{prop.memberlist.find((element)=>element.workerId===prop.data.checker)?.name} 醫檢師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中檢專字{prop.memberlist.find((element)=>element.workerId===prop.data.checker)?.number}號</Text>
-					<Text style={{ width: 263, fontFamily: 'KAIU' }}>確 認 者：{prop.memberlist.find((element)=>element.workerId===prop.data.confirmer)?.name} 主治醫師{'\n'}{'\t\t\t\t\t\t\t\t\t\t'}中血專字{prop.memberlist.find((element)=>element.workerId===prop.data.confirmer)?.number}號</Text>
-				</View>
-                <Text>
-                {'\n'}
-				</Text>
+                
                 <View style={styles.containInfoView}>
 					<Text style={{ width: 263, fontFamily: 'KAIU' }}>確認日期：{`${new Date(Date.now()).getFullYear()}/${(new Date(Date.now()).getMonth() > 8) ? (new Date(Date.now()).getMonth() + 1) : ('0' + (new Date(Date.now()).getMonth() + 1))}/${(new Date(Date.now()).getDate() > 9) ? new Date(Date.now()).getDate() : ('0' + new Date(Date.now()).getDate())}`}</Text>
 				</View>

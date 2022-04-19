@@ -389,27 +389,7 @@ export const ExportManualPdfModal: FunctionComponent<ExportManualPdfModalProps> 
 					</div>
 				</div>
 				<div className="row mt-2">
-					<div className="row col-6">
-						<div className="col-6 text-right">品質主管:</div>
-						<div className="col-6">
-							<FormControl variant="outlined">
-								<Select
-									labelId="demo-simple-select-outlined-label2"
-									value={pdfData.qualityManager}
-									name={'qualityManager'}
-									onChange={handleSampleChange}
-								>
-									{memberlistgroupbyrole[HealthCareWorkerRole['MT']] !== undefined ? (
-										memberlistgroupbyrole[
-											HealthCareWorkerRole['MT']
-										].map((result: HealthCareWorkers) => {
-											return <MenuItem value={result.workerId}>{result.name}</MenuItem>;
-										})
-									) : null}
-								</Select>
-							</FormControl>
-						</div>
-					</div>
+					
 					<div className="row col-6">
 						<div className="col-6 text-right">報告醫師:</div>
 						<div className="col-6">
@@ -432,50 +412,7 @@ export const ExportManualPdfModal: FunctionComponent<ExportManualPdfModalProps> 
 						</div>
 					</div>
 				</div>
-				<div className="row mt-2">
-					<div className="row col-6">
-						<div className="col-6 text-right">檢查者:</div>
-						<div className="col-6">
-							<FormControl variant="outlined">
-								<Select
-									labelId="demo-simple-select-outlined-label2"
-									value={pdfData.checker}
-									name={'checker'}
-									onChange={handleSampleChange}
-								>
-									{memberlistgroupbyrole[HealthCareWorkerRole['MT']] !== undefined ? (
-										memberlistgroupbyrole[
-											HealthCareWorkerRole['MT']
-										].map((result: HealthCareWorkers) => {
-											return <MenuItem value={result.workerId}>{result.name}</MenuItem>;
-										})
-									) : null}
-								</Select>
-							</FormControl>
-						</div>
-					</div>
-					<div className="row col-6">
-						<div className="col-6 text-right">確認者:</div>
-						<div className="col-6">
-							<FormControl variant="outlined">
-								<Select
-									labelId="demo-simple-select-outlined-label2"
-									value={pdfData.confirmer}
-									name={'confirmer'}
-									onChange={handleSampleChange}
-								>
-									{memberlistgroupbyrole[HealthCareWorkerRole['VS']] !== undefined ? (
-										memberlistgroupbyrole[
-											HealthCareWorkerRole['VS']
-										].map((result: HealthCareWorkers) => {
-											return <MenuItem value={result.workerId}>{result.name}</MenuItem>;
-										})
-									) : null}
-								</Select>
-							</FormControl>
-						</div>
-					</div>
-				</div>
+				
 				<Typography className={' mt-4'} variant="h6" id="tableTitle" component="div">
 					I. Biomarker Findings
 				</Typography>
