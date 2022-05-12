@@ -361,6 +361,25 @@ export const NgsResult: FunctionComponent = (prop) => {
 	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	// disable hyphenation
+	Font.registerHyphenationCallback((word: string) => {
+		// Return word syllables in an array
+		const splittedWord = word.split('');
+		const result = [] as string[];
+		for (const l of splittedWord) {
+		  result.push(l, '');
+		}
+		return result;
+		/*if (word.length === 1) {
+		  return [word];
+		}   
+	
+		return Array.from(word)
+		  .map((char) => [char, ''])
+		  .reduce((arr, current) => {
+			arr.push(...current);
+			return arr;
+		  }, []);*/
+	  });
 	/*Font.registerHyphenationCallback((word: string) => {
 		if (word.length === 1) {
 		  return [word];
