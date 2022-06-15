@@ -903,20 +903,20 @@ export const NgsResult: FunctionComponent = (prop) => {
 		selected.forEach((id: number) => {
 			let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
 
-			if (mutationQCResults[id]) {
-				const fail = mutationQCResults[id]
-					.filter((m: MutationQC) => m.QC < 50)
-					.map((m: MutationQC) => m.geneName)
-					.filter((element, index, arr) => arr.indexOf(element) === index);
+			// if (mutationQCResults[id]) {
+			// 	const fail = mutationQCResults[id]
+			// 		.filter((m: MutationQC) => m.QC < 50)
+			// 		.map((m: MutationQC) => m.geneName)
+			// 		.filter((element, index, arr) => arr.indexOf(element) === index);
 
-				if (tempTarget[0]) {
-					tempTarget[0].alert = 'Fail Gene Name: ' + fail.join('; ');
-				} else {
-					let alert = new Segment();
-					alert.alert = 'Fail Gene Name: ' + fail.join('; ');
-					tempTarget = [ alert ].concat(tempTarget);
-				}
-			}
+			// 	if (tempTarget[0]) {
+			// 		tempTarget[0].alert = 'Fail Gene Name: ' + fail.join('; ');
+			// 	} else {
+			// 		let alert = new Segment();
+			// 		alert.alert = 'Fail Gene Name: ' + fail.join('; ');
+			// 		tempTarget = [ alert ].concat(tempTarget);
+			// 	}
+			// }
 			newExportData = newExportData.concat(tempTarget);
 		});
 		setSelected([]);

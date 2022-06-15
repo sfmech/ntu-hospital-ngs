@@ -1,5 +1,6 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, Radio, RadioGroup } from '@material-ui/core';
 import React, { FunctionComponent, useState, useEffect } from 'react';
+import { Orders } from '../../models/orders.enum';
 import { ExportDataToCsv } from '../../utils/exportDataToCsv';
 
 
@@ -10,6 +11,7 @@ type ExportModalProps = {
 };
 
 const headers = [
+    { label: 'SID', key: 'SID' },
 	{ label: 'Sample Name', key: 'sampleName'},
 	{ label: 'Chr', key: 'chr' },
 	{ label: 'Position', key: 'position' },
@@ -26,7 +28,9 @@ const headers = [
 	{ label: 'AMR_AF', key: 'AMRAF' },
 	{ label: 'EUR_AF', key: 'EURAF' },
     { label: 'ASN_AF', key: 'ASNAF' },
-    { label: 'Remark', key: 'alert' }
+    { label: 'Remark', key: 'alert' },
+    { label: 'Assay', key: 'Assay' },
+    { label: 'P/N', key: 'PN' },
 ];
 export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
     const [ step, setStep] = useState<number>(0)
@@ -34,23 +38,26 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
 
     const [ template, setTemplate] = useState<number>(0)
     const LISHeader = {
-        sampleName: true,
+        sampleName: false,
         chr: false,
         position:false,
         dbSNP: false,
         freq:true,
-        depth:true,
+        depth:false,
         annotation:false,
         geneName:true,
-        HGVSc:  false,
+        HGVSc: true,
         HGVSp: true,
-        clinicalSignificance: true,
+        clinicalSignificance: false,
         globalAF: false,
         AFRAF: false,
         AMRAF: false,
         EURAF: false,
         ASNAF: false,
-        alert: true
+        alert: false,
+        SID: true,
+        Assay: true,
+        PN: true
     }
     const [ header, setHeader] = useState({
         sampleName: true,
@@ -69,7 +76,10 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
         AMRAF: true,
         EURAF: true,
         ASNAF: true,
-        alert: false
+        alert: false,
+        SID: false,
+        Assay: false,
+        PN: false
     })
     useEffect(()=>{
         setStep(0);
@@ -79,7 +89,63 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHeader({ ...header, [event.target.name]: event.target.checked });
       };
-    
+
+    const getAssay = (geneName: string, HGVSp: string) => {
+        if(geneName == 'JAK2') {
+            let matchResult = HGVSp.match(/\d+/);
+            if(matchResult != null) {
+                let HGVSpNumber = parseInt(matchResult[0]);
+                if (HGVSpNumber >= 505 && HGVSpNumber <= 547) {
+                    return Orders['JAK2_505547'];
+                } else if (HGVSpNumber >= 593 && HGVSpNumber <= 622) {
+                    return Orders['JAK2_593622'];
+                } else {
+                    return null;
+                }
+            } else {
+                return; 
+            }
+        } else {
+            return Orders[geneName];
+        }
+    }
+
+    const toTwoDigit = (number: number) => {
+        return ("0" + number).slice(-2)
+    }
+
+    const LISFileName = () => {
+        return `MPN_${now.getFullYear()}${toTwoDigit(now.getMonth()+1)}${toTwoDigit(now.getDate())}${toTwoDigit(now.getHours())}${toTwoDigit(now.getMinutes())}${toTwoDigit(now.getSeconds())}.csv`
+    }
+
+    const LISDataFilter = (exportData: Array<any>) => {
+        const dataGroupBySID = exportData.reduce((group, data) => {
+            const SID = data.sample.SID;
+            group[SID] = group[SID] ?? [];
+            group[SID].push(data);
+            return group;
+        }, {});
+
+        Object.keys(dataGroupBySID).map(key => {
+            let negative = dataGroupBySID[key].every(data => { return !['Pathogenic', 'VUS'].includes(data.clinicalSignificance) });
+            if (negative) {
+                dataGroupBySID[key] = [dataGroupBySID[key][0]]
+            }
+            dataGroupBySID[key].map(data => {
+                const assay = getAssay(data.geneName, data.HGVSp);
+                if(!assay) { return null }
+
+                data.sampleName = data.sample.sampleName;
+                data.SID = data.sample.SID;
+                data.Assay = assay
+                data.PN = negative ? 'N' : 'P';
+                return data;
+            })
+        });
+
+        return Object.values(dataGroupBySID).flat(Infinity).filter(data => { return data !== null; });
+    }
+
 	return (
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
 			<DialogTitle>Select export Template</DialogTitle>
@@ -130,10 +196,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
 				<Button onClick={()=>setStep(1)} color="primary">
 					確認
                 </Button>:(template===1?
-                <ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`} data={props.exportData.map((d)=>{
-                    d.sampleName = d.sample.sampleName;
-                    return d;
-                })} onClose={props.onClose} headers={headers.filter((h)=>LISHeader[h.key])}>
+                <ExportDataToCsv fileName={LISFileName()} data={LISDataFilter(props.exportData)} onClose={props.onClose} headers={headers.filter((h)=>LISHeader[h.key])}>
                     匯出
                 </ExportDataToCsv>:
                 <ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`} data={props.exportData.map((d)=>{
