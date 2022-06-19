@@ -1,7 +1,9 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, Radio, RadioGroup } from '@material-ui/core';
 import React, { FunctionComponent, useState, useEffect } from 'react';
 import { Orders } from '../../models/orders.enum';
+import { ApiUrl } from '../../constants/constants';
 import { ExportDataToCsv } from '../../utils/exportDataToCsv';
+import axios from 'axios';
 
 
 type ExportModalProps = {
@@ -110,12 +112,18 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
         }
     }
 
-    const toTwoDigit = (number: number) => {
-        return ("0" + number).slice(-2)
-    }
-
-    const LISFileName = () => {
-        return `MPN_${now.getFullYear()}${toTwoDigit(now.getMonth()+1)}${toTwoDigit(now.getDate())}${toTwoDigit(now.getHours())}${toTwoDigit(now.getMinutes())}${toTwoDigit(now.getSeconds())}.csv`
+    const handleExportLIE = async (header: any[], rowData: any[]) => {
+        try {
+			await axios.post(`${ApiUrl}/api/downloadliscsv`, {
+                rowData: rowData,
+				header: header,
+			});
+		} catch (error) {
+			console.log(error);
+		} finally{
+			props.onClose();
+			window.location.reload();
+        }
     }
 
     const LISDataFilter = (exportData: Array<any>) => {
@@ -196,9 +204,9 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
 				<Button onClick={()=>setStep(1)} color="primary">
 					確認
                 </Button>:(template===1?
-                <ExportDataToCsv fileName={LISFileName()} data={LISDataFilter(props.exportData)} onClose={props.onClose} headers={headers.filter((h)=>LISHeader[h.key])}>
+                <Button onClick={()=>handleExportLIE(headers.filter((h)=>LISHeader[h.key]), LISDataFilter(props.exportData))}>
                     匯出
-                </ExportDataToCsv>:
+                </Button>:
                 <ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`} data={props.exportData.map((d)=>{
                     d.sampleName = d.sample.sampleName;
                     return d;

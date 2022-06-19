@@ -286,4 +286,11 @@ export class NGSController {
 		
 		return data[0].pipe(response);
 	}
+
+	@Post('downloadliscsv')
+	@UseGuards(AuthGuard('jwt'))
+	downloadliscsv(@Body() body) {
+		return this.ngsService.downloadliscsv(body.header, body.rowData);
+	}
+
 }

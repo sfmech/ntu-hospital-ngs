@@ -32,6 +32,7 @@ import { promisify } from 'util';
 var cp = require('child_process');
 const fs = require('fs');
 const csv = require('csv-parser');
+const { stringify } = require("csv-stringify");
 const cheerio = require("cheerio");
 
 @Injectable()
@@ -786,4 +787,25 @@ export class NGSService {
 		const response = this.sampleRepository.save(sample);
 		return;
 	}
+
+	async downloadliscsv(header: any[], rowData: any[]): Promise<void> {
+		const filename = `${this.configService.get<string>('ngs.path')}/report/${this.LISFileName}.csv`
+		const writableStream = fs.createWriteStream(filename);
+		const stringifier = stringify({ header: true, columns: header });
+		rowData.map((row)=> {
+			stringifier.write(row);
+		});
+		stringifier.pipe(writableStream);
+		console.log("Finished writing data");
+		return ;
+	}
+
+	toTwoDigit(number: number): string {
+        return ("0" + number).slice(-2)
+    }
+
+    LISFileName(): string {
+		const now = new Date(Date.now())
+        return `MPN_${now.getFullYear()}${this.toTwoDigit(now.getMonth()+1)}${this.toTwoDigit(now.getDate())}${this.toTwoDigit(now.getHours())}${this.toTwoDigit(now.getMinutes())}${this.toTwoDigit(now.getSeconds())}.csv`
+    }
 }
