@@ -15,7 +15,7 @@ export const ExportDataToCsv: FunctionComponent<CsvReport> = (props) => {
 	const now = new Date(Date.now())
 
 	return (
-		<CSVLink data={props.data} headers={props.headers?props.headers:null} filename={props.fileName} onClick={props.onClose} style={props.style}>
+		<CSVLink enclosingCharacter={``}data={props.data} headers={props.headers?props.headers:null} filename={props.fileName} onClick={props.onClose} style={props.style}>
 			{props.children}
 		</CSVLink>
 	);

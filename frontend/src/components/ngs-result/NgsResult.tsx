@@ -361,6 +361,25 @@ export const NgsResult: FunctionComponent = (prop) => {
 	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
 	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	// disable hyphenation
+	Font.registerHyphenationCallback((word: string) => {
+		// Return word syllables in an array
+		const splittedWord = word.split('');
+		const result = [] as string[];
+		for (const l of splittedWord) {
+		  result.push(l, '');
+		}
+		return result;
+		/*if (word.length === 1) {
+		  return [word];
+		}   
+	
+		return Array.from(word)
+		  .map((char) => [char, ''])
+		  .reduce((arr, current) => {
+			arr.push(...current);
+			return arr;
+		  }, []);*/
+	  });
 	/*Font.registerHyphenationCallback((word: string) => {
 		if (word.length === 1) {
 		  return [word];
@@ -646,8 +665,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setTrack({
 			"name": sample.sampleName.split("_")[0],
 			"sourceType": "file",
-			"url": `/file/Data/${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
-			"indexURL": `/file/Data/${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
+			"url": `/file/${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam`,
+			"indexURL": `/file/${sample.bed}/${sample.run.runName.replace('/','-')}/BAM/${sample.sampleName}.bam.bai`,
 			"type": 'alignment',
 			"format": 'bam',
 		});
@@ -884,20 +903,20 @@ export const NgsResult: FunctionComponent = (prop) => {
 		selected.forEach((id: number) => {
 			let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
 
-			if (mutationQCResults[id]) {
-				const fail = mutationQCResults[id]
-					.filter((m: MutationQC) => m.QC < 50)
-					.map((m: MutationQC) => m.geneName)
-					.filter((element, index, arr) => arr.indexOf(element) === index);
+			// if (mutationQCResults[id]) {
+			// 	const fail = mutationQCResults[id]
+			// 		.filter((m: MutationQC) => m.QC < 50)
+			// 		.map((m: MutationQC) => m.geneName)
+			// 		.filter((element, index, arr) => arr.indexOf(element) === index);
 
-				if (tempTarget[0]) {
-					tempTarget[0].alert = 'Fail Gene Name: ' + fail.join('; ');
-				} else {
-					let alert = new Segment();
-					alert.alert = 'Fail Gene Name: ' + fail.join('; ');
-					tempTarget = [ alert ].concat(tempTarget);
-				}
-			}
+			// 	if (tempTarget[0]) {
+			// 		tempTarget[0].alert = 'Fail Gene Name: ' + fail.join('; ');
+			// 	} else {
+			// 		let alert = new Segment();
+			// 		alert.alert = 'Fail Gene Name: ' + fail.join('; ');
+			// 		tempTarget = [ alert ].concat(tempTarget);
+			// 	}
+			// }
 			newExportData = newExportData.concat(tempTarget);
 		});
 		setSelected([]);

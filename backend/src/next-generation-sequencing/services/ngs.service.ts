@@ -514,10 +514,10 @@ export class NGSService {
 							temp.category="Other";
 						}
 
-						if (temp.freq >= 3) {
-							temp.sample.sampleId = element.sampleId;
-							segmentResults.push(temp);
-						} 
+						//if (temp.freq >= 3) {
+						temp.sample.sampleId = element.sampleId;
+						segmentResults.push(temp);
+						//} 
 
 						
 					})
@@ -719,10 +719,10 @@ export class NGSService {
 								temp.category="Other";
 							}
 
-							if (temp.freq >=3) {
-								temp.sample.sampleId = element.sampleId;
-								segmentResults.push(temp);
-							} 
+							//if (temp.freq >=3) {
+							temp.sample.sampleId = element.sampleId;
+							segmentResults.push(temp);
+							//} 
 						})
 						.on('end', async () => {
 							const segmentsResponse = await this.segmentRepository.save(segmentResults);
