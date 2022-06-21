@@ -789,9 +789,12 @@ export class NGSService {
 	}
 
 	async downloadliscsv(header: any[], rowData: any[]): Promise<void> {
-		const filename = `${this.configService.get<string>('ngs.path')}/report/${this.LISFileName}.csv`
+		const filename = `${this.configService.get<string>('ngs.path')}/report/${this.LISFileName()}.csv`
 		const writableStream = fs.createWriteStream(filename);
-		const stringifier = stringify({ header: true, columns: header });
+		const stringifier = stringify({ header: false, columns: header });
+                let firstRow = {}
+                header.map(ele => { firstRow[ele.key] = ele.label })
+		rowData.unshift(firstRow)
 		rowData.map((row)=> {
 			stringifier.write(row);
 		});
