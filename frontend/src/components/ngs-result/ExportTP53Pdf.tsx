@@ -108,7 +108,7 @@ type ExportPdfProps = {
 	memberlist: HealthCareWorkers[];
 };
 // Create Document Component
-export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
+export const MyDocumentTP53: FunctionComponent<ExportPdfProps> = (prop) => (
 	<Document>
 		<Page size="A4" style={styles.page}>
 			<Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
@@ -150,7 +150,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</View>
 				<View style={styles.containInfoView}>
 					<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}Panel: </Text>
-					<Text>{'\n'} NTUH LabMed Myeloid Panel</Text>
+					<Text>{'\n'} NTUH LabMed TP53</Text>
 				</View>
 				
 				<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}I. Variant list:</Text>
@@ -218,121 +218,21 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 					{'\n\n'}II. Methods:
 				</Text>
 				<Text style={{ marginHorizontal: 5 }}>
-                This sequencing assay is an amplicon-based targeted panel NGS 
-				(as detailed below, 26 genes / 119 exons, covering 62.2 kb genomic region) 
-				designed to detect genetic variants in genes that are relevant in myeloid diseases. 
+				This sequencing assay is an amplicon-based targeted panel NGS (TP53 exon 2~11) 
+				designed to detect genetic variants to aid clinical decision-making. 
 				After library preparation, the genetic materials are sequenced on MiniSeq sequencer, 
-				150 bp paired-end mode. Raw FASTQ files are aligned to human reference genome hg19, and 
-				subsequently single-nucleotide variants (SNV) and small insertions/deletions (indel) are 
-				detected by Varscan (version 2.4.4). Pindel (version 0.2.5b9) is used for detection of large indels 
-				({'>'} 20 bp). Variants are then annotated with SnpEff (version 4.3t), 
-				and pathogenicity reporting is guided by the National Center for Biotechnology Information 
-				(NCBI) ClinVar database (version 2018-07-01).
+				150 bp paired-end mode. Raw FASTQ files are aligned to human reference genome hg19, 
+				and subsequently single-nucleotide variants (SNV) and small insertions/deletions 
+				(indel) are detected by Varscan (version 2.4.4). Pindel (version 0.2.5b9) 
+				is used for detection of large indels ({'>'} 20 bp). Variants are then annotated with SnpEff 
+				(version 4.3t), and pathogenicity reporting is guided by the National 
+				Center for Biotechnology Information (NCBI) ClinVar database (version 2018-07-01).
+ 
 				</Text>
                 <Text>
 					{'\n'}
 				</Text>
-				<View style={styles.table} wrap={true}>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>ASXL1 exon 12</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>IDH2 exon 4</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>TP53 exon 2~9</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>SRSF2 exon 1</Text>
-						</View>
-					</View>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>CALR exon 8,9</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>JAK2 exon 12,14</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>PHF6 exon 2~10</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>TET2 exon 3~9,11</Text>
-						</View>
-					</View>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>CSF3R exon 14~17</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>KIT exon 8,10~12,17</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>PIGA exon 1~6</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>U2AF1 exon 2,6</Text>
-						</View>
-					</View>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>DNMT3A exon 2~24</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>KRAS exon 2,3</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>PTPN11 exon 3,13</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>WT1 exon 2,3,6~9</Text>
-						</View>
-					</View>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>FLT3 exon 14,20</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>MPL exon 10</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>RUNX1 exon 2~9</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>ZRSR2 exon 1~11</Text>
-						</View>
-					</View>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>GATA2 exon 2~6</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>NPM1 exon 11</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>SETBP1 exon 4</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>IDH1 exon 4</Text>
-						</View>
-					</View>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>NRAS exon 2,3</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>SF3B1 exon 13~16</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}></Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}></Text>
-						</View>
-					</View>
-				</View>
-
+				
 				<Text style={{ fontFamily: 'TimesNewRomanBold'}}>
 					{'\n\n'}III. Regions with Insufficient Coverage for Evaluation ({'<'}50X){' '}
 				</Text>
@@ -405,7 +305,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
                 {'  '}8.	This test was developed and its performance characteristics determined by the Department of Laboratory Medicine, National Taiwan University Hospital (NTUH). It has not been cleared or approved by the Taiwan Food and Drug Administration (FDA).
 				</Text>
                 <Text style={{fontFamily: 'TimesNewRomanBold'}}>
-					{'\n\n'}VII. References:
+					{'\n\n'}V. References:
 				</Text>
                 <Text>
                 {'  '}1.	The 2016 revision to the World Health Organization classification of myeloid neoplasms and acute leukemia. Blood. 2016 May 19;127(20):2391-405.

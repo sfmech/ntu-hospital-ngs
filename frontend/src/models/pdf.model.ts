@@ -4,6 +4,7 @@ import { Sample } from "./sample.model";
 import { Segment } from "./segment.model";
 
 export class PdfData {
+    panel: string;
     runName: string;
     sampleName: string;
     medicalRecordNo: string;

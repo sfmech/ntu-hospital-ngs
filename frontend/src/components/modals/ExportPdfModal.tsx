@@ -24,6 +24,8 @@ import { ApiUrl } from '../../constants/constants';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
 import XLSX from "xlsx";
 import { Sex } from '../../models/sex.enum';
+import { MyDocumentTP53 } from '../ngs-result/ExportTP53Pdf';
+import { MyDocumentMPN } from '../ngs-result/ExportMPNPdf';
 
 type ExportPdfModalProps = {
 	show: boolean;
@@ -146,13 +148,34 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 
     const handleDownloadPdf =  () => {
         pdfData.forEach(async element => {
-            const blob = await pdf((
-                <MyDocument
-                    data={element}
-                    memberlist={memberlist}
-                />
-            )).toBlob();
-            saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
+			
+			if(element.panel==="MPN"){
+				const blob = await pdf((
+					<MyDocument
+						data={element}
+						memberlist={memberlist}
+					/>
+				)).toBlob();
+				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
+			}else if(element.panel==="TP53"){
+				const blob = await pdf((
+					<MyDocumentTP53
+						data={element}
+						memberlist={memberlist}
+					/>
+				)).toBlob();
+				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
+			}else{
+				const blob = await pdf((
+					<MyDocumentMPN
+						data={element}
+						memberlist={memberlist}
+					/>
+				)).toBlob();
+				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
+			}
+            
+            
             try {
                 await axios.post(`${ApiUrl}/api/updateSample`, {
                     data: element.sample

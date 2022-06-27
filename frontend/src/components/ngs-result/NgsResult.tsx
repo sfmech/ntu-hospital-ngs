@@ -716,6 +716,46 @@ export const NgsResult: FunctionComponent = (prop) => {
 		setSelectedSample(selectedSample);
 		
 	};
+	function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+		if (b[orderBy] < a[orderBy]) {
+			return -1;
+		}
+		if (b[orderBy] > a[orderBy]) {
+			return 1;
+		}
+		return 0;
+	}
+	
+	type Order = 'asc' | 'desc';
+	
+	function getComparator<Key extends keyof any>(
+		order: Order,
+		orderBy: Key
+	): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
+		return order === 'desc'
+			? (a, b) => descendingComparator(a, b, orderBy)
+			: (a, b) => -descendingComparator(a, b, orderBy);
+	}
+	
+	function stableSort(array, comparator: (a, b) => number) {
+		const stabilizedThis = array.map((el, index) => [ el, index ]);
+		
+		stabilizedThis.sort((a, b) => {
+			const colorOrder = ['Pathogenic', 'Likely Pathogenic', 'VUS', 'Benign'];
+
+    		const aColorIndex = colorOrder.indexOf( a.color );
+    		const bColorIndex = colorOrder.indexOf( b.color );
+			if ( aColorIndex === bColorIndex ){
+				const order = comparator(a[0], b[0]);
+				if (order !== 0) return order;
+				return a[1] - b[1];
+			}
+			return aColorIndex - bColorIndex;
+		});
+		return stabilizedThis.map((el) => el[0]);
+	}
+	
+
 	const getExportPdfData = () => {
 		let newExportData = new Array<PdfData>();
 		
@@ -723,6 +763,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 			let pdfData = new PdfData();
 			if(segmentResults[id]!==undefined){
 				let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
+				pdfData['panel'] =  segmentResults[id][0].sample.bed;
 				pdfData['sample'] =  segmentResults[id][0].sample;
 				pdfData['runName'] = segmentResults[id][0].sample.run.runName;
 				pdfData['sampleName'] = segmentResults[id][0].sample.sampleName;
@@ -741,14 +782,16 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['note1'] = segmentResults[id][0].sample.note1===undefined?"":segmentResults[id][0].sample.note1;
 				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
 				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
-				pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq>5 && !segment.isDeleted);
+				pdfData['list1'] = stableSort(tempTarget.filter((segment)=>((hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) !== -1&&segment.freq>2)
+				||(hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) == -1&&(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic || segment.clinicalSignificance===ClinicalSignificance.VUS) && segment.freq>2))
+				&& !segment.isDeleted), getComparator("desc", 'freq'));
 				/*pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && !segment.isDeleted).map((segment)=>{
 					if(segment.freq<5)
 						segment.clinicalSignificance=segment.clinicalSignificance+"(low allel frequency)";
 					return segment;
 				});*/
-				pdfData['list2'] = tempTarget.filter((segment)=>hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) !== -1&&(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && segment.freq<=5 && !segment.isDeleted);
-				pdfData['list3'] = tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS && !segment.isDeleted);
+				//pdfData['list2'] = stableSort(tempTarget.filter((segment)=>hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) !== -1 && segment.freq<5 && segment.freq>2 && !segment.isDeleted), getComparator("desc", 'freq'));
+				//pdfData['list3'] = stableSort(tempTarget.filter((segment)=>segment.clinicalSignificance===ClinicalSignificance.VUS && segment.freq>2 && !segment.isDeleted), getComparator("desc", 'freq'));
 				pdfData['checker'] = segmentResults[id][0].sample.checker;
 				pdfData['qualityManager'] = segmentResults[id][0].sample.qualityManager;
 				pdfData['reportDoctor'] = segmentResults[id][0].sample.reportDoctor;

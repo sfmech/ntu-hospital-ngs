@@ -397,7 +397,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 									id="tableTitle"
 									component="div"
 								>
-									Variants with pathogenic relevance
+									Variant list
 								</Typography>
 								<Table aria-label="simple table">
 									<caption>
@@ -436,96 +436,7 @@ function Row(props: { row: PdfData; index: number, memberlist }) {
 										</TableRow>
 									))}
 								</Table>
-								<Typography
-									className={classes.title + ' mt-4'}
-									variant="h6"
-									id="tableTitle"
-									component="div"
-								>
-									Hotspot variants with low VAF ({'<'}5%)
-								</Typography>
-								<Table aria-label="simple table">
-									<caption>
-										<TextField
-											id="outlined-multiline-static"
-											label="Note"
-											multiline
-											rows={4}
-											value={row.note2}
-											name={"note2"}
-											onChange={handleSampleChange}
-											variant="outlined"
-											style={{ width: '100%' }}
-										/>
-									</caption>
-									<TableHead>
-										<TableRow>
-											<TableCell>Gene</TableCell>
-											<TableCell>Refenence</TableCell>
-											<TableCell>Nucleotide Change</TableCell>
-											<TableCell>Protein Change</TableCell>
-											<TableCell>VAF</TableCell>
-											<TableCell>Depth</TableCell>
-											<TableCell>Classification</TableCell>
-										</TableRow>
-									</TableHead>
-									{row.list2.map((element) => (
-										<TableRow>
-											<TableCell>{element.geneName}</TableCell>
-											<TableCell>{Reference[element.geneName]}</TableCell>
-											<TableCell>{element.HGVSc}</TableCell>
-											<TableCell>{element.HGVSp}</TableCell>
-											<TableCell>{parseFloat((element.freq / 100.0).toFixed(2))}</TableCell>
-											<TableCell>{element.depth}</TableCell>
-											<TableCell>{element.clinicalSignificance}</TableCell>
-										</TableRow>
-									))}
-								</Table>
-								<Typography
-									className={classes.title + ' mt-4'}
-									variant="h6"
-									id="tableTitle"
-									component="div"
-								>
-									Variants of uncertain significance (VUS)
-								</Typography>
-								<Table aria-label="simple table">
-									<caption>
-										<TextField
-											id="outlined-multiline-static"
-											label="Note"
-											multiline
-											rows={4}
-											value={row.note3}
-											variant="outlined"
-											name={"note3"}
-											onChange={handleSampleChange}
-											style={{ width: '100%' }}
-										/>
-									</caption>
-									<TableHead>
-										<TableRow>
-											<TableCell>Gene</TableCell>
-											<TableCell>Refenence</TableCell>
-											<TableCell>Nucleotide Change</TableCell>
-											<TableCell>Protein Change</TableCell>
-											<TableCell>VAF</TableCell>
-											<TableCell>Depth</TableCell>
-											<TableCell>Classification</TableCell>
-										</TableRow>
-									</TableHead>
-									{row.list3.map((element) => (
-										<TableRow>
-											<TableCell>{element.geneName}</TableCell>
-											<TableCell>{Reference[element.geneName]}</TableCell>
-											<TableCell>{element.HGVSc}</TableCell>
-											<TableCell>{element.HGVSp}</TableCell>
-											<TableCell>{parseFloat((element.freq / 100.0).toFixed(2))}</TableCell>
-											<TableCell>{element.depth}</TableCell>
-											<TableCell>{element.clinicalSignificance}</TableCell>
-										</TableRow>
-									))}
-								</Table>
+								
 								<Typography
 									className={classes.title + ' mt-4'}
 									variant="h6"
