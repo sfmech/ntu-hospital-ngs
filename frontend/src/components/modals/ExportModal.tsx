@@ -188,7 +188,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                 } else {
                     // 該 sample 中沒有該醫令的資料
                     let newData = {
-                        SID: key,
+                        SID: dataGroupBySampleId[key][0].SID,
                         geneName: order.startsWith('JAK2') ? 'JAK2' : order,
                         HGVSc: 'NA',
                         HGVSp: 'NA',
