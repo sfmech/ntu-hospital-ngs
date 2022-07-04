@@ -714,7 +714,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 		const name = e.target.name;
 		selectedSample[name] = value;
 		if(segmentResults[selectedSample.sampleId]!==undefined)
-			segmentResults[selectedSample.sampleId][0]['sample'][name] = value;
+			segmentResults[selectedSample.sampleId].forEach(result => result['sample'][name] = value)	
 		setSelectedSample(selectedSample);
 		
 	};
