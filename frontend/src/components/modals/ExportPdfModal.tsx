@@ -151,7 +151,7 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 			
 			if(element.panel==="MPN"){
 				const blob = await pdf((
-					<MyDocument
+					<MyDocumentMPN
 						data={element}
 						memberlist={memberlist}
 					/>
@@ -167,7 +167,7 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
 			}else{
 				const blob = await pdf((
-					<MyDocumentMPN
+					<MyDocument
 						data={element}
 						memberlist={memberlist}
 					/>
