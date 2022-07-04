@@ -170,6 +170,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                         targetDatas.map(data => {
                             data.SID = data.sample.SID;
                             data.Assay = getAssay(data.geneName, data.HGVSp);
+                            data.freq = 'NA'
                             data.PN = 'NA'
                             return data;
                         })
@@ -178,9 +179,10 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                     // 該 sample 中沒有該醫令的資料
                     let newData = {
                         SID: key,
-                        geneName: order,
+                        geneName: order.startsWith('JAK2') ? 'JAK2' : order,
                         HGVSc:  'NA',
                         HGVSp: 'NA',
+                        freq: 'NA',
                         Assay: Orders[order],
                     }
                     newData['PN'] = meanCoverage > 250 ? 'N' : 'NA'
