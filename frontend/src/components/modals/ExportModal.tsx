@@ -149,7 +149,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                     if (order == 'JAK2_505547') {
                         return coverageData.amplionName == 'JAK2-ex12.1'
                     } else if (order == 'JAK2_593622') {
-                        return coverageData.amplionName == 'JAK2-ex12.1'
+                        return coverageData.amplionName == 'JAK2-ex14.1'
                     } else {
                         return coverageData.amplionName.startsWith(order)
                     }
