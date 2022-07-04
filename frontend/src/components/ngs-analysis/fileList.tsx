@@ -89,9 +89,9 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 							{Myeloidanalysis === 0 ? (
 							<>
 								
-								<TextField name="SID" className="col-2" label="SID" variant="outlined" value={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
-								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" value={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
-								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" value={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
+								<TextField name="SID" className="col-2" label="SID" variant="outlined" defaultValue={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" defaultValue={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" defaultValue={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
 								<TextField
 											name="checkDate"
 											label="檢查日期"
@@ -131,9 +131,9 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 							</ListItemIcon>
 							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />
 							{MPNanalysis === 0 ? (<>
-								<TextField name="SID" className="col-2" label="SID" variant="outlined" value={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
-								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" value={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
-								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" value={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
+								<TextField name="SID" className="col-2" label="SID" variant="outlined" defaultValue={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" defaultValue={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" defaultValue={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
 								<TextField
 											name="checkDate"
 											label="檢查日期"
@@ -172,9 +172,9 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 							</ListItemIcon>
 							<ListItemText primary={file.name.split('_')[0]} secondary={file.disease.enName} />
 							{TP53analysis === 0 ? (<>
-								<TextField name="SID" className="col-2" label="SID" variant="outlined" value={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
-								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" value={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
-								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" value={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
+								<TextField name="SID" className="col-2" label="SID" variant="outlined" defaultValue={file.SID} onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="medicalRecordNo" className="col-2 mx-2" label="病歷號" defaultValue={file.medicalRecordNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)}/>
+								<TextField name="departmentNo" className="col-2 mx-2" label="科分號" defaultValue={file.departmentNo} variant="outlined" onChange={(event) => handleInfoChange(event, file)} />
 								<TextField
 											name="checkDate"
 											label="檢查日期"
