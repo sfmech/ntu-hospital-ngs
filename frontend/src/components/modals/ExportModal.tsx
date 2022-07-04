@@ -142,6 +142,14 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
         }, {});
 
         Object.keys(dataGroupBySID).map(key => {
+            // 該 SID 中沒對到醫令的資料
+            dataGroupBySID[key].filter(data => !getAssay(data.geneName, data.HGVSp)).map(data => {
+                data.SID = data.sample.SID;
+                data.Assay = 'NA'
+                data.PN = !['Pathogenic', 'VUS'].includes(data.clinicalSignificance)  ? 'N' : 'P';
+                return data;
+            })
+
             Object.keys(Orders).map(order => {
                 let targetDatas = dataGroupBySID[key].filter(data => getAssay(data.geneName, data.HGVSp) == Orders[order])
                 // 對應到該醫令的 coverage data
@@ -170,6 +178,8 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                         targetDatas.map(data => {
                             data.SID = data.sample.SID;
                             data.Assay = getAssay(data.geneName, data.HGVSp);
+                            data.HGVSc = 'NA'
+                            data.HGVSp = 'NA'
                             data.freq = 'NA'
                             data.PN = 'NA'
                             return data;
@@ -180,7 +190,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                     let newData = {
                         SID: key,
                         geneName: order.startsWith('JAK2') ? 'JAK2' : order,
-                        HGVSc:  'NA',
+                        HGVSc: 'NA',
                         HGVSp: 'NA',
                         freq: 'NA',
                         Assay: Orders[order],
@@ -188,15 +198,6 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                     newData['PN'] = meanCoverage > 250 ? 'N' : 'NA'
                     dataGroupBySID[key].push(newData)
                 }
-            })
-            
-            // 該 SID 中沒對到醫令的資料
-            dataGroupBySID[key].filter(data => !getAssay(data.geneName, data.HGVSp)).map(data => {
-                console.log('沒對到醫令的資料', data)
-                data.SID = data.sample.SID;
-                data.Assay = 'NA'
-                data.PN = !['Pathogenic', 'VUS'].includes(data.clinicalSignificance)  ? 'N' : 'P';
-                return data;
             })
         });
 
