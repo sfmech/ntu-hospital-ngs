@@ -799,6 +799,8 @@ export class NGSService {
 			stringifier.write(row);
 		});
 		stringifier.pipe(writableStream);
+		stringifier.end();
+		
 		console.log("Finished writing data");
 		return ;
 	}
