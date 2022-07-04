@@ -122,7 +122,6 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
 			console.log(error);
 		} finally{
 			props.onClose();
-			window.location.reload();
         }
     }
 
