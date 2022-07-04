@@ -341,6 +341,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ selected, setSelected ] = React.useState<number[]>([]);
 	const [ selectedRunId, setSelectedRunId ] = React.useState<number[]>([]);
 	const [ exportData, setExportData ] = useState<Segment[]>([]);
+	const [ exportCoverageData, setExportCoverageData ] = useState<Coverage[]>([]);
+
 	const [ exportPdfData, setExportPdfData ] = useState<any>([]);
 	const [ value, setValue ] = React.useState('1');
 	const [ igvHidden, setIgvHidden] = React.useState(true);
@@ -943,6 +945,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 	};
 	const getExportData = () => {
 		let newExportData: Segment[] = [];
+		let newExportCoverageData: Coverage[] = [];
 		selected.forEach((id: number) => {
 			let [ tempOther, tempTarget ] = filterSegments(segmentResults[id]);
 
@@ -960,8 +963,10 @@ export const NgsResult: FunctionComponent = (prop) => {
 			// 		tempTarget = [ alert ].concat(tempTarget);
 			// 	}
 			// }
+			newExportCoverageData = newExportCoverageData.concat(coverageResults[id]);
 			newExportData = newExportData.concat(tempTarget);
 		});
+		setExportCoverageData(newExportCoverageData);
 		setSelected([]);
 		return newExportData;
 	};
@@ -1415,7 +1420,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				</Fab>
 			</ScrollTop>
 			<ExportPdfModal show={showExportPdfModal} exportData={exportPdfData} onClose={() => setShowExportPdfModal(false)} />
-			<ExportModal show={showModal} exportData={exportData} onClose={() => setShowModal(false)} />
+			<ExportModal show={showModal} exportData={exportData} exportCoverageData={exportCoverageData} onClose={() => setShowModal(false)} />
 			<UploadFolderModal show={showUploadModal} onClose={() => setShowUploadModal(false)} />
 			<EditDiseaseModal
 				show={showEditDiseaseModal}
