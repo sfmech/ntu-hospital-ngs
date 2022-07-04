@@ -192,6 +192,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
             
             // 該 SID 中沒對到醫令的資料
             dataGroupBySID[key].filter(data => !getAssay(data.geneName, data.HGVSp)).map(data => {
+                console.log('沒對到醫令的資料', data)
                 data.SID = data.sample.SID;
                 data.Assay = 'NA'
                 data.PN = !['Pathogenic', 'VUS'].includes(data.clinicalSignificance)  ? 'N' : 'P';
