@@ -59,9 +59,14 @@ const styles = StyleSheet.create({
 		fontSize: 12
 	},
 	infoView: {
-		display: 'flex',
-		flexDirection: 'row',
-		fontSize: 10,
+		position: 'absolute',
+ 		fontSize: 10,
+ 		border: '1px solid black',
+ 		paddingTop: 5,
+ 		paddingLeft: 2,
+ 		width: 150,
+ 		height: 50,
+		top: '1cm',
 	},
 	table: {
 		width: 'auto',
@@ -100,7 +105,11 @@ const styles = StyleSheet.create({
         top: '4.44cm',
         textAlign: 'right',
 
-      },
+      },addressView:{
+		display: 'flex',
+ 		flexDirection: 'row',
+ 		fontSize: 10,
+	  }
 });
 
 type ExportPdfProps = {
@@ -112,19 +121,22 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 	<Document>
 		<Page size="A4" style={styles.page}>
 			<Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-                `第${pageNumber}頁`
+                `第 ${pageNumber}/${totalPages} 頁`
             )} fixed />
 			<View style={styles.headerView} fixed>
+				<View style={styles.infoView}>
+ 					<Text>病歷號 : {prop.data.medicalRecordNo}</Text>
+ 					<Text>姓  名 : {prop.data.patientName}</Text>
+ 					<Text>生  日 : 西元 {new Date( prop.data.patientBirth).getFullYear()}年 {new Date( prop.data.patientBirth).getMonth()+1}月 {new Date( prop.data.patientBirth).getDate()}日</Text>
+ 				</View>
 				<View style={styles.titleView}>
 					<Text>國 立 臺 灣 大 學 醫 學 院 附 設 醫 院</Text>
 					<Text style={{fontFamily:"TimesNewRoman"}}>National Taiwan University Hospital</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>次世代定序檢驗報告</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>(檢驗醫學部)</Text>
 				</View>
-				<View style={styles.infoView}>
-					<Text style={{ fontSize: 11, width: 150 }}>病歷號 : {prop.data.medicalRecordNo}</Text>
-					<Text style={{ fontSize: 11, width: 150 }}>姓名 : {prop.data.patientName}</Text>
-					<Text style={{ fontSize: 11 }}>生日 : 西元 {new Date( prop.data.patientBirth).getFullYear()}年 {new Date( prop.data.patientBirth).getMonth()+1}月 {new Date( prop.data.patientBirth).getDate()}日</Text>
+				<View style={styles.addressView}>
+					<Text style={{ fontSize: 11, width: 150 }}>台北市中山南路七號</Text>
 				</View>
 				<Text>{'\n'}</Text>
 			</View>
