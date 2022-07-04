@@ -127,23 +127,23 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
     }
 
     const LISDataFilter = (exportData: Array<any>, exportCoverageData: Array<any>) => {
-        const dataGroupBySID = exportData.reduce((group, data) => {
-            const SID = data.sample.SID;
-            group[SID] = group[SID] ?? [];
-            group[SID].push(data);
+        const dataGroupBySampleId = exportData.reduce((group, data) => {
+            const sampleId = data.sample.sampleId;
+            group[sampleId] = group[sampleId] ?? [];
+            group[sampleId].push(data);
             return group;
         }, {});
 
-        const coverageDataGroupBySID = exportCoverageData.reduce((group, data) => {
-            const SID = data.sample.SID;
-            group[SID] = group[SID] ?? [];
-            group[SID].push(data);
+        const coverageDataGroupBySampleId = exportCoverageData.reduce((group, data) => {
+            const sampleId = data.sample.sampleId;
+            group[sampleId] = group[sampleId] ?? [];
+            group[sampleId].push(data);
             return group;
         }, {});
 
-        Object.keys(dataGroupBySID).map(key => {
+        Object.keys(dataGroupBySampleId).map(key => {
             // 該 SID 中沒對到醫令的資料
-            dataGroupBySID[key].filter(data => !getAssay(data.geneName, data.HGVSp)).map(data => {
+            dataGroupBySampleId[key].filter(data => !getAssay(data.geneName, data.HGVSp)).map(data => {
                 data.SID = data.sample.SID;
                 data.Assay = 'NA'
                 data.PN = !['Pathogenic', 'VUS'].includes(data.clinicalSignificance)  ? 'N' : 'P';
@@ -151,9 +151,9 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
             })
 
             Object.keys(Orders).map(order => {
-                let targetDatas = dataGroupBySID[key].filter(data => getAssay(data.geneName, data.HGVSp) == Orders[order])
+                let targetDatas = dataGroupBySampleId[key].filter(data => getAssay(data.geneName, data.HGVSp) == Orders[order])
                 // 對應到該醫令的 coverage data
-                let targetCoverageDatas = coverageDataGroupBySID[key].filter(coverageData => {
+                let targetCoverageDatas = coverageDataGroupBySampleId[key].filter(coverageData => {
                     if (order == 'JAK2_505547') {
                         return coverageData.amplionName == 'JAK2-ex12.1'
                     } else if (order == 'JAK2_593622') {
@@ -196,12 +196,12 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                         Assay: Orders[order],
                     }
                     newData['PN'] = meanCoverage > 250 ? 'N' : 'NA'
-                    dataGroupBySID[key].push(newData)
+                    dataGroupBySampleId[key].push(newData)
                 }
             })
         });
 
-        return Object.values(dataGroupBySID).flat(Infinity);
+        return Object.values(dataGroupBySampleId).flat(Infinity);
     }
 
 	return (
