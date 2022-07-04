@@ -9,7 +9,8 @@ import axios from 'axios';
 type ExportModalProps = {
     show: boolean;
     exportData: Array<any>;
-	onClose: () => void;
+    exportCoverageData: Array<any>;
+    onClose: () => void;
 };
 
 const headers = [
@@ -125,7 +126,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
         }
     }
 
-    const LISDataFilter = (exportData: Array<any>) => {
+    const LISDataFilter = (exportData: Array<any>, exportCoverageData: Array<any>) => {
         const dataGroupBySID = exportData.reduce((group, data) => {
             const SID = data.sample.SID;
             group[SID] = group[SID] ?? [];
@@ -133,24 +134,70 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
             return group;
         }, {});
 
-        Object.keys(dataGroupBySID).map(key => {
-            let negative = dataGroupBySID[key].every(data => { return !['Pathogenic', 'VUS'].includes(data.clinicalSignificance) });
-            if (negative) {
-                dataGroupBySID[key] = [dataGroupBySID[key][0]]
-            }
-            dataGroupBySID[key].map(data => {
-                const assay = getAssay(data.geneName, data.HGVSp);
-                if(!assay) { return null }
+        const coverageDataGroupBySID = exportCoverageData.reduce((group, data) => {
+            const SID = data.sample.SID;
+            group[SID] = group[SID] ?? [];
+            group[SID].push(data);
+            return group;
+        }, {});
 
-                data.sampleName = data.sample.sampleName;
+        Object.keys(dataGroupBySID).map(key => {
+            Object.keys(Orders).map(order => {
+                let targetDatas = dataGroupBySID[key].filter(data => getAssay(data.geneName, data.HGVSp) == Orders[order])
+                // 對應到該醫令的 coverage data
+                let targetCoverageDatas = coverageDataGroupBySID[key].filter(coverageData => {
+                    if (order == 'JAK2_505547') {
+                        return coverageData.amplionName == 'JAK2-ex12.1'
+                    } else if (order == 'JAK2_593622') {
+                        return coverageData.amplionName == 'JAK2-ex12.1'
+                    } else {
+                        return coverageData.amplionName.startsWith(order)
+                    }
+                })
+                let meanCoverage = targetCoverageDatas.reduce((a, b) => a + b.amplion_mean_coverge, 0) / targetCoverageDatas.length;
+
+                if (targetDatas.length > 0) {
+                    // 該 sample 中有該醫令的資料
+                    if (meanCoverage > 250) {
+                        targetDatas.map(data => {
+                            const assay = getAssay(data.geneName, data.HGVSp);
+                            data.SID = data.sample.SID;
+                            data.Assay = assay
+                            data.PN = !['Pathogenic', 'VUS'].includes(data.clinicalSignificance)  ? 'N' : 'P';
+                            return data;
+                        })
+                    } else {
+                        targetDatas.map(data => {
+                            data.SID = data.sample.SID;
+                            data.Assay = getAssay(data.geneName, data.HGVSp);
+                            data.PN = 'NA'
+                            return data;
+                        })
+                    }
+                } else {
+                    // 該 sample 中沒有該醫令的資料
+                    let newData = {
+                        SID: key,
+                        geneName: order,
+                        HGVSc:  'NA',
+                        HGVSp: 'NA',
+                        Assay: Orders[order],
+                    }
+                    newData['PN'] = meanCoverage > 250 ? 'N' : 'NA'
+                    dataGroupBySID[key].push(newData)
+                }
+            })
+            
+            // 該 SID 中沒對到醫令的資料
+            dataGroupBySID[key].filter(data => Object.keys(Orders).findIndex(getAssay(data.geneName, data.HGVSp))===-1).map(data => {
                 data.SID = data.sample.SID;
-                data.Assay = assay
-                data.PN = negative ? 'N' : 'P';
+                data.Assay = 'NA'
+                data.PN = !['Pathogenic', 'VUS'].includes(data.clinicalSignificance)  ? 'N' : 'P';
                 return data;
             })
         });
 
-        return Object.values(dataGroupBySID).flat(Infinity).filter(data => { return data !== null; });
+        return Object.values(dataGroupBySID).flat(Infinity);
     }
 
 	return (
@@ -203,7 +250,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
 				<Button onClick={()=>setStep(1)} color="primary">
 					確認
                 </Button>:(template===1?
-                <Button onClick={()=>handleExportLIE(headers.filter((h)=>LISHeader[h.key]), LISDataFilter(props.exportData))}>
+                <Button onClick={()=>handleExportLIE(headers.filter((h)=>LISHeader[h.key]), LISDataFilter(props.exportData, props.exportCoverageData))}>
                     匯出
                 </Button>:
                 <ExportDataToCsv fileName={`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${now.getHours()}.csv`} data={props.exportData.map((d)=>{
