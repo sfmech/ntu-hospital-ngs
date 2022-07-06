@@ -143,7 +143,6 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
         }, {});
 
         Object.keys(dataGroupBySampleId).map(key => {
-            console.log(dataGroupBySampleId[key]);
             Object.keys(Orders).map(order => {
                 let targetDatas = dataGroupBySampleId[key].filter(data => !data.isDeleted && getAssay(data.geneName, data.HGVSp) == Orders[order] && ['Pathogenic', 'VUS', 'Likely Pathogenic'].includes(data.clinicalSignificance))
                 // 對應到該醫令的 coverage data
@@ -171,7 +170,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                 } else {
                     // 該 sample 中沒有該醫令的資料
                     let newData = {
-                        SID: dataGroupBySampleId[key][0].SID,
+                        SID: dataGroupBySampleId[key][0].sample.SID,
                         geneName: order.startsWith('JAK2') ? 'JAK2' : order,
                         HGVSc: 'NA',
                         HGVSp: 'NA',
