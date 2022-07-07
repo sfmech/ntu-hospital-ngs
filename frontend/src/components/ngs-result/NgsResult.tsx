@@ -360,8 +360,8 @@ export const NgsResult: FunctionComponent = (prop) => {
 	const [ cookies ] = useCookies();
 	Font.register({ family: 'KAIU', src: KAIU });
 	Font.register({ family: 'KAIUBold', src: KAIUBold });
-	Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
-	Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
+	//Font.register({ family: 'TimesNewRoman', src: TimesNewRoman });
+	//Font.register({ family: 'TimesNewRomanBold', src: TimesNewRomanBold });
 	// disable hyphenation
 	Font.registerHyphenationCallback((word: string) => {
 		// Return word syllables in an array

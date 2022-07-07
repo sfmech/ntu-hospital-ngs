@@ -2,8 +2,6 @@ import React, { FunctionComponent } from 'react';
 import { Font, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import KAIU from '../../font/KAIU.TTF';
 import KAIUBold from '../../font/KAIUBold.TTF';
-import TimesNewRoman from '../../font/TimesNewRoman.TTF';
-import TimesNewRomanBold from '../../font/TimesNewRomanBold.TTF';
 import { Height } from '@material-ui/icons';
 import { PdfData } from '../../models/pdf.model';
 import { HealthCareWorkers } from '../../models/healthCareWorkers.model';
@@ -50,7 +48,7 @@ const styles = StyleSheet.create({
 		position: 'relative',
 		flexDirection: 'column',
 		fontSize: 12,
-		fontFamily: 'TimesNewRoman',
+		fontFamily: 'Times-Roman',
 		padding: 5,
 	},
 	containInfoView: {
@@ -131,7 +129,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
  				</View>
 				<View style={styles.titleView}>
 					<Text>國 立 臺 灣 大 學 醫 學 院 附 設 醫 院</Text>
-					<Text style={{fontFamily:"TimesNewRoman"}}>National Taiwan University Hospital</Text>
+					<Text style={{fontFamily:"Times-Roman"}}>National Taiwan University Hospital</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>次世代定序檢驗報告</Text>
 					<Text style={{ fontSize: 16, fontFamily: 'KAIUBold' }}>(檢驗醫學部)</Text>
 				</View>
@@ -161,33 +159,33 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體狀態 : {prop.data.specimenStatus}</Text>
 				</View>
 				<View style={styles.containInfoView}>
-					<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}Panel: </Text>
+					<Text style={{fontFamily: 'Times-Bold'}}>{'\n'}Panel: </Text>
 					<Text>{'\n'} NTUH LabMed MPN</Text>
 				</View>
 				
-				<Text style={{fontFamily: 'TimesNewRomanBold'}}>{'\n'}I. Variant list:</Text>
+				<Text style={{fontFamily: 'Times-Bold'}}>{'\n'}I. Variant list:</Text>
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={[ styles.tableCol, { width: '10%', alignItems: 'center' } ]}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Gene</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '15%', alignItems: 'center' } ]}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Reference</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Reference</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Nucleotide Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Nucleotide Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '20%', alignItems: 'center' } ]}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Protein Change</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Protein Change</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>VAF</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>VAF</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '7%', alignItems: 'center' } ]}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Depth</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Depth</Text>
 						</View>
 						<View style={[ styles.tableCol, { width: '21%', alignItems: 'center' } ]}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Classification</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Classification</Text>
 						</View>
 					</View>
 					{
@@ -226,7 +224,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 					</View>
 				</View>
 				
-				<Text style={{ fontFamily: 'TimesNewRomanBold'}}>
+				<Text style={{ fontFamily: 'Times-Bold'}}>
 					{'\n\n'}II. Methods:
 				</Text>
 				<Text style={{ marginHorizontal: 5 }}>
@@ -275,7 +273,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 					
 				</View>
 
-				<Text style={{ fontFamily: 'TimesNewRomanBold'}}>
+				<Text style={{ fontFamily: 'Times-Bold'}}>
 					{'\n\n'}III. Regions with Insufficient Coverage for Evaluation ({'<'}50X){' '}
 				</Text>
 				<Text>
@@ -288,16 +286,16 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 				<View style={styles.table} wrap={true}>
 					<View style={styles.tableRow}>
 						<View style={{...styles.tableCol, alignItems: 'center'}}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Gene</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Gene</Text>
 						</View>
 						<View style={{...styles.tableCol, alignItems: 'center'}}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>Exon</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>Exon</Text>
 						</View>
 						<View style={{...styles.tableCol, alignItems: 'center'}}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>From (codon)</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>From (codon)</Text>
 						</View>
 						<View style={{...styles.tableCol, alignItems: 'center'}}>
-							<Text style={{...styles.tableCell, fontFamily: 'TimesNewRomanBold'}}>To (codon)</Text>
+							<Text style={{...styles.tableCell, fontFamily: 'Times-Bold'}}>To (codon)</Text>
 						</View>
 					</View>
 					{
@@ -319,7 +317,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 						))
 					}
 				</View>
-                <Text style={{ fontFamily: 'TimesNewRomanBold'}}>
+                <Text style={{ fontFamily: 'Times-Bold'}}>
 					{'\n\n'}IV. Technical Notes:
 				</Text>
                 <Text>
@@ -346,7 +344,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
                 <Text>
                 {'  '}8.	This test was developed and its performance characteristics determined by the Department of Laboratory Medicine, National Taiwan University Hospital (NTUH). It has not been cleared or approved by the Taiwan Food and Drug Administration (FDA).
 				</Text>
-                <Text style={{fontFamily: 'TimesNewRomanBold'}}>
+                <Text style={{fontFamily: 'Times-Bold'}}>
 					{'\n\n'}VII. References:
 				</Text>
                 <Text>
