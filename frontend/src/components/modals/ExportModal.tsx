@@ -155,7 +155,7 @@ export const ExportModal: FunctionComponent<ExportModalProps> = (props) => {
                         return coverageData.amplionName.startsWith(order)
                     }
                 })
-                let meanCoverage = targetCoverageDatas.reduce((a, b) => a + b.amplion_mean_coverge, 0) / targetCoverageDatas.length;
+                let meanCoverage = targetCoverageDatas.reduce((a, b) => a + parseFloat(b.amplion_mean_coverge), 0) / targetCoverageDatas.length;
 
                 if (targetDatas.length > 0) {
                     // 該 sample 中有該醫令的資料
