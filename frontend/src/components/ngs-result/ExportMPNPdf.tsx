@@ -390,7 +390,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 				</View>
 			</View>
 			<View style={styles.footerView} fixed>
-				<Text style={{marginTop:8}}>西元2021年07月29日病歷委員會審核通過電子病歷版本 MR 08-13-39</Text>
+				<Text style={{marginTop:8}}>西元2022年07月01日病歷委員會修正通過電子病歷版本 MR 08-13-39</Text>
 				<View style={{...styles.table, width:210, marginLeft:2}}>
 					<View style={styles.tableRow}>
 						<View style={{...styles.tableCol, width: '25%'}}>
@@ -403,7 +403,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 							<Text style={{...styles.tableCell, textAlign: 'center'}}>版次</Text>
 						</View>
 						<View style={{...styles.tableCol, width: '17%'}}>
-							<Text style={{...styles.tableCell, textAlign: 'center'}}>01</Text>
+							<Text style={{...styles.tableCell, textAlign: 'center'}}>02</Text>
 						</View>
 					</View>
 				</View>

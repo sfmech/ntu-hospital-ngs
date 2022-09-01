@@ -784,9 +784,16 @@ export const NgsResult: FunctionComponent = (prop) => {
 				pdfData['note1'] = segmentResults[id][0].sample.note1===undefined?"":segmentResults[id][0].sample.note1;
 				pdfData['note2'] = segmentResults[id][0].sample.note2===undefined?"":segmentResults[id][0].sample.note2;
 				pdfData['note3'] = segmentResults[id][0].sample.note3===undefined?"":segmentResults[id][0].sample.note3;
-				pdfData['list1'] = stableSort(tempTarget.filter((segment)=>((hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) !== -1&&segment.freq>2)
-				||(hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) == -1&&(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic || segment.clinicalSignificance===ClinicalSignificance.VUS) && segment.freq>2))
-				&& !segment.isDeleted), getComparator("desc", 'freq'));
+				/*
+				1. For mutations on hotspot list --> 保留VAF > 1%
+				2. For other mutations -->  保留VAF > 3%
+				*/
+				pdfData['list1'] = stableSort(tempTarget.filter((segment)=>(
+					(hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) !== -1&&segment.freq>1)
+				  ||(hotspotlist.findIndex((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName) == -1
+				     &&(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic || segment.clinicalSignificance===ClinicalSignificance.VUS) 
+					 && segment.freq>3))
+				  && !segment.isDeleted), getComparator("desc", 'freq'));
 				/*pdfData['list1'] = tempTarget.filter((segment)=>(segment.clinicalSignificance===ClinicalSignificance.Pathogenic || segment.clinicalSignificance===ClinicalSignificance.LikelyPathogenic) && !segment.isDeleted).map((segment)=>{
 					if(segment.freq<5)
 						segment.clinicalSignificance=segment.clinicalSignificance+"(low allel frequency)";
