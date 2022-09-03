@@ -361,7 +361,7 @@ export const MyDocumentTP53: FunctionComponent<ExportPdfProps> = (prop) => (
 				</View>
 			</View>
 			<View style={styles.footerView} fixed>
-				<Text style={{marginTop:8}}>西元2021年07月01日病歷委員會修正通過電子病歷版本 MR 08-13-39</Text>
+				<Text style={{marginTop:8}}>西元2022年07月01日病歷委員會修正通過電子病歷版本 MR 08-13-39</Text>
 				<View style={{...styles.table, width:210, marginLeft:2}}>
 					<View style={styles.tableRow}>
 						<View style={{...styles.tableCol, width: '25%'}}>
