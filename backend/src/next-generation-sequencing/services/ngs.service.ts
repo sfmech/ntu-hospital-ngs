@@ -498,18 +498,18 @@ export class NGSService {
 						if (parseFloat(data['20'])) temp.EURAF = parseFloat(data['20']);
 						if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
 						
-						if(temp.clinicalSignificance.indexOf("Pathogenic")!==-1
-						||temp.clinicalSignificance.indexOf("VUS")!==-1){
+						if((temp.clinicalSignificance.indexOf("Pathogenic")!==-1
+						||temp.clinicalSignificance.indexOf("VUS")!==-1)&& temp.freq >=3){
 							temp.category="Target";
 						}else if(temp.clinicalSignificance.indexOf("Benign")!==-1){
 							temp.category="Other";
 						}else if(temp.globalAF>=0.01||temp.AFRAF>=0.01||temp.AMRAF>=0.01||temp.EURAF>=0.01||temp.ASNAF>=0.01){
 							temp.category="Other";
-						}else if(temp.annotation.indexOf('stop') !==-1 ||
+						}else if((temp.annotation.indexOf('stop') !==-1 ||
 						temp.annotation.indexOf('missense') !==-1 ||
 						temp.annotation.indexOf('frameshift') !==-1 ||
 						temp.annotation.indexOf('splice') !==-1 ||
-						temp.annotation.indexOf('inframe') !==-1){
+						temp.annotation.indexOf('inframe') !==-1)&& temp.freq >=3){
 							temp.category="Target";
 						}else{
 							temp.category="Other";
@@ -703,18 +703,18 @@ export class NGSService {
 							if (parseFloat(data['20'])) temp.EURAF = parseFloat(data['20']);
 							if (parseFloat(data['21'])) temp.ASNAF = parseFloat(data['21']);
 
-							if(temp.clinicalSignificance.indexOf("Pathogenic")!==-1
-							||temp.clinicalSignificance.indexOf("VUS")!==-1){
+							if((temp.clinicalSignificance.indexOf("Pathogenic")!==-1
+							||temp.clinicalSignificance.indexOf("VUS")!==-1 )&& temp.freq >=3){
 								temp.category="Target";
 							}else if(temp.clinicalSignificance.indexOf("Benign")!==-1){
 								temp.category="Other";
 							}else if(temp.globalAF>=0.01||temp.AFRAF>=0.01||temp.AMRAF>=0.01||temp.EURAF>=0.01||temp.ASNAF>=0.01){
 								temp.category="Other";
-							}else if(temp.annotation.indexOf('stop') !==-1 ||
+							}else if((temp.annotation.indexOf('stop') !==-1 ||
 							temp.annotation.indexOf('missense') !==-1 ||
 							temp.annotation.indexOf('frameshift') !==-1 ||
 							temp.annotation.indexOf('splice') !==-1 ||
-							temp.annotation.indexOf('inframe') !==-1){
+							temp.annotation.indexOf('inframe') !==-1)&& temp.freq >=3){
 								temp.category="Target";
 							}else{
 								temp.category="Other";

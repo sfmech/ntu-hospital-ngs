@@ -575,7 +575,7 @@ export const NgsResult: FunctionComponent = (prop) => {
 				if (
 					hotspotlist.findIndex(
 						(tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName
-					) !== -1
+					) !== -1 && segment.freq > 1
 				) {
 					const finding = hotspotlist.find((tag) => segment.HGVSp.indexOf(tag.HGVSp) !==-1 && segment.geneName === tag.geneName)
 					segment.clinicalSignificance = finding?.clinicalSignificance;
