@@ -120,7 +120,7 @@ export const MyDocumentTP53: FunctionComponent<ExportPdfProps> = (prop) => (
 	<Document>
 		<Page size="A4" style={styles.page}>
 			<Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-                `第 ${pageNumber} 頁，共 /${totalPages} 頁`
+                `第 ${pageNumber} 頁，共 ${totalPages} 頁`
             )} fixed />
 			<View style={styles.headerView} fixed>
 				<View style={styles.infoView}>
