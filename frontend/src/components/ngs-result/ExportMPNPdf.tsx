@@ -162,7 +162,7 @@ export const MyDocumentMPN: FunctionComponent<ExportPdfProps> = (prop) => (
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體狀態 : {prop.data.specimenStatus}</Text>
 				</View>
 				<View style={styles.containInfoView}>
-					<<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢測項目 : </Text>
+					<<Text style={{ width: 350, fontFamily: 'KAIU' }}>檢測項目 : </Text>
 					<Text>MPN mutation screening for malignancies</Text>
 				</View>
 				
