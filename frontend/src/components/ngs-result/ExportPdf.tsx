@@ -122,13 +122,13 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 	<Document>
 		<Page size="A4" style={styles.page}>
 			<Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-                `第 ${pageNumber}/${totalPages} 頁`
+                `第 ${pageNumber} 頁，共 ${totalPages} 頁`
             )} fixed />
 			<View style={styles.headerView} fixed>
 				<View style={styles.infoView}>
  					<Text>病歷號 : {prop.data.medicalRecordNo}</Text>
  					<Text>姓  名 : {prop.data.patientName}</Text>
- 					<Text>生  日 : 西元 {new Date( prop.data.patientBirth).getFullYear()}年 {new Date( prop.data.patientBirth).getMonth()+1}月 {new Date( prop.data.patientBirth).getDate()}日</Text>
+ 					<Text>生  日 : {new Date( prop.data.patientBirth).getFullYear()}/{new Date( prop.data.patientBirth).getMonth()+1}/{new Date( prop.data.patientBirth).getDate()}</Text>
  				</View>
 				<View style={styles.titleView}>
 					<Text>國 立 臺 灣 大 學 醫 學 院 附 設 醫 院</Text>
@@ -152,6 +152,9 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 
 			<View style={styles.containView}>
 				<View style={styles.containInfoView}>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>報告版本 : 01</Text>
+				</View>
+				<View style={styles.containInfoView}>
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢查日期 : {`${new Date( prop.data.checkDate).getFullYear()}/${(new Date( prop.data.checkDate).getMonth() > 8) ? (new Date( prop.data.checkDate).getMonth() + 1) : ('0' + (new Date( prop.data.checkDate).getMonth() + 1))}/${(new Date( prop.data.checkDate).getDate() > 9) ? new Date( prop.data.checkDate).getDate() : ('0' + new Date( prop.data.checkDate).getDate())}`}</Text>
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體編號 : {prop.data.specimenNo}</Text>
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>科分號 : {prop.data.departmentNo}</Text>
@@ -162,8 +165,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體狀態 : {prop.data.specimenStatus}</Text>
 				</View>
 				<View style={styles.containInfoView}>
-					<Text style={{fontFamily: 'Times-Bold'}}>{'\n'}Panel: </Text>
-					<Text>{'\n'} NTUH LabMed Myeloid Panel</Text>
+					<Text style={{fontFamily: 'Times-Bold'}}>檢測項目 : Mutation screening for myeloid malignancies</Text>
 				</View>
 				
 				<Text style={{fontFamily: 'Times-Bold'}}>{'\n'}I. Variant list:</Text>
@@ -463,7 +465,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 				</View>
 			</View>
 			<View style={styles.footerView} fixed>
-				<Text style={{marginTop:8}}>西元2022年07月01日病歷委員會修正通過電子病歷版本 MR 08-13-39</Text>
+				<Text style={{marginTop:8}}>西元2023年03月03日病歷委員會修正通過電子病歷版本 MR 08-13-39</Text>
 				<View style={{...styles.table, width:210, marginLeft:2}}>
 					<View style={styles.tableRow}>
 						<View style={{...styles.tableCol, width: '25%'}}>
@@ -476,7 +478,7 @@ export const MyDocument: FunctionComponent<ExportPdfProps> = (prop) => (
 							<Text style={{...styles.tableCell, textAlign: 'center'}}>版次</Text>
 						</View>
 						<View style={{...styles.tableCol, width: '17%'}}>
-							<Text style={{...styles.tableCell, textAlign: 'center'}}>02</Text>
+							<Text style={{...styles.tableCell, textAlign: 'center'}}>03</Text>
 						</View>
 					</View>
 				</View>
