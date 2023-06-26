@@ -360,7 +360,7 @@ export class NGSService {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
 			}
 		});
-		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response }, ABL1: { analysis: ABL1status, files: ABL1response } };
+		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response } };
 	}
 
 
@@ -423,10 +423,8 @@ export class NGSService {
 		const TP53files = fs
 			.readdirSync(`${this.configService.get<string>('ngs.path')}/TP53`)
 			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));
-		const ABL1files = fs
-			.readdirSync(`${this.configService.get<string>('ngs.path')}/ABL1`)
-			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));
-		return { Myeloid: Myeloidfiles, MPN: MPNfiles, TP53: TP53files, ABL1: ABL1files };
+
+		return { Myeloid: Myeloidfiles, MPN: MPNfiles, TP53: TP53files };
 	}
 
 	async uploadResult(folder: string, bed: string): Promise<void> {

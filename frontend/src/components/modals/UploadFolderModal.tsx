@@ -5,7 +5,7 @@ import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
 
 type UploadFolderModalProps = {
-    show: boolean;
+	show: boolean;
 	onClose: () => void;
 };
 const useStyles = makeStyles((theme: Theme) =>
@@ -27,17 +27,17 @@ const useStyles = makeStyles((theme: Theme) =>
 			margin: theme.spacing(1),
 			minWidth: 200
 		}
-    })
+	})
 );
-    
+
 
 
 export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (props) => {
-    const classes = useStyles();
-    const [ resultlist, setResultlist ] = useState({Myeloid:[],MPN:[],TP53:[]});
-    const [ selectResult, setSelectResult ] = useState<string>('');
-	const [ selectPanel, setSelectPanel ] = useState<string>('Myeloid');
-    useEffect(() => {
+	const classes = useStyles();
+	const [resultlist, setResultlist] = useState({ Myeloid: [], MPN: [], TP53: [], ABL1: [] });
+	const [selectResult, setSelectResult] = useState<string>('');
+	const [selectPanel, setSelectPanel] = useState<string>('Myeloid');
+	useEffect(() => {
 		const getResultlist = async () => {
 			try {
 				const response = await axios(`${ApiUrl}/api/resultlist`);
@@ -47,10 +47,10 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 				console.log(error);
 			}
 		};
-		
+
 		getResultlist();
 	}, []);
-    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+	const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 		setSelectResult(event.target.value as string);
 	};
 	const handlePanelChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -67,7 +67,7 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 				console.log(error);
 			} finally {
 				window.location.reload();
-				
+
 			}
 		};
 		uploadResult();
@@ -76,7 +76,7 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 		<Dialog maxWidth="xl" open={props.show} onClose={props.onClose}>
 			<DialogTitle>Select upload folder</DialogTitle>
 			<DialogContent dividers >
-			
+
 				<div className="row justify-content-center">
 					<FormControl variant="outlined" className={classes.formControl}>
 						<InputLabel id="bed-label">Panel</InputLabel>
@@ -87,12 +87,12 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 							onChange={handlePanelChange}
 							label="Panel"
 						>
-							{["Myeloid", "MPN", "TP53"].map((result) => {
+							{["Myeloid", "MPN", "TP53", "ABL1"].map((result) => {
 								return <MenuItem value={result}>{result}</MenuItem>;
 							})}
 						</Select>
 					</FormControl>
-					
+
 				</div>
 				<div className="row justify-content-center">
 					<FormControl variant="outlined" className={classes.formControl}>
@@ -109,18 +109,18 @@ export const UploadFolderModal: FunctionComponent<UploadFolderModalProps> = (pro
 							})}
 						</Select>
 					</FormControl>
-					
+
 				</div>
-            </DialogContent>
+			</DialogContent>
 			<DialogActions>
-            <Button
-						color="default"
-						startIcon={<FolderOpenIcon />}
-						onClick={handleUploadResult}
-						disabled={resultlist[selectPanel].length <= 0 || selectResult === ''}
-					>
-						上傳
-					</Button>
+				<Button
+					color="default"
+					startIcon={<FolderOpenIcon />}
+					onClick={handleUploadResult}
+					disabled={resultlist[selectPanel].length <= 0 || selectResult === ''}
+				>
+					上傳
+				</Button>
 				<Button onClick={props.onClose} color="primary">
 					取消
 				</Button>

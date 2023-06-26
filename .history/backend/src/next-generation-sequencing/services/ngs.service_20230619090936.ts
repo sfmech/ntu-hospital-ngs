@@ -198,12 +198,7 @@ export class NGSService {
 		*/
 	}
 	async getFilelist(): Promise<{}> {
-		var MPNstatus, TP53status, Myeloidstatus, ABL1status;
-		try {
-			ABL1status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/ABL1/status.txt`, 'utf-8');
-		} catch (error) {
-			ABL1status = FileStatus.NotAnalyse;
-		}
+		var ABL1status, MPNstatus, TP53status, Myeloidstatus;
 		try {
 			MPNstatus = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/MPN/status.txt`, 'utf-8');
 		} catch (error) {
@@ -213,6 +208,11 @@ export class NGSService {
 			TP53status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/TP53/status.txt`, 'utf-8');
 		} catch (error) {
 			TP53status = FileStatus.NotAnalyse;
+		}
+		try {
+			ABL1status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/ABL1/status.txt`, 'utf-8');
+		} catch (error) {
+			ABL1status = FileStatus.NotAnalyse;
 		}
 		try {
 			Myeloidstatus = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/Myeloid/status.txt`, 'utf-8');
@@ -291,41 +291,6 @@ export class NGSService {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
 			}
 		});
-		const ABL1bams = fs
-			.readdirSync(`${this.configService.get<string>('ngs.path')}/ABL1`)
-			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
-			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`);
-		const ABL1mutationQC = fs
-			.readdirSync(`${this.configService.get<string>('ngs.path')}/ABL1`)
-			.filter((mutationQC: string) => mutationQC.match(/(\d)*_(\w)*_Target_SOMATIC_Mutation_QC.csv/))
-			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
-			.filter((element, index, arr) => arr.indexOf(element) === index);
-		const ABL1files = fs
-			.readdirSync(`${this.configService.get<string>('ngs.path')}/ABL1`)
-			.filter((file: string) => file.match(/(\d)*_(\w)*_L001_R(1|2)_001.fastq.gz/))
-			.map((file: string) => `${file.split('_')[0]}_${file.split('_')[1]}`)
-			.filter((element, index, arr) => arr.indexOf(element) === index);
-
-
-		const ABL1response = ABL1files.map((file) => {
-			let disease = file.split('_')[1];
-			if (disease.match(/S(\d)*/)) {
-				disease = unknown;
-			} else {
-				disease = diseases.find((d) => d.abbr === disease);
-				if (disease === undefined) {
-					disease = unknown;
-				}
-			}
-			//return {status: status, name: file, disease: disease };
-			if (ABL1mutationQC.includes(file)) {
-				return { status: FileStatus.Analysed, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
-			} else if (ABL1bams.includes(file)) {
-				return { status: FileStatus.Analysing, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
-			} else {
-				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
-			}
-		});
 		const TP53bams = fs
 			.readdirSync(`${this.configService.get<string>('ngs.path')}/TP53`)
 			.filter((bam: string) => bam.match(/(\d)*_(\w)*_L001_R(1|2)_001_fastqc.html/))
@@ -360,7 +325,7 @@ export class NGSService {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
 			}
 		});
-		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response }, ABL1: { analysis: ABL1status, files: ABL1response } };
+		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response } };
 	}
 
 
@@ -426,6 +391,7 @@ export class NGSService {
 		const ABL1files = fs
 			.readdirSync(`${this.configService.get<string>('ngs.path')}/ABL1`)
 			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));
+
 		return { Myeloid: Myeloidfiles, MPN: MPNfiles, TP53: TP53files, ABL1: ABL1files };
 	}
 

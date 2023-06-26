@@ -192,7 +192,7 @@ export const FileReducer = (state, action) => {
 					files: updatedFilesInfo
 				}
 			} else if (updatedFileInfo.bed === "ABL1") {
-				const updatedFilesInfo = state.ABL1files.map((file: File) => {
+				const updatedFilesInfo = state.MPNfiles.map((file: File) => {
 					if (file.name.split("_")[0] === updatedFileInfo.file.name.split("_")[0]) {
 						return updatedFileInfo;
 					}

@@ -159,7 +159,7 @@ export const FileList: FunctionComponent<FileListProp> = (props) => {
 							) : null}
 							{file.status === FileStatus.Analysing ? <CircularProgress /> : null}
 						</ListItem>)) :
-						props.bed === "ABL1" ? ABL1files.map((file) => (
+						props.bed === "ABL1" ? MPNfiles.map((file) => (
 							<ListItem key={file.name} onClick={handleToggle(file)} selected={file.status === FileStatus.Analysed} classes={{ selected: classes.listItemSelected }}>
 								<ListItemIcon>
 									{props.merge ? <Checkbox

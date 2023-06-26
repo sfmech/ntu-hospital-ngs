@@ -26,6 +26,7 @@ import XLSX from "xlsx";
 import { Sex } from '../../models/sex.enum';
 import { MyDocumentTP53 } from '../ngs-result/ExportTP53Pdf';
 import { MyDocumentMPN } from '../ngs-result/ExportMPNPdf';
+import { MyDocumentABL1 } from '../ngs-result/ExportABL1Pdf';
 
 type ExportPdfModalProps = {
 	show: boolean;
@@ -61,75 +62,75 @@ const rows = [
 
 export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) => {
 	const classes = useStyles();
-	const [ step, setStep ] = useState<number>(0);
+	const [step, setStep] = useState<number>(0);
 	const { pdfData, setData } = useContext(PdfDataContext);
-    const [memberlistgroupbyrole, setMemberlistgroupbyrole] = useState({'醫檢師':[], '主治醫師':[]});
-    const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
+	const [memberlistgroupbyrole, setMemberlistgroupbyrole] = useState({ '醫檢師': [], '主治醫師': [] });
+	const [memberlist, setMemberlist] = useState<HealthCareWorkers[]>([]);
 
 	useEffect(
 		() => {
-			setStep(0);  
-			console.log(pdfData);   
-            const getMemberlist = () => {
-                try {
-                    axios(`${ApiUrl}/api/getHealthCareWorkers`).then((res) => {
-                        const memberlistgroupbyrole = res.data.reduce((groups, item) => {
-                            const val = item.role;
-                            groups[val] = groups[val] || [];
-                            groups[val].push(item);
-                            return groups;
-                        }, {});		
-                        setMemberlistgroupbyrole(memberlistgroupbyrole);
-                        setMemberlist(res.data);
-                    });
-                } catch (error){
-                    console.log(error);
-                }
-            }
-            getMemberlist();       
+			setStep(0);
+			console.log(pdfData);
+			const getMemberlist = () => {
+				try {
+					axios(`${ApiUrl}/api/getHealthCareWorkers`).then((res) => {
+						const memberlistgroupbyrole = res.data.reduce((groups, item) => {
+							const val = item.role;
+							groups[val] = groups[val] || [];
+							groups[val].push(item);
+							return groups;
+						}, {});
+						setMemberlistgroupbyrole(memberlistgroupbyrole);
+						setMemberlist(res.data);
+					});
+				} catch (error) {
+					console.log(error);
+				}
+			}
+			getMemberlist();
 		},
-		[ props.show ]
+		[props.show]
 	);
 
 	function processExcel(data) {
-		const workbook = XLSX.read(data, {type: 'string'});
+		const workbook = XLSX.read(data, { type: 'string' });
 		const firstSheet = workbook.SheetNames[0];
 		const excelRows: XMLType[] = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
-		let newpdfData = pdfData.map( element => {
-			
-			let xmlData = excelRows.find((r) =>String(r['DEPTASSIGNNO'])===element.departmentNo);
-			if(xmlData!==undefined){
-				if(Object.keys(xmlData).findIndex((d)=>d==="PTBIRTHDAY")!==-1){
+		let newpdfData = pdfData.map(element => {
+
+			let xmlData = excelRows.find((r) => String(r['DEPTASSIGNNO']) === element.departmentNo);
+			if (xmlData !== undefined) {
+				if (Object.keys(xmlData).findIndex((d) => d === "PTBIRTHDAY") !== -1) {
 					element.patientBirth = xmlData.PTBIRTHDAY;
-					element.sample.patientBirth =new Date(xmlData.PTBIRTHDAY);
+					element.sample.patientBirth = new Date(xmlData.PTBIRTHDAY);
 				}
-					
-				if(Object.keys(xmlData).findIndex((d)=>d==="PTNAME")!==-1){
-					element.patientName = xmlData.PTNAME.trim().replace('','');
-					element.sample.patientName = xmlData.PTNAME.trim().replace('','');
+
+				if (Object.keys(xmlData).findIndex((d) => d === "PTNAME") !== -1) {
+					element.patientName = xmlData.PTNAME.trim().replace('', '');
+					element.sample.patientName = xmlData.PTNAME.trim().replace('', '');
 				}
-					
-				if(Object.keys(xmlData).findIndex((d)=>d==="PTSEX")!==-1){
-					if(xmlData.PTSEX==="F"){
+
+				if (Object.keys(xmlData).findIndex((d) => d === "PTSEX") !== -1) {
+					if (xmlData.PTSEX === "F") {
 						element.patientSex = Sex["female"];
 						element.sample.patientSex = Sex["female"];
 					}
-					else{
-						element.patientSex =  Sex["male"];
+					else {
+						element.patientSex = Sex["male"];
 						element.sample.patientSex = Sex["male"];
 					}
-						
+
 				}
-				if(Object.keys(xmlData).findIndex((d)=>String(d)==="SPECIMENNO")!==-1){
+				if (Object.keys(xmlData).findIndex((d) => String(d) === "SPECIMENNO") !== -1) {
 					element.specimenNo = String(xmlData.SPECIMENNO);
 					element.sample.specimenNo = String(xmlData.SPECIMENNO);
 				}
-					
+
 			}
 			return element;
-        });
+		});
 		setData(newpdfData);
-		
+
 	}
 
 	const handleChange = (event) => {
@@ -137,19 +138,19 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 		reader.onloadend = (event) => {
 			processExcel(reader.result);
 		};
-		if (event.target.files.length>0)
+		if (event.target.files.length > 0)
 			reader.readAsText(event.target.files[0]);
 
 		/*
-        const formData = new FormData();
-        formData.append('file', event.target.files);
-        axios.post("http://localhost:8080/upload", formData);*/
+		const formData = new FormData();
+		formData.append('file', event.target.files);
+		axios.post("http://localhost:8080/upload", formData);*/
 	};
 
-    const handleDownloadPdf =  () => {
-        pdfData.forEach(async element => {
-			
-			if(element.panel==="MPN"){
+	const handleDownloadPdf = () => {
+		pdfData.forEach(async element => {
+
+			if (element.panel === "MPN") {
 				const blob = await pdf((
 					<MyDocumentMPN
 						data={element}
@@ -157,7 +158,7 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 					/>
 				)).toBlob();
 				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
-			}else if(element.panel==="TP53"){
+			} else if (element.panel === "TP53") {
 				const blob = await pdf((
 					<MyDocumentTP53
 						data={element}
@@ -165,7 +166,15 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 					/>
 				)).toBlob();
 				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
-			}else{
+			} else if (element.panel === "ABL1") {
+				const blob = await pdf((
+					<MyDocumentABL1
+						data={element}
+						memberlist={memberlist}
+					/>
+				)).toBlob();
+				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
+			} else {
 				const blob = await pdf((
 					<MyDocument
 						data={element}
@@ -174,18 +183,18 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 				)).toBlob();
 				saveAs(blob, `${element.runName}-${element.sampleName}.pdf`);
 			}
-            
-            
-            try {
-                await axios.post(`${ApiUrl}/api/updateSample`, {
-                    data: element.sample
-                });
-            } catch (error) {
-                console.log(error);
-            } 
-        });
-        props.onClose();
-        
+
+
+			try {
+				await axios.post(`${ApiUrl}/api/updateSample`, {
+					data: element.sample
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		});
+		props.onClose();
+
 	};
 
 	return (
@@ -195,22 +204,22 @@ export const ExportPdfModal: FunctionComponent<ExportPdfModalProps> = (props) =>
 				{(() => {
 					switch (step) {
 						case 0:
-							return <ExportPdfCollapsibleTable pdfData={pdfData} memberlist={memberlistgroupbyrole}/>;
+							return <ExportPdfCollapsibleTable pdfData={pdfData} memberlist={memberlistgroupbyrole} />;
 					}
 				})()}
 			</DialogContent>
 			<DialogActions>
-				<Button variant="contained" color="primary" onClick={handleDownloadPdf} disabled={pdfData!==undefined?pdfData.length===0:false}>
-						匯出
+				<Button variant="contained" color="primary" onClick={handleDownloadPdf} disabled={pdfData !== undefined ? pdfData.length === 0 : false}>
+					匯出
 				</Button>
 
 				{(() => {
 					switch (step) {
 						case 0:
 							return (
-								<Button component="label" color="primary" disabled={pdfData!==undefined?pdfData.length===0:false} >
+								<Button component="label" color="primary" disabled={pdfData !== undefined ? pdfData.length === 0 : false} >
 									匯入xml
-									<input type="file" onChange={handleChange} hidden disabled={pdfData!==undefined?pdfData.length===0:false}/>
+									<input type="file" onChange={handleChange} hidden disabled={pdfData !== undefined ? pdfData.length === 0 : false} />
 								</Button>
 							);
 					}

@@ -200,7 +200,7 @@ export class NGSService {
 	async getFilelist(): Promise<{}> {
 		var MPNstatus, TP53status, Myeloidstatus, ABL1status;
 		try {
-			ABL1status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/ABL1/status.txt`, 'utf-8');
+			cd = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/ABL1/status.txt`, 'utf-8');
 		} catch (error) {
 			ABL1status = FileStatus.NotAnalyse;
 		}

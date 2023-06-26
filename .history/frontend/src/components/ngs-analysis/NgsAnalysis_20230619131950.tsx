@@ -172,7 +172,7 @@ export const NgsAnalysis: FunctionComponent = (prop) => {
 						<div className="row justify-content-center mt-3"><Button variant="contained" color="primary" disabled={ABL1files.length === 0 || ABL1analysis > 0} onClick={() => handleClick(ABL1files, "ABL1")}>
 							開始分析
 						</Button>
-							<Button variant="contained" color="primary" className='ml-3' disabled={ABL1files.length === 0 || ABL1analysis > 0} onClick={() => handleClickMerge()}>
+							<Button variant="contained" color="primary" className='ml-3' disabled={TP53files.length === 0 || ABL1analysis > 0} onClick={() => handleClickMerge()}>
 								合併檔案
 							</Button>
 						</div>

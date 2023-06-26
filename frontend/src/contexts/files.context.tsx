@@ -12,25 +12,29 @@ const initialState = {
 	Myeloidanalysis: 0,
 	MPNanalysis: 0,
 	TP53analysis: 0,
+	ABL1analysis: 0,
 	Myeloidfiles: new Array<File>(),
 	MPNfiles: new Array<File>(),
 	TP53files: new Array<File>(),
+	ABL1files: new Array<File>(),
 	Mergefiles: new Array<string>(),
-	setMyeloidAnalysis: (analysis: number)=>{},
-	setMPNAnalysis: (analysis: number)=>{},
-	setTP53Analysis: (analysis: number)=>{},
-	setMyeloidFiles: (files: Array<File>)=>{},
-	setMPNFiles: (files: Array<File>)=>{},
-	setTP53Files: (files: Array<File>)=>{},
-	setMergeFiles: (files: Array<string>)=>{},
-	updateFile: (file: {file:File, bed: string})=>{},
-	updateFileInfo: (file: {file:File, bed: string})=>{}
+	setMyeloidAnalysis: (analysis: number) => { },
+	setMPNAnalysis: (analysis: number) => { },
+	setTP53Analysis: (analysis: number) => { },
+	setABL1Analysis: (analysis: number) => { },
+	setMyeloidFiles: (files: Array<File>) => { },
+	setMPNFiles: (files: Array<File>) => { },
+	setTP53Files: (files: Array<File>) => { },
+	setABL1Files: (files: Array<File>) => { },
+	setMergeFiles: (files: Array<string>) => { },
+	updateFile: (file: { file: File, bed: string }) => { },
+	updateFileInfo: (file: { file: File, bed: string }) => { }
 };
 
 export const FileContext = createContext(initialState);
 
 export const FileProvider = ({ children }) => {
-	const [ state, dispatch ] = useReducer(FileReducer, initialState);
+	const [state, dispatch] = useReducer(FileReducer, initialState);
 
 	useEffect(() => {
 		const getFilelist = () => {
@@ -39,23 +43,30 @@ export const FileProvider = ({ children }) => {
 					if (res.data.Myeloid.files.length > 0) {
 						setMyeloidFiles(res.data.Myeloid.files);
 						setMyeloidAnalysis(parseInt(res.data.Myeloid.analysis));
-					}else{
+					} else {
 						setMyeloidFiles([]);
 						setMyeloidAnalysis(0);
 					}
 					if (res.data.MPN.files.length > 0) {
 						setMPNFiles(res.data.MPN.files);
 						setMPNAnalysis(parseInt(res.data.MPN.analysis));
-					}else{
+					} else {
 						setMPNFiles([]);
 						setMPNAnalysis(0);
 					}
 					if (res.data.TP53.files.length > 0) {
 						setTP53Files(res.data.TP53.files);
 						setTP53Analysis(parseInt(res.data.TP53.analysis));
-					}else{
+					} else {
 						setTP53Files([]);
 						setTP53Analysis(0);
+					}
+					if (res.data.ABL1.files.length > 0) {
+						setABL1Files(res.data.ABL1.files);
+						setABL1Analysis(parseInt(res.data.ABL1.analysis));
+					} else {
+						setABL1Files([]);
+						setABL1Analysis(0);
 					}
 				});
 			} catch (error) {
@@ -67,81 +78,95 @@ export const FileProvider = ({ children }) => {
 	}, []);
 
 	function setMergeFiles(files: string[]) {
-        dispatch({
-            type: 'SETMERGEFILES',
-            payload: files
-        });
+		dispatch({
+			type: 'SETMERGEFILES',
+			payload: files
+		});
 	}
 
 	function setMyeloidFiles(files: File[]) {
-        dispatch({
-            type: 'SETMYELOIDFILES',
-            payload: files
-        });
+		dispatch({
+			type: 'SETMYELOIDFILES',
+			payload: files
+		});
 	}
 	function setMPNFiles(files: File[]) {
-        dispatch({
-            type: 'SETMPNFILES',
-            payload: files
-        });
+		dispatch({
+			type: 'SETMPNFILES',
+			payload: files
+		});
 	}
 	function setTP53Files(files: File[]) {
-        dispatch({
-            type: 'SETTP53FILES',
-            payload: files
-        });
+		dispatch({
+			type: 'SETTP53FILES',
+			payload: files
+		});
 	}
-	
+	function setABL1Files(files: File[]) {
+		dispatch({
+			type: 'SETABL1FILES',
+			payload: files
+		});
+	}
 	function setMyeloidAnalysis(analysis: number) {
-        dispatch({
-            type: 'SETMYELOIDANALYSIS',
-            payload: analysis
-        });
+		dispatch({
+			type: 'SETMYELOIDANALYSIS',
+			payload: analysis
+		});
 	}
 	function setMPNAnalysis(analysis: number) {
-        dispatch({
-            type: 'SETMPNANALYSIS',
-            payload: analysis
-        });
+		dispatch({
+			type: 'SETMPNANALYSIS',
+			payload: analysis
+		});
 	}
 	function setTP53Analysis(analysis: number) {
-        dispatch({
-            type: 'SETTP53ANALYSIS',
-            payload: analysis
-        });
+		dispatch({
+			type: 'SETTP53ANALYSIS',
+			payload: analysis
+		});
 	}
-	
-	function updateFile(file: {file:File, bed: string}) {
-        dispatch({
-            type: 'UPDATEFILE',
-            payload: file
-        });
-    }
+	function setABL1Analysis(analysis: number) {
+		dispatch({
+			type: 'SETABL1ANALYSIS',
+			payload: analysis
+		});
+	}
+	function updateFile(file: { file: File, bed: string }) {
+		dispatch({
+			type: 'UPDATEFILE',
+			payload: file
+		});
+	}
 
-	function updateFileInfo(file: {file:File, bed: string}) {
-        dispatch({
-            type: 'UPDATEFILEINFO',
-            payload: file
-        });
-    }
-	
-	
+	function updateFileInfo(file: { file: File, bed: string }) {
+		dispatch({
+			type: 'UPDATEFILEINFO',
+			payload: file
+		});
+	}
+
+
 	return (
 		<FileContext.Provider
 			value={{
 				Myeloidanalysis: state.Myeloidanalysis,
 				MPNanalysis: state.MPNanalysis,
+				ABL1analysis: state.ABL1analysis,
 				TP53analysis: state.TP53analysis,
 				Myeloidfiles: state.Myeloidfiles,
 				MPNfiles: state.MPNfiles,
 				TP53files: state.TP53files,
+				ABL1files: state.ABL1files,
 				Mergefiles: state.Mergefiles,
 				setMyeloidAnalysis,
 				setMPNAnalysis,
 				setTP53Analysis,
+				setABL1Analysis,
 				setMyeloidFiles,
 				setMPNFiles,
 				setTP53Files,
+				setABL1Files,
 				setMergeFiles,
 				updateFile,
 				updateFileInfo

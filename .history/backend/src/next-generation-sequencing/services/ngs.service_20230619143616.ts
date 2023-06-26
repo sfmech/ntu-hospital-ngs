@@ -360,7 +360,7 @@ export class NGSService {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
 			}
 		});
-		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response }, ABL1: { analysis: ABL1status, files: ABL1response } };
+		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response } };
 	}
 
 

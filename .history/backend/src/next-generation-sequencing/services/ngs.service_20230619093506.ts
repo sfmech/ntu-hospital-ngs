@@ -198,12 +198,7 @@ export class NGSService {
 		*/
 	}
 	async getFilelist(): Promise<{}> {
-		var MPNstatus, TP53status, Myeloidstatus, ABL1status;
-		try {
-			ABL1status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/ABL1/status.txt`, 'utf-8');
-		} catch (error) {
-			ABL1status = FileStatus.NotAnalyse;
-		}
+		var ABL1status, MPNstatus, TP53status, Myeloidstatus;
 		try {
 			MPNstatus = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/MPN/status.txt`, 'utf-8');
 		} catch (error) {
@@ -213,6 +208,11 @@ export class NGSService {
 			TP53status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/TP53/status.txt`, 'utf-8');
 		} catch (error) {
 			TP53status = FileStatus.NotAnalyse;
+		}
+		try {
+			ABL1status = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/ABL1/status.txt`, 'utf-8');
+		} catch (error) {
+			ABL1status = FileStatus.NotAnalyse;
 		}
 		try {
 			Myeloidstatus = fs.readFileSync(`${this.configService.get<string>('ngs.path')}/Myeloid/status.txt`, 'utf-8');
@@ -360,7 +360,7 @@ export class NGSService {
 				return { status: FileStatus.NotAnalyse, name: file, disease: disease, SID: "", medicalRecordNo: "", departmentNo: "", checkDate: new Date(Date.now()).toLocaleDateString() };
 			}
 		});
-		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response }, ABL1: { analysis: ABL1status, files: ABL1response } };
+		return { Myeloid: { analysis: Myeloidstatus, files: Myeloidresponse }, MPN: { analysis: MPNstatus, files: MPNresponse }, TP53: { analysis: TP53status, files: TP53response } };
 	}
 
 
@@ -426,6 +426,7 @@ export class NGSService {
 		const ABL1files = fs
 			.readdirSync(`${this.configService.get<string>('ngs.path')}/ABL1`)
 			.filter((file: string) => file.match(/(\d)*-(\d)*-(\d)*-(\d)*/));
+
 		return { Myeloid: Myeloidfiles, MPN: MPNfiles, TP53: TP53files, ABL1: ABL1files };
 	}
 
@@ -855,4 +856,5 @@ export class NGSService {
 		const now = new Date(Date.now())
 		return `MPN_${now.getFullYear()}${this.toTwoDigit(now.getMonth() + 1)}${this.toTwoDigit(now.getDate())}${this.toTwoDigit(now.getHours())}${this.toTwoDigit(now.getMinutes())}${this.toTwoDigit(now.getSeconds())}.csv`
 	}
+
 }
