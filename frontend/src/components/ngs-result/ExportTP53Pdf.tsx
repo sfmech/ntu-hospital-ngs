@@ -150,7 +150,7 @@ export const MyDocumentTP53: FunctionComponent<ExportPdfProps> = (prop) => (
 
 			<View style={styles.containView}>
 				<View style={styles.containInfoView}>
-					<Text style={{ width: 175, fontFamily: 'KAIU' }}>報告版本 : 01</Text>
+					<Text style={{ width: 175, fontFamily: 'KAIU' }}>報告版本 : 01{prop.data.departmentNo}</Text>
 				</View>
 				<View style={styles.containInfoView}>
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢查日期 : {`${new Date( prop.data.checkDate).getFullYear()}/${(new Date( prop.data.checkDate).getMonth() > 8) ? (new Date( prop.data.checkDate).getMonth() + 1) : ('0' + (new Date( prop.data.checkDate).getMonth() + 1))}/${(new Date( prop.data.checkDate).getDate() > 9) ? new Date( prop.data.checkDate).getDate() : ('0' + new Date( prop.data.checkDate).getDate())}`}</Text>
@@ -163,7 +163,8 @@ export const MyDocumentTP53: FunctionComponent<ExportPdfProps> = (prop) => (
 					<Text style={{ width: 175, fontFamily: 'KAIU' }}>檢體狀態 : {prop.data.specimenStatus}</Text>
 				</View>
 				<View style={styles.containInfoView}>
-					<Text style={{ width: 350, fontFamily: 'KAIU' }}>檢測項目 : TP53 mutation screening for malignancies</Text>
+					{/* <Text style={{ width: 350, fontFamily: 'KAIU' }}>檢測項目 : TP53 mutation screening for malignancies</Text> */}
+					<Text style={{ width: 350, fontFamily: 'KAIU' }}>檢測項目 : TP53 基因之突變檢測</Text>
 				</View>
 				
 				<Text style={{fontFamily: 'Times-Bold'}}>{'\n'}I. Variant list:</Text>
