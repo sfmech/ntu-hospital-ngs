@@ -52,7 +52,8 @@ export class NGSService {
 	) {}
 	
 	async getAllRuns(): Promise<Run[]> {
-		const runs = await this.runRepository.find({ order: { runId: 'DESC' } });
+		// const runs = await this.runRepository.find({ order: { runId: 'DESC' } });
+		const runs = await this.runRepository.find({ order: { runId: 'DESC' }, take: 5 }); // 嘗試修改調取的run數量
 		return runs;
 	}
 
