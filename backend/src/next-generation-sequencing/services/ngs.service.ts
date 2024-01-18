@@ -53,7 +53,6 @@ export class NGSService {
 	
 	async getAllRuns(): Promise<Run[]> {
 		const runs = await this.runRepository.find({ order: { runId: 'DESC' } });
-		// const runs = await this.runRepository.find({ order: { runId: 'DESC' }, take: 5 }); // 嘗試修改調取的run數量
 		return runs;
 	}
 
@@ -62,8 +61,19 @@ export class NGSService {
 		return segments;
 	}
 	async getAllSamples(): Promise<Sample[]> {
-		const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
-		console.log(samples)		
+		// 這個部分是篩選全部的sample，以下的是我更改的部分，只會篩選最新5個run的sample
+		// const samples = await this.sampleRepository.find({ order: { sampleId: 'DESC' } });
+		// console.log(samples)		
+		// return samples;
+
+		const latestruns = (await this.runRepository.find({ order: { runId: 'DESC' }, take: 5 })).map((run) => run.runId);
+		const samples = await this.sampleRepository.createQueryBuilder('sample')
+			.leftJoinAndSelect('sample.run', 'run')
+			.leftJoinAndSelect('sample.disease', 'disease')
+			.where("run.runId IN (:...latestruns)", { latestruns })
+			.orderBy('sample.sampleId', 'DESC')
+			.getMany();
+		console.log(samples);		
 		return samples;
 	}
 
